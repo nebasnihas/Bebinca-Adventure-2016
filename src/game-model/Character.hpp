@@ -27,7 +27,7 @@ private:
 	int areaID;
 	std::string name;
 
-	// To-do: Add customization features
+	// To-do: Add customization features, i.e. attributes
 
 };
 

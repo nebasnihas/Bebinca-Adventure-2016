@@ -10,12 +10,15 @@ class GameModel {
 
 public:
 
-	bool addCharacter(Character&);
+	bool createCharacter(Character&);
 	bool moveCharacter(int, int);
+	Character* getCharacterByID(int);
 
 	bool addArea(Area&);
+	Area* getAreaByID(int);
 
-	Character* getCharacterByID(int);
+	std::string getAreaDescription(int);
+	std::string getEntityDescription(int, std::string);
 
 private:
 

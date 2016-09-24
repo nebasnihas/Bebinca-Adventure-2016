@@ -2,7 +2,7 @@
 
 #include "GameModel.hpp"
 
-bool GameModel::addCharacter(Character& character) {
+bool GameModel::createCharacter(Character& character) {
 	int openID = getNextOpenCharacterID();
 	character.setID(openID);
 	characters.insert(std::pair<int, Character>(openID, character));
@@ -30,6 +30,45 @@ bool GameModel::addArea(Area& area) {
 
 	// No failure case yet...
 	return true;
+}
+
+Area* GameModel::getAreaByID(int areaID) {
+	auto aPtr = locations.find(areaID);
+
+	if (aPtr != locations.end()) {
+		return &aPtr->second;
+	}
+
+	return nullptr;
+}
+
+std::string GameModel::getAreaDescription(int areaID) {
+
+	std::string description = "";
+
+	auto area = getAreaByID(areaID);
+
+	if (area != nullptr) {
+
+		description = area->getAreaDescription();
+	}
+
+	return description;
+}
+
+std::string GameModel::getEntityDescription(int areaID, std::string entityName) {
+
+	auto area = getAreaByID(areaID);
+
+	auto entityList = area->getEntityList();
+    auto iter = std::find_if(entityList.begin(), entityList.end(),
+                          [&entityName](const Entity& entity) { return entity.getName() == entityName; });
+    if (iter != entityList.end()) {
+        return iter->getDescription();
+    }
+
+    // Error message when entity doesn't exist in area
+    return "Entity does not exist.";
 }
 
 bool GameModel::moveCharacter(int characterID, int areaID) {
