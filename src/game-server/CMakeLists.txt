@@ -2,6 +2,7 @@
 add_executable(game-server
         gameServer.cpp
 )
+add_subdirectory(controller)
 
 target_link_libraries(game-server
   networking
