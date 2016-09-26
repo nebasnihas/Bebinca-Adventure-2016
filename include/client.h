@@ -14,6 +14,7 @@
 #include <deque>
 #include <string>
 #include <sstream>
+#include <vector>
 
 
 namespace networking {
@@ -62,11 +63,9 @@ public:
 
     /**
      *  Receive messages from the Server. This returns all messages collected by
-     *  previous calls to Client::update() and not yet received. If multiple
-     *  messages were received from the Server, they are first concatenated
-     *  into a single std::string.
+     *  previous calls to Client::update()
      */
-    std::string receive();
+    std::vector<std::string> receive();
 
     /**
      *  Returns true iff the client disconnected from the server after initally
@@ -87,7 +86,7 @@ private:
     boost::asio::io_service ioService;
     boost::asio::ip::tcp::socket socket;
     boost::asio::streambuf readBuffer;
-    std::ostringstream incomingMessage;
+    std::vector<std::string> incomingMessages;
     std::deque<std::string> writeBuffer;
 };
 

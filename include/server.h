@@ -17,10 +17,7 @@
 #include <string>
 #include <unordered_map>
 
-
 namespace networking {
-
-
 /**
  *  An identifier for a Client connected to a Server. The ID of a Connection is
  *  guaranteed to be unique across all actively connected Client instances.
@@ -30,20 +27,17 @@ struct Connection {
 
     Connection(uintptr_t id) : id{id} {};
 
-    bool
-    operator==(Connection other) const {
+    bool operator==(Connection other) const {
         return id == other.id;
     }
 };
 
 
 struct ConnectionHash {
-    size_t
-    operator()(Connection c) const {
-        return std::hash<decltype(c.id)>{}(c.id);
+    size_t operator()(Connection c) const {
+        return std::hash < decltype(c.id) > {}(c.id);
     }
 };
-
 
 /**
  *  A Message containing text that can be sent to or was recieved from a given
@@ -105,6 +99,8 @@ public:
      *  contain carriage returns.
      */
     void send(const std::deque<Message> &messages);
+
+    void send(const Message& message);
 
     /**
      *  Receive Message instances from Client instances. This returns all Message
