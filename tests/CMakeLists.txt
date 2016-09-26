@@ -1,4 +1,5 @@
 add_executable(controllerTest ControllerTest.cpp)
+target_link_libraries(controllerTest gameModel)
 target_link_libraries(controllerTest controller)
 
 set_property(TARGET controllerTest PROPERTY CXX_STANDARD 14)
