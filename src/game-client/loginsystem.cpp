@@ -1,12 +1,13 @@
+//
+//  loginsystem.cpp
+//  loginsystem
+//
 
-#include <iostream>
-#include <string>
+#include "loginsystem.hpp"
 #include <fstream>
+#include <assert.h>
 
-//Global Vars
-std::string username;
-
-//Save file format
+//Save file format(subject to change)
 /*
  ------------------------------------------------------
  username.txt
@@ -19,25 +20,9 @@ std::string username;
  */
 
 
-void welcomescreen(); //Call this function only
-std::string login();
-std::string _register();
-/*Returns the username for successful login/registration. Other methods can use the username to open game save file and modify/access it.*/
-bool save_file_exists (std::string user);
-void set_savefilevals(std::string user, std::string pass);
+login::login(){}
 
-int main(int argc, const char * argv[]) {
-    
-    welcomescreen();
-    
-    std::cout << "This is the username returned " << username << std::endl;
-    return 0;
-}
-
-
-
-void welcomescreen(){
-    
+std::string login::welcomescreen(){
     int choice;
     
     for (int i=0; i < 50; i++) {
@@ -61,7 +46,7 @@ void welcomescreen(){
     
     switch (choice) {
         case 1:
-            username = login();
+            username = _login();
             break;
         case 2:
             username = _register();
@@ -69,14 +54,14 @@ void welcomescreen(){
             
         default:
             std::cout << "Invalid choice\n";
+            username= "nousercreated";
             break;
     }
     
-    //Break out to character creation from here
-    
+    return username;
 }
 
-std::string login(){
+std::string login::_login(){
     std::string user, pass; // vars to store user input
     std::string file_user, file_pass; // vars to store file data
     bool flag = false;
@@ -85,6 +70,8 @@ std::string login(){
         std::cout << "Enter credentials" <<std::endl
         << "Please enter username\n";
         std::cin >> user;
+        
+        assert(user.size()<=10 && "The username cannot contain more than 10 characters"); //For testing
         
         std::cout << "Please enter password\n";
         std::cin >> pass;
@@ -117,8 +104,7 @@ std::string login(){
     return user;
 }
 
-//Must refine function _register. Has issues with file checking
-std::string _register(){
+std::string login::_register(){
     std::string user, pass; // vars to store user input
     std::cout << "Create credentials" <<std::endl;
     bool flag = false;
@@ -129,7 +115,9 @@ std::string _register(){
         std::cout << "Please select username\n";
         std::cin >> user;
         
-        if(save_file_exists(user)){
+        assert(user.size()<=10 && "The username cannot contain more than 10 characters"); //For testing
+        
+        if(save_file_exists(user +".txt")){
             std::cout << "Username is already taken\n";
             flag = false;
             
@@ -147,13 +135,12 @@ std::string _register(){
     return user;
 }
 
-bool save_file_exists (std::string user){
+bool login::save_file_exists(const std::string user){
     std::ifstream f(user);
     return f.good();
 }
 
-void set_savefilevals(std::string user, std::string pass){
-    
+void login::set_savefilevals(const std::string user, std::string pass){
     int user_level = 0;
     std::string avatar = "nil";
     std::string world = "start";
@@ -167,5 +154,6 @@ void set_savefilevals(std::string user, std::string pass){
     << world << std::endl;
     
     f.close();
-    
+
 }
+
