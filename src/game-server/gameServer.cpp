@@ -7,72 +7,57 @@
 
 
 #include "server.h"
+#include "messageSender.h"
+#include "commandHandler.h"
 
 #include <boost/lexical_cast.hpp>
 #include <iostream>
-
+#include <map>
+#include <string>
+#include <queue>
 
 using namespace networking;
 
-
 std::vector<Connection> clients;
 
-
-void onConnect(Connection c) {
-    printf("New connection found: %lu\n", c.id);
-    clients.push_back(c);
+void onConnect(Connection connection) {
+    printf("New connection found: %lu\n", connection.id);
+    clients.push_back(connection);
 }
 
 
 void onDisconnect(Connection c) {
     printf("Connection lost: %lu\n", c.id);
-    auto eraseBegin = std::remove(std::begin(clients), std::end(clients), c);
-    clients.erase(eraseBegin, std::end(clients));
+    auto it = std::remove(clients.begin(), clients.end(), c);
+    clients.erase(it, clients.end());
 }
 
-
-std::string processMessages(Server &server,
-                const std::deque<Message> &incoming,
-                bool &quit) {
-    std::ostringstream result;
-    for (auto &message : incoming) {
-        if (message.text == "quit") {
-            server.disconnect(message.connection);
-        } else if (message.text == "shutdown") {
-            printf("Shutting down.\n");
-            quit = true;
-        } else {
-            result << message.connection.id << "> " << message.text << "\n";
-        }
-    }
-    return result.str();
-}
-
-
-std::deque<Message> buildOutgoing(const std::string &log) {
-    std::deque<Message> outgoing;
-    for (auto& client : clients) {
-        outgoing.push_back({client, log});
-    }
-    return outgoing;
-}
-
-
-int main(int argc, char *argv[]) {
+bool validateServerArgs(int argc, char* argv[], unsigned short& port)
+{
     if (argc < 2) {
         printf("Usage:\n%s <port>\ne.g. %s 4002\n", argv[0], argv[0]);
-        return 1;
+        return false;
     }
 
-    unsigned short port;
     try {
         port = boost::lexical_cast<ushort>(argv[1]);
     } catch (const boost::bad_lexical_cast&) {
         std::cout << "Invalid port number" << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+int main(int argc, char *argv[]) {
+    unsigned short port;
+    if (!validateServerArgs(argc, argv, port))
+    {
         return 1;
     }
 
     Server server{port, onConnect, onDisconnect};
+    MessageSender messageSender(server, clients);
 
     bool done = false;
     while (!done) {
@@ -84,9 +69,17 @@ int main(int argc, char *argv[]) {
         }
 
         auto incoming = server.receive();
-        auto log = processMessages(server, incoming, done);
-        auto outgoing = buildOutgoing(log);
-        server.send(outgoing);
+        for (auto &message : incoming) {
+            if (message.text == "quit") {
+                server.disconnect(message.connection);
+            } else if (message.text == "shutdown") {
+                printf("Shutting down.\n");
+                done = true;
+            } else {
+                processCommand(message, messageSender);
+            }
+        }
+
         sleep(1);
     }
 

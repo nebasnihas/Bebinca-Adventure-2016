@@ -122,13 +122,17 @@ std::deque<Message> Server::receive() {
 
 void Server::send(const std::deque<Message> &messages) {
     for (auto &message : messages) {
-        auto found = channels.find(message.connection);
-        if (channels.end() != found) {
-            found->second->send(message.text);
-        }
+        send(message);
     }
 }
 
+void Server::send(const Message &message)
+{
+    auto found = channels.find(message.connection);
+    if (channels.end() != found) {
+        found->second->send(message.text);
+    }
+}
 
 void Server::disconnect(Connection connection) {
     auto found = channels.find(connection);
