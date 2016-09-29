@@ -9,6 +9,7 @@
 #include "server.h"
 #include "messageSender.h"
 #include "commandHandler.h"
+#include "controller/Controller.hpp"
 
 #include <boost/lexical_cast.hpp>
 #include <iostream>
@@ -59,6 +60,8 @@ int main(int argc, char *argv[]) {
     Server server{port, onConnect, onDisconnect};
     MessageSender messageSender(server, clients);
 
+    Controller controller
+
     bool done = false;
     while (!done) {
         try {
@@ -76,6 +79,7 @@ int main(int argc, char *argv[]) {
                 printf("Shutting down.\n");
                 done = true;
             } else {
+                controller.processCommand(message.text, message.connection, messageSender);
                 processCommand(message, messageSender);
             }
         }
