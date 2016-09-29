@@ -1,34 +1,52 @@
-#ifndef CHARACTER_HPP
-#define CHARACTER_HPP
+#ifndef CHARACTER_H
+#define CHARACTER_H
 
-#include <string>
+#include <iostream>
+#include "Inventory.hpp"
 
-class Character 
-{
-
+class Character {
 public:
+    Inventory inventory;// TODO move to private section
 
-	Character();
-	Character(std::string);
+    enum class Type {
+        WARRIOR,
+        ARCHER,
+        MAGE
+    };
 
-	int getID() const { return id; }
-	int getAreaID() const { return areaID; }
-	std::string getName() const { return name; }
+    Character(int id, int areaID, std::string name, Type type, int level);
+    std::string getName() const;
+    int getID() const;
+    int getAreaID() const;
+    Type getType() const;
+    void setID(int id);
+    void setAreaID(int areaID);
 
-	void setID(int id) { this->id = id; }
-	void setAreaID(int areaID) { this->areaID = areaID; }
-	void setName(std::string name) { this->name = name; }
+    //////////////////////////// Level ////////////////////////////
+
+    void increaseLevel();
+    int getLevel() const;
+
+    //////////////////////////// Stats ////////////////////////////
+
+    std::unordered_map<std::string, int> getStats() const;
+    int getStat(std::string stat);
+    void increaseStat(std::string stat);
+
+    //////////////////////////// Skills ////////////////////////////
+
+    std::string getSkillsString() const;
+    int getSkill(std::string skill);
+    void increaseSkill(std::string skill);
 
 private:
-
-	// Id of the character object, may not be needed depending on networking implementation
-	int id;
-	// Id of the Area object the character is in
-	int areaID;
-	std::string name;
-
-	// To-do: Add customization features, i.e. attributes
-
+    std::string name;
+    int id;
+    int areaID;
+    Type type;
+    int level;
+    std::unordered_map<std::string, int> stats;
+    std::unordered_map<std::string, int> skills;
 };
 
 #endif
