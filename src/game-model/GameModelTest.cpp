@@ -49,7 +49,7 @@ int main()
 
 void addMockCharacters() 
 {
-	Character c1("Test Character");
+	Character c1(1, 1, "Test Character", Character::Type::WARRIOR, 1);
 	gameModel.createCharacter(c1);
 
 }
