@@ -10,28 +10,28 @@
 #include "../../game-model/Command.hpp"
 #include "../../game-model/GameModel.hpp"
 #include "server.h"
-#include "../messageSender.h"
+#include "MessageSender.h"
 
 using namespace networking;
 
 class Controller {
 public:
-    Controller(GameModel &gameModel);
-    void processCommand(const std::string& message, const Connection& connectionID, MessageSender& sender);
-    void registerCommand(Command::Type type, string commandText, Command::functionRef method);
+    Controller();
+    void processCommand(const std::string& message, const Connection& client, GameModel& gameModel, MessageSender& messageSender);
+    void registerCommand(const Command::Type& type, const std::string& commandText, Command::functionRef method);
 
 private:
-    GameModel gameModel;
-
-//    std::unordered_map<Connection, int> connectionToPlayerMap;
-    std::unordered_map<int, Connection> playerToConnectionMap;
+    std::unordered_map<Connection, int, ConnectionHash> clientToPlayerMap;
+    std::unordered_map<int, Connection> playerToClientMap;
 
     std::map<std::string, Command> commandMap;
-    string look(int playerID, vector<string> targets, MessageSender &messageSender);
-    string executeCommand(const string &command, const vector<string> &targets, const Connection &connection,
-                          MessageSender &messageSender);
-    std::string Controller::authHandler(const std::string& args, const Connection& client, MessageSender& messageSender);
 
+    void executeCommand(const std::string& command, const std::vector<std::string>& targets,
+                        const Connection& client, GameModel& gameModel, MessageSender& messageSender);
+
+    void look(const std::vector<std::string>& targets, int playerID, const Connection& clientID, GameModel& gameModel, MessageSender& messageSender);
+    void authHandler(const std::vector<std::string>& targets, int playerID, const Connection& clientID, GameModel& gameModel, MessageSender& messageSender);
+    void sayHandler(const std::vector<std::string>& targets, int playerID, const Connection& clientID, GameModel& gameModel, MessageSender& messageSender);
 };
 
 

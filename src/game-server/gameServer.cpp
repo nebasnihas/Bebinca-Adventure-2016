@@ -7,8 +7,7 @@
 
 
 #include "server.h"
-#include "messageSender.h"
-#include "commandHandler.h"
+#include "controller/BufferedMessageSender.h"
 #include "controller/Controller.hpp"
 
 #include <boost/lexical_cast.hpp>
@@ -20,6 +19,9 @@
 using namespace networking;
 
 std::vector<Connection> clients;
+BufferedMessageSender messageSender;
+GameModel gameModel;
+Controller controller;
 
 void onConnect(Connection connection) {
     printf("New connection found: %lu\n", connection.id);
@@ -58,9 +60,6 @@ int main(int argc, char *argv[]) {
     }
 
     Server server{port, onConnect, onDisconnect};
-    MessageSender messageSender(server, clients);
-
-    Controller controller
 
     bool done = false;
     while (!done) {
@@ -79,10 +78,11 @@ int main(int argc, char *argv[]) {
                 printf("Shutting down.\n");
                 done = true;
             } else {
-                controller.processCommand(message.text, message.connection, messageSender);
-                processCommand(message, messageSender);
+                controller.processCommand(message.text, message.connection, gameModel, messageSender);
             }
         }
+
+        messageSender.sendAll(server, clients);
 
         sleep(1);
     }

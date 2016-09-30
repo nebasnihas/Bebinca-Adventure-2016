@@ -5,13 +5,14 @@
 #include <vector>
 #include <string>
 #include <functional>
-#include "../game-server/messageSender.h"
+#include "../game-server/controller/MessageSender.h"
+#include "GameModel.hpp"
 
 using namespace std;
 
 class Command {
 public:
-    typedef std::function<string(int playerID, vector<string> targets, MessageSender& messageSender)> functionRef;
+    typedef function<void (const vector<string>& targets, int playerID, const Connection& clientID, GameModel& gameModel, MessageSender& messageSender)> functionRef;
 
     enum Type {
         AREA,

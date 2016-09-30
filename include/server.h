@@ -25,8 +25,6 @@ namespace networking {
 struct Connection {
     uintptr_t id;
 
-    Connection(uintptr_t id) : id{id} {};
-
     bool operator==(Connection other) const {
         return id == other.id;
     }
