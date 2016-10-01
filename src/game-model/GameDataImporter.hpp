@@ -11,7 +11,7 @@ class GameDataImporter {
 private:
 
 	std::string datafile;
-	void loadSingleRooms(YAML::Node);
+	void loadSingleRoom(YAML::Node);
 	void loadSingleObjects(YAML::Node);
 	void loadSingleResets(YAML::Node);
 	void loadSingleShops(YAML::Node);
