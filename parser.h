@@ -13,10 +13,21 @@ using std::vector;
 #ifndef FUNCTIONS_H_INCLUDED
 #define FUNCTIONS_H_INCLUDED
 
-string toUpperFunction(string input);
+class Parser {
+private:
+	vector<string> actions {"GET", "DROP", "USE", "OPEN", "CLOSE", "EXAMINE", "INVENTORY", "LOOK"};
+	vector<string> targets {"CAVE", "KITCHEN", "NORTH", "SOUTH", "UP", "DOWN", "SWORD", "GOLD", "TREE", "BUSH"};
+public:
 
-vector<string> stringSplitter(string input);
+	//Converts input to uppercase to avoid direct matching
+	string toUpperFunction(string input);
 
-bool parser(string& location, vector<string> words);
+	//Splits string into a vector of words
+	vector<string> stringSplitter(string input);
+
+	//Returns a vector with "ACTION:"[][][]"TARGET:"[][][]"
+	vector<string> organizer(vector<string> words);
+
+};
 
 #endif
