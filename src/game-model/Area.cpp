@@ -23,10 +23,3 @@ std::string Area::getAreaDescription() const {
 
     return description;
 }
-
-Area* Area::loadAreaFromFile(std::string filePath) {
-    // TO-DO: Implement function once file format has been decided
-    //        Prefer loading from file contents instead of filepath if possible
-    //        Change in function signature will be needed
-
-}

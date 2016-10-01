@@ -21,7 +21,7 @@ public:
 	std::string getAreaDescription() const;
 
     //TO-DO: Add loading mechanism from file
-    static Area* loadAreaFromFile(std::string);
+    static Area* loadAreaFromFile(std::string file);
 
 private:
     // Id of the area object, may not be needed depending on networking implementation
