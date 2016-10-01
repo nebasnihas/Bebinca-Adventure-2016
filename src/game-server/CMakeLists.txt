@@ -1,7 +1,7 @@
 
 add_executable(game-server
         GameServer.cpp
-        Authentication.cpp
+        Authenticator.cpp
         BufferedMessageSender.cpp
         Command.cpp
         Controller.cpp
@@ -27,4 +27,3 @@ target_link_libraries(game-server ${Boost_LIBRARIES})
 install(TARGETS game-server
         RUNTIME DESTINATION bin
         )
-

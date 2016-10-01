@@ -2,6 +2,7 @@
 #include <vector>
 #include <boost/algorithm/string.hpp>
 #include "Controller.hpp"
+#include "Authenticator.hpp"
 
 using namespace networking;
 using namespace std::placeholders;
@@ -71,16 +72,32 @@ void Controller::look(const std::vector<std::string>& targets, int playerID, con
 
 void Controller::authHandler(const std::vector<std::string>& targets, int playerID, const Connection& clientID, GameModel& gameModel, MessageSender& messageSender)
 {
-    //TODO placeholder. args are user and password separated by space
-    if (targets.size() != 2 || targets[1] != "password") {
+    if (targets.size() != 2) {
         messageSender.sendMessage("auth:bad", clientID);
     } else {
-        static int id = 0;
-        clientToPlayerMap[clientID] = ++id;
-        playerToClientMap[id] = clientID;
+        auto username = targets[0];
+        auto password = targets[1];
 
-        messageSender.sendMessage("player id: " + std::to_string(id) + " has joined\n", SENDER_DEFAULT);
-        messageSender.sendMessage("auth:ok", clientID);
+        switch (Authenticator::login(username, password)) {
+            case LoginStatus::INVALID_CREDENTIALS:
+                messageSender.sendMessage("auth:bad", clientID);
+                //TODO return "The credentials do not match\n" to client;
+                break;
+            case LoginStatus::USERNAME_NOT_FOUND:
+                messageSender.sendMessage("auth:bad", clientID);
+                //TODO return "Username has not been registererd\n" to client;
+                break;
+            case LoginStatus::OK:
+                static int id = 0;
+                clientToPlayerMap[clientID] = ++id;
+                playerToClientMap[id] = clientID;
+
+                messageSender.sendMessage("player id: " + std::to_string(id) + " has joined\n", SENDER_DEFAULT);
+                messageSender.sendMessage("auth:ok", clientID);
+                break;
+            default:
+                throw std::runtime_error{"Invalid case"};
+        }
     }
 }
 
@@ -89,7 +106,7 @@ void Controller::sayHandler(const std::vector<std::string> &targets, int playerI
 {
     std::string str;
     for (const auto& s : targets) {
-        str += s;
+        str += s + " ";
     }
     messageSender.sendMessage(str + "\n", std::to_string(playerID));
 
