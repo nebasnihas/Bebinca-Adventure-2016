@@ -1,6 +1,6 @@
 
 add_executable(game-client
-        gameClient.cpp
+        GameClient.cpp
         chatWindow.cpp
 )
 

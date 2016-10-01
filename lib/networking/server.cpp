@@ -6,7 +6,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-#include "server.h"
+#include "networking/server.h"
 #include "transferMessage.h"
 
 using namespace networking;

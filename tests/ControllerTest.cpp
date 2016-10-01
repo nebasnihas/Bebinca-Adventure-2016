@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "../src/game-server/controller/Controller.hpp"
+#include "../src/game-server/Controller.hpp"
 
 void addMockAreas();
 

@@ -7,9 +7,9 @@
 #include <map>
 #include <functional>
 
-#include "../../game-model/Command.hpp"
-#include "../../game-model/GameModel.hpp"
-#include "server.h"
+#include "Command.hpp"
+#include "game/GameModel.hpp"
+#include "networking/server.h"
 #include "MessageSender.h"
 
 using namespace networking;

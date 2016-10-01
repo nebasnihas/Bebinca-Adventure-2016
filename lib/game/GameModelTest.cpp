@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "GameModel.hpp"
+#include "game/GameModel.hpp"
 #include "Entity.hpp"
 
 void addMockCharacters();

@@ -7,7 +7,7 @@
 
 
 #include "chatWindow.h"
-#include "client.h"
+#include "networking/client.h"
 
 #include <string>
 

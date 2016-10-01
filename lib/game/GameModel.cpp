@@ -1,6 +1,6 @@
 #include <algorithm>
 
-#include "GameModel.hpp"
+#include "game/GameModel.hpp"
 
 bool GameModel::createCharacter(Character& character) {
 	int openID = getNextOpenCharacterID();

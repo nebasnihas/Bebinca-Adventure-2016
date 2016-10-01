@@ -1,13 +1,15 @@
 
 add_executable(game-server
-        gameServer.cpp
-)
-add_subdirectory(controller)
-
+        GameServer.cpp
+        Authentication.cpp
+        BufferedMessageSender.cpp
+        Command.cpp
+        Controller.cpp
+        )
 
 target_link_libraries(game-server
         networking
-        controller
+        game
         )
 
 set_target_properties(game-server

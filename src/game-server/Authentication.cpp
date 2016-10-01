@@ -3,7 +3,7 @@
 //  loginsystem
 //
 
-#include "loginsystem.hpp"
+#include "Authentication.hpp"
 #include <fstream>
 #include <assert.h>
 
@@ -18,9 +18,6 @@
  user level
  world
  */
-
-
-login::login(){}
 
 std::string login::welcomescreen(){
     int choice;

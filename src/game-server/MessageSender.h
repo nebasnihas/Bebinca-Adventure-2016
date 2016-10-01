@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "server.h"
+#include "networking/server.h"
 
 using namespace networking;
 

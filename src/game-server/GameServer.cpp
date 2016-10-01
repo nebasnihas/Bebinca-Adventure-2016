@@ -6,14 +6,11 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-#include "server.h"
-#include "controller/BufferedMessageSender.h"
-#include "controller/Controller.hpp"
+#include "networking/server.h"
+#include "BufferedMessageSender.h"
+#include "Controller.hpp"
 
 #include <boost/lexical_cast.hpp>
-#include <iostream>
-#include <map>
-#include <string>
 #include <queue>
 
 using namespace networking;

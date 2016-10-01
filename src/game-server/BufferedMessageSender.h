@@ -5,7 +5,7 @@
 
 #include "MessageSender.h"
 #include "boost/optional.hpp"
-#include "server.h"
+#include "networking/server.h"
 
 using namespace networking;
 

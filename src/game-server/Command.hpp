@@ -5,8 +5,8 @@
 #include <vector>
 #include <string>
 #include <functional>
-#include "../game-server/controller/MessageSender.h"
-#include "GameModel.hpp"
+#include "MessageSender.h"
+#include "game/GameModel.hpp"
 
 using namespace std;
 
