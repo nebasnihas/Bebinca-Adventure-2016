@@ -1,11 +1,6 @@
 #include "Area.hpp"
 
-Area::Area() {
-	this->id = 0;
-	this->areaName = "";
-}
-
-Area::Area(int id, std::string areaName, std::vector<int> connectedAreas, std::vector<Entity> entityList) {
+Area::Area(std::string id, std::string areaName, std::vector<std::string> connectedAreas, std::vector<Entity> entityList) {
 	this->id = id;
 	this->areaName = areaName;
 	this->connectedAreas = connectedAreas;
@@ -22,7 +17,7 @@ std::string Area::getAreaDescription() const {
         description += "\nIn this area:\n";
 
         for (Entity entity : entityList) {
-            description += entity.getName() + "\n";
+            description += entity.getDisplayName() + "\n";
         }
     }
 

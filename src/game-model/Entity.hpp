@@ -7,14 +7,16 @@ class Entity {
 
 public:
 
-    Entity(std::string name, std::string description) : name{name}, description{description} {}
+    Entity(std::string entityID, std::string name, std::string description) : entityID{entityID}, displayName{displayName}, description{description} {}
 
-    std::string getName() const { return name; }
+    std::string getEntityID() const { return entityID; }
+    std::string getDisplayName() const { return displayName; }
     std::string getDescription() const { return description; }
 
 private:
 
-    std::string name;
+    std::string entityID;
+    std::string displayName;
     std::string description;
 
 };

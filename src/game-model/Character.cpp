@@ -1,11 +1,11 @@
 #include "Character.hpp"
 
-Character::Character(int id, int areaID, std::string name, Type type, int level) : id(id), areaID(areaID), name(name), type(type), level(level) {
+Character::Character(std::string id, std::string areaID, std::string name, Type type, int level) : id(id), areaID(areaID), name(name), type(type), level(level) {
     // TODO determine unique stats and attacks for character type
     // TODO initialize skills
 }
 
-int Character::getID() const {
+std::string Character::getID() const {
     return id;
 }
 
@@ -13,7 +13,7 @@ std::string Character::getName() const {
     return name;
 }
 
-int Character::getAreaID() const {
+std::string Character::getAreaID() const {
     return areaID;
 }
 
@@ -21,11 +21,11 @@ Character::Type Character::getType() const {
     return type;
 }
 
-void Character::setID(int id) {
+void Character::setID(std::string id) {
     this->id = id;
 }
 
-void Character::setAreaID(int areaID) {
+void Character::setAreaID(std::string areaID) {
     this->areaID = areaID;
 }
 

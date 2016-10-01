@@ -10,22 +10,21 @@ class GameModel {
 
 public:
 
-	bool createCharacter(Character&);
-	bool moveCharacter(int, int);
-	Character* getCharacterByID(int);
+	bool createCharacter(std::string characterID, std::string characterName);
+	bool moveCharacter(std::string characterID, std::string areaID);
+	Character* getCharacterByID(std::string characterID);
 
-	bool addArea(Area&);
-	Area* getAreaByID(int);
+    bool addArea(Area& area);
 
-	std::string getAreaDescription(int);
-	std::string getEntityDescription(int, std::string);
+	Area* getAreaByID(std::string areaID);
+    std::string getAreaDescription(std::string areaID);
+
+	std::string getEntityDescription(std::string areaID, std::string entityID);
 
 private:
 
-	int getNextOpenCharacterID() const;
-
-	std::map<int, Character> characters;
-	std::map<int, Area> locations;
+	std::map<std::string, Character> characters;
+	std::map<std::string, Area> locations;
 
 };
 

@@ -11,12 +11,11 @@ class Area
 
 public:
 
-	Area();
-	Area(int, std::string, std::vector<int>, std::vector<Entity>);
+	Area(std::string id, std::string areaName, std::vector<std::string> connectedAreas, std::vector<Entity> entityList);
 
-	int getID() const { return id; }
+	std::string getID() const { return id; }
 	std::string getAreaName() const { return areaName; }
-	std::vector<int> getConnectedAreas() const { return connectedAreas; }
+	std::vector<std::string> getConnectedAreas() const { return connectedAreas; }
     std::vector<Entity> getEntityList() const { return entityList; }
 
 	std::string getAreaDescription() const;
@@ -26,9 +25,9 @@ public:
 
 private:
     // Id of the area object, may not be needed depending on networking implementation
-	int id;
+	std::string id;
     std::string areaName;
-    std::vector<int> connectedAreas;
+    std::vector<std::string> connectedAreas;
 
 	std::vector<Entity> entityList;
 
