@@ -13,14 +13,14 @@ private:
 	std::string datafile;
 	void loadSingleRoom(YAML::Node);
 	void loadSingleObjects(YAML::Node);
-	void loadSingleResets(YAML::Node);
-	void loadSingleShops(YAML::Node);
+	//void loadSingleResets(YAML::Node);
+	//void loadSingleShops(YAML::Node);
 
 
 public:
 
 	//Inputs .YAML file for parsing
-	void loadymlFile(std::string file);
+	void loadyamlFile(std::string file);
 
 	void loadRooms(YAML::Node);
 	void loadObjects(YAML::Node);
