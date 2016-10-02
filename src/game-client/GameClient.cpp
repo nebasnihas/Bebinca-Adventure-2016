@@ -8,12 +8,16 @@
 
 #include "chatWindow.h"
 #include "networking/client.h"
+#include "game/protocols/Message.hpp"
 
 #include <string>
+#include "StringUtils.hpp"
+#include "game/protocols/Authentication.hpp"
+
 
 using namespace networking;
 
-//TODO this is placeholder authentication
+//TODO this is placeholder authentication window
 bool authenticated = false;
 
 void promptForAuth(ChatWindow& chatWindow)
@@ -24,11 +28,13 @@ void promptForAuth(ChatWindow& chatWindow)
 
 void checkForAuthMessage(const std::string &message, ChatWindow &chatWindow)
 {
-    if (message == "auth:ok") {
+    auto response = protocols::readAuthResponseMessage(message);
+    if (response.success) {
         authenticated = true;
-        chatWindow.displayText("You have logged in\n");
-    } else if (message == "auth:bad") {
-        promptForAuth(chatWindow);
+        chatWindow.displayText("You have logged in as " + response.messageOrUserID + "\n");
+    } else {
+        chatWindow.displayText(response.messageOrUserID);
+        chatWindow.update();
     }
 }
 
@@ -47,9 +53,13 @@ int main(int argc, char *argv[]) {
         if ("exit" == text || "quit" == text) {
             done = true;
         } else if (!authenticated) {
-            client.send("auth " + text);
+            auto userAndPass = splitString(text);
+            if (userAndPass.size() == 2) {
+                auto request = protocols::createAuthRequestMessage(protocols::AuthType::LOGIN, userAndPass[0], userAndPass[1]);
+                client.send(protocols::createMessage(protocols::MessageType::AUTHENTICATION, request));
+            }
         } else {
-            client.send(text);
+            client.send(protocols::createMessage(protocols::MessageType::USER_COMMAND, text));
         }
     };
 
@@ -67,11 +77,15 @@ int main(int argc, char *argv[]) {
 
         auto response = client.receive();
         if (!response.empty()) {
-            for (const auto& message : response) {
-                if (!authenticated) {
-                    checkForAuthMessage(message, chatWindow);
-                } else {
-                    chatWindow.displayText(message);
+            for (const auto& text : response) {
+                auto message = protocols::readMessage(text);
+
+                if (message.type == protocols::MessageType::CLIENT_DISPLAY_MESSAGE) {
+                    chatWindow.displayText(message.messageBody);
+                } else if (message.type == protocols::MessageType::AUTHENTICATION) {
+                    if (!authenticated) {
+                        checkForAuthMessage(message.messageBody, chatWindow);
+                    }
                 }
             }
         }

@@ -1,17 +1,11 @@
 
 #include "Command.hpp"
 
-
-Command::Command(Command::Type type, string text, Command::functionRef method) {
-    this->type = type;
-    this->text = text;
-    this->method = method;
-}
-std::string Command::getText() {
+std::string Command::getKeyword() const {
     return this->text;
 }
 
-Command::functionRef Command::getMethod() {
+Command::functionRef Command::getMethod() const {
     return method;
 }
 

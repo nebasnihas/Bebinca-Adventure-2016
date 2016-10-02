@@ -17,21 +17,20 @@ using namespace networking;
 class Controller {
 public:
     Controller();
-    void processCommand(const std::string& message, const Connection& client, GameModel& gameModel, MessageSender& messageSender);
-    void registerCommand(const Command::Type& type, const std::string& commandText, Command::functionRef method);
-
+    void processCommand(const std::string& text, const Connection& client, GameModel& gameModel, MessageSender& messageSender);
+    void addNewPlayer(const PlayerInfo& player);
+    void registerForPlayerCommand(const Command& command);
+    void registerForSystemCommand(const Command& command);
 private:
+    typedef std::unordered_map<std::string, Command> CommandMap;
     std::unordered_map<Connection, int, ConnectionHash> clientToPlayerMap;
     std::unordered_map<int, Connection> playerToClientMap;
 
-    std::map<std::string, Command> commandMap;
+    CommandMap playerCommandMap;
+    CommandMap systemCommandMap;
 
-    void executeCommand(const std::string& command, const std::vector<std::string>& targets,
-                        const Connection& client, GameModel& gameModel, MessageSender& messageSender);
-
-    void look(const std::vector<std::string>& targets, int playerID, const Connection& clientID, GameModel& gameModel, MessageSender& messageSender);
-    void authHandler(const std::vector<std::string>& targets, int playerID, const Connection& clientID, GameModel& gameModel, MessageSender& messageSender);
-    void sayHandler(const std::vector<std::string>& targets, int playerID, const Connection& clientID, GameModel& gameModel, MessageSender& messageSender);
+    void look(const std::vector<std::string>& targets, const PlayerInfo& player, GameModel& gameModel, MessageSender& messageSender);
+    void sayHandler(const std::vector<std::string>& targets, const PlayerInfo& player, GameModel& gameModel, MessageSender& messageSender);
 };
 
 

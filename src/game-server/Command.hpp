@@ -10,31 +10,29 @@
 
 using namespace std;
 
+struct PlayerInfo {
+    int playerID;
+    Connection clientID;
+};
+
 class Command {
 public:
-    typedef function<void (const vector<string>& targets, int playerID, const Connection& clientID, GameModel& gameModel, MessageSender& messageSender)> functionRef;
+    typedef function<void (const vector<string>& targets, const PlayerInfo& player, GameModel& gameModel, MessageSender& messageSender)> functionRef;
 
-    enum Type {
-        AREA,
-        CHARACTER,
-        ENTITY,
-        GAME
-    };
 
     /**
      * Type supported by game controller for calling appropriate game functions.
      * Final parameter is a function pointer to the method that provides the functionality.
      * @param type
-     * @param text
+     * @param keyword
      * @param method
      * @return
      */
-    Command(Type type, string text, functionRef method);
-    std::string getText();
-    functionRef getMethod();
+    Command(const string& keyword, functionRef method) : text{keyword}, method{method} {};
+    std::string getKeyword() const;
+    functionRef getMethod() const;
 
 private:
-    Type type;
     std::string text;
     functionRef method;
 };

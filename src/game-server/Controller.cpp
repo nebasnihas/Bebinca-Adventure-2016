@@ -3,113 +3,76 @@
 #include <boost/algorithm/string.hpp>
 #include "Controller.hpp"
 #include "Authenticator.hpp"
+#include "game/protocols/Message.hpp"
+#include "StringUtils.hpp"
+#include "game/protocols/Message.hpp"
 
 using namespace networking;
 using namespace std::placeholders;
 
-std::vector<std::string> splitArgs(const std::string& args)
-{
-    std::vector<std::string> tokens;
-    boost::split(tokens, args, boost::is_any_of(" \t"));
-    return tokens;
-}
 
 Controller::Controller() {
-    registerCommand(Command::Type::AREA, "look", std::bind(&Controller::look, this, _1, _2, _3, _4, _5));
-    registerCommand(Command::Type::GAME, "auth", std::bind(&Controller::authHandler, this, _1, _2, _3, _4, _5));
-    registerCommand(Command::Type::GAME, "say", std::bind(&Controller::sayHandler, this, _1, _2, _3, _4, _5));
+    registerForPlayerCommand(Command{"look", std::bind(&Controller::look, this, _1, _2, _3, _4)});
+    registerForPlayerCommand(Command{"say", std::bind(&Controller::sayHandler, this, _1, _2, _3, _4)});
 }
 
-void Controller::processCommand(const std::string& message, const Connection& client, GameModel& gameModel, MessageSender& messageSender) {
-    const std::string delim = " ";
-    auto delimPos = message.find(delim);
+void Controller::processCommand(const std::string& text, const Connection& client, GameModel& gameModel, MessageSender& messageSender) {
+    auto serverMessage = protocols::readMessage(text);
+    auto separated = separateFirstWord(serverMessage.messageBody);
 
-    std::string command;
-    std::string args;
+    auto commandType = serverMessage.type;
+    auto command = separated.first;
+    auto commandArgs = splitString(separated.second);
 
-    if (delimPos == std::string::npos) {
-        //there is only the command, no arguments
-        command = message;
+    //get the correct command map
+    CommandMap map;
+    if (commandType == protocols::MessageType::SERVER_COMMAND) {
+        map = systemCommandMap;
+    } else if (commandType == protocols::MessageType::USER_COMMAND) {
+        map = playerCommandMap;
+    }
+
+    auto it = map.find(command);
+    if (it != map.end()) {
+        auto handler = it->second.getMethod();
+        auto playerId = clientToPlayerMap[client];
+        handler(commandArgs, PlayerInfo{playerId, client}, gameModel, messageSender);
     } else {
-        command = message.substr(0, delimPos);
-        args = message.substr(delimPos + 1);
-    }
-
-    executeCommand(command, splitArgs(args), client, gameModel, messageSender);
-}
-
-
-void Controller::executeCommand(const std::string& command, const std::vector<std::string>& targets,
-                                const Connection& client, GameModel& gameModel, MessageSender& messageSender) {
-
-    int playerId;
-    //check if client has a character yet
-    try {
-        playerId = clientToPlayerMap[client];
-    } catch (const std::out_of_range& e) {
-        playerId = -1;
-    }
-
-    try {
-        auto targetMethod = commandMap.at(command).getMethod();
-        targetMethod(targets,playerId, client, gameModel, messageSender);
-    } catch (const std::out_of_range& oor) {
-        messageSender.sendMessage("<" + command + "> is an invalid command.\n", SENDER_DEFAULT, client);
+        messageSender.sendMessage(protocols::createMessage(protocols::MessageType::CLIENT_DISPLAY_MESSAGE, "<" + command + "> is an invalid command.\n"), client);
     }
 }
 
-void Controller::registerCommand(const Command::Type& type, const std::string& commandText, Command::functionRef method) {
-    Command command{type, commandText, method};
-    commandMap.insert(std::make_pair(commandText, command));
+void Controller::registerForPlayerCommand(const Command &command) {
+    playerCommandMap.insert(std::make_pair(command.getKeyword(), command));
 }
 
-void Controller::look(const std::vector<std::string>& targets, int playerID, const Connection& clientID, GameModel& gameModel, MessageSender& messageSender) {
+void Controller::registerForSystemCommand(const Command &command) {
+    systemCommandMap.insert(std::make_pair(command.getKeyword(), command));
+}
+
+void Controller::look(const std::vector<std::string>& targets, const PlayerInfo& player, GameModel& gameModel, MessageSender& messageSender) {
 //    auto character = gameModel.getCharacterByID(playerID);
 //    std::string areaDescription = gameModel.getAreaDescription(character->getAreaID());
 
-    messageSender.sendMessage("You look around...\n", SENDER_DEFAULT, clientID);
+    messageSender.sendMessage(protocols::createMessage(protocols::MessageType::CLIENT_DISPLAY_MESSAGE, "You look around...\n"), player.clientID);
 }
 
-void Controller::authHandler(const std::vector<std::string>& targets, int playerID, const Connection& clientID, GameModel& gameModel, MessageSender& messageSender)
-{
-    if (targets.size() != 2) {
-        messageSender.sendMessage("auth:bad", clientID);
-    } else {
-        auto username = targets[0];
-        auto password = targets[1];
-
-        switch (Authenticator::login(username, password)) {
-            case LoginStatus::INVALID_CREDENTIALS:
-                messageSender.sendMessage("auth:bad", clientID);
-                //TODO return "The credentials do not match\n" to client;
-                break;
-            case LoginStatus::USERNAME_NOT_FOUND:
-                messageSender.sendMessage("auth:bad", clientID);
-                //TODO return "Username has not been registererd\n" to client;
-                break;
-            case LoginStatus::OK:
-                static int id = 0;
-                clientToPlayerMap[clientID] = ++id;
-                playerToClientMap[id] = clientID;
-
-                messageSender.sendMessage("player id: " + std::to_string(id) + " has joined\n", SENDER_DEFAULT);
-                messageSender.sendMessage("auth:ok", clientID);
-                break;
-            default:
-                throw std::runtime_error{"Invalid case"};
-        }
-    }
-}
-
-void Controller::sayHandler(const std::vector<std::string> &targets, int playerID, const Connection &clientID,
-                            GameModel &gameModel, MessageSender &messageSender)
+void Controller::sayHandler(const std::vector<std::string> &targets, const PlayerInfo& player, GameModel &gameModel, MessageSender &messageSender)
 {
     std::string str;
     for (const auto& s : targets) {
         str += s + " ";
     }
-    messageSender.sendMessage(str + "\n", std::to_string(playerID));
 
+    messageSender.sendMessage(protocols::createMessage(protocols::MessageType::CLIENT_DISPLAY_MESSAGE, str + "\n"));
 }
+
+void Controller::addNewPlayer(const PlayerInfo &player) {
+    clientToPlayerMap.insert(std::make_pair(player.clientID, player.playerID));
+    playerToClientMap.insert(std::make_pair(player.playerID, player.clientID));
+}
+
+
+
 
 
