@@ -3,8 +3,8 @@
 
 #include <map>
 
-#include "../../lib/game/Area.hpp"
-#include "../../lib/game/Character.hpp"
+#include "../../src/game-model/Area.hpp"
+#include "../../src/game-model/Character.hpp"
 
 class GameModel {
 

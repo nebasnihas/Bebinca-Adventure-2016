@@ -3,7 +3,7 @@
 
 #include "Area.hpp"
 #include <string>
-#include "../../lib/parsers/yaml-cpp/include/yaml-cpp/yaml.h"
+#include "yaml-cpp/yaml.h"
 
 
 class GameDataImporter {
