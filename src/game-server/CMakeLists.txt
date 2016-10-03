@@ -5,7 +5,7 @@ add_executable(game-server
         BufferedMessageSender.cpp
         Command.cpp
         Controller.cpp
-        )
+        GameFunctions.cpp GameFunctions.hpp)
 
 target_link_libraries(game-server
         networking
