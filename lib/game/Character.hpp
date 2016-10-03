@@ -14,13 +14,13 @@ public:
         MAGE
     };
 
-    Character(int id, int areaID, std::string name, Type type, int level);
+    Character(std::string characterID, std::string areaID, std::string name, Type type, int level);
     std::string getName() const;
-    int getID() const;
-    int getAreaID() const;
+    std::string getID() const;
+    std::string getAreaID() const;
     Type getType() const;
-    void setID(int id);
-    void setAreaID(int areaID);
+    void setID(std::string id);
+    void setAreaID(std::string areaID);
 
     //////////////////////////// Level ////////////////////////////
 
@@ -41,8 +41,8 @@ public:
 
 private:
     std::string name;
-    int id;
-    int areaID;
+    std::string id;
+    std::string areaID;
     Type type;
     int level;
     std::unordered_map<std::string, int> stats;

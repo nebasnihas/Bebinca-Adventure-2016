@@ -2,37 +2,23 @@
 
 #include "game/GameModel.hpp"
 
-bool GameModel::createCharacter(Character& character) {
-	int openID = getNextOpenCharacterID();
-	character.setID(openID);
-	characters.insert(std::pair<int, Character>(openID, character));
+bool GameModel::createCharacter(std::string characterID, std::string characterName) {
+	Character character(characterID, "area_tutorial", characterName, Character::Type::WARRIOR, 1);
+	characters.insert(std::pair<std::string, Character>(characterID, character));
 
 	// No failure case yet...
 	return true;
-}
-
-int GameModel::getNextOpenCharacterID() const {
-
-	// Placeholder functionality for the current build.
-	// Will need to be changed when players are stored
-	int maxID = 1;
-	for (auto pair : characters) {
-		if (pair.first > maxID) {
-			maxID = pair.first;
-		}
-	}
-	return maxID++;
 }
 
 bool GameModel::addArea(Area& area) {
 
-	locations.insert(std::pair<int, Area>(area.getID(), area));
+	locations.insert(std::pair<std::string, Area>(area.getID(), area));
 
 	// No failure case yet...
 	return true;
 }
 
-Area* GameModel::getAreaByID(int areaID) {
+Area* GameModel::getAreaByID(std::string areaID) {
 	auto aPtr = locations.find(areaID);
 
 	if (aPtr != locations.end()) {
@@ -42,7 +28,7 @@ Area* GameModel::getAreaByID(int areaID) {
 	return nullptr;
 }
 
-std::string GameModel::getAreaDescription(int areaID) {
+std::string GameModel::getAreaDescription(std::string areaID) {
 
 	std::string description = "";
 
@@ -56,13 +42,13 @@ std::string GameModel::getAreaDescription(int areaID) {
 	return description;
 }
 
-std::string GameModel::getEntityDescription(int areaID, std::string entityName) {
+std::string GameModel::getEntityDescription(std::string areaID, std::string entityDisplayName) {
 
 	auto area = getAreaByID(areaID);
 
 	auto entityList = area->getEntityList();
     auto iter = std::find_if(entityList.begin(), entityList.end(),
-                          [&entityName](const Entity& entity) { return entity.getName() == entityName; });
+                          [&entityDisplayName](const Entity& entity) { return entity.getDisplayName() == entityDisplayName; });
     if (iter != entityList.end()) {
         return iter->getDescription();
     }
@@ -71,7 +57,7 @@ std::string GameModel::getEntityDescription(int areaID, std::string entityName) 
     return "Entity does not exist.";
 }
 
-bool GameModel::moveCharacter(int characterID, int areaID) {
+bool GameModel::moveCharacter(std::string characterID, std::string areaID) {
 
 	auto cPtr = characters.find(characterID);
 	
@@ -100,7 +86,7 @@ bool GameModel::moveCharacter(int characterID, int areaID) {
 	return false;
 }
 
-Character* GameModel::getCharacterByID(int characterID) {
+Character* GameModel::getCharacterByID(std::string characterID) {
 
 	auto cPtr = characters.find(characterID);
 	
