@@ -1,6 +1,6 @@
 #include <algorithm>
 
-#include "game/GameModel.hpp"
+#include "GameModel.hpp"
 
 bool GameModel::createCharacter(std::string characterID, std::string characterName) {
 	Character character(characterID, "area_tutorial", characterName, Character::Type::WARRIOR, 1);
@@ -57,7 +57,7 @@ std::string GameModel::getEntityDescription(std::string areaID, std::string enti
     return "Entity does not exist.";
 }
 
-bool GameModel::moveCharacter(std::string characterID, std::string areaID) {
+bool GameModel::moveCharacter(std::string characterID, std::string areaTag) {
 
 	auto cPtr = characters.find(characterID);
 	
@@ -73,10 +73,11 @@ bool GameModel::moveCharacter(std::string characterID, std::string areaID) {
 			auto connectedAreas = area.getConnectedAreas();
 			
 			// Check if the current area is connected to the target destination
-			if (std::find(connectedAreas.begin(), connectedAreas.end(), areaID)
-				!= connectedAreas.end()) {
+			auto connectedArea = connectedAreas.find(areaTag);
 
-				character->setAreaID(areaID);
+            if (connectedArea != connectedAreas.end()) {
+
+				character->setAreaID(connectedArea->second);
 				return true;
 			}	
 		}
