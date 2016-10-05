@@ -1,54 +1,101 @@
 #include "game/protocols/Authentication.hpp"
-#include "boost/bimap.hpp"
-#include "boost/bimap/unordered_set_of.hpp"
-#include "boost/assign/list_of.hpp"
-#include <vector>
-#include "StringUtils.hpp"
-
-using namespace boost::bimaps;
+#include "game/protocols/RequestMessage.hpp"
+#include "game/protocols/ResponseMessage.hpp"
+#include "yaml-cpp/yaml.h"
+#include <string>
 
 namespace protocols {
-namespace {
-typedef bimap<unordered_set_of<AuthType >, unordered_set_of<std::string>> mapType;
 
-mapType map = boost::assign::list_of<mapType::relation>
-        (AuthType::LOGIN, "login")
-        (AuthType::REGISTER, "reg");
+const std::string USERNAME_KEY = "user";
+const std::string PASSWORD_KEY = "pass";
+const std::string MESSAGE_KEY = "err";
+const std::string SUCCESS_KEY = "ok";
 
-const std::string AUTH_OK = "ok";
-const std::string AUTH_BAD = "bad";
-const std::string AUTH_RESPONSE_BODY_SEPARATER = "/";
+//using a switch instead of map so compiler can warn if we forgot a key
+std::string getLoginReponseMessage(LoginResponseCode code)
+{
+    switch (code) {
+        case LoginResponseCode::LOGIN_OK:
+            return "Login successful";
+        case LoginResponseCode::USERNAME_NOT_FOUND:
+            return "This user doesn't exist";
+        case LoginResponseCode::INVALID_CREDENTIALS:
+            return "You have entered invalid credentials";
+    }
 }
 
-std::string createAuthRequestMessage(AuthType type, const std::string& username, const std::string& password)
+std::string getRegistrationMessage(RegistrationResponseCode code)
 {
-    auto header = map.left.at(type);
-
-    return header + " " + username + " " + password;
-}
-std::string createAuthResponseMessage(AuthType type, bool success, const std::string& messageBody)
-{
-    auto header = map.left.at(type);
-    auto successValue = success? AUTH_OK : AUTH_BAD;
-
-    return header + " " + successValue + " " + AUTH_RESPONSE_BODY_SEPARATER + messageBody;
+    switch (code) {
+        case RegistrationResponseCode::REGISTRATION_OK:
+            return "Registration successful. Welcome!";
+        case RegistrationResponseCode::USERNAME_EXISTS:
+            return "This username has already been taken";
+        case RegistrationResponseCode::USERNAME_TOO_LONG:
+            return "This username has too many characters";
+    }
 }
 
-AuthRequest readAuthRequestMessage(const std::string& text)
+//can be used for login and registration
+inline YAML::Node createCredentialData(const std::string& username, const std::string password)
 {
-    auto separated = splitString(text);
-    auto typeHeader = map.right.at(separated[0]);
+    YAML::Node data;
+    data[USERNAME_KEY] = username;
+    data[PASSWORD_KEY] = password;
 
-    return AuthRequest{typeHeader, separated[1], separated[2]};
+    return data;
 }
-AuthResponse readAuthResponseMessage(const std::string& text)
-{
-    auto separated = splitString(text);
-    auto typeHeader = map.right.at(separated[0]);
-    auto success = separated[1] == AUTH_OK;
-    auto body = text.substr(text.find(AUTH_RESPONSE_BODY_SEPARATER) + 1);
 
-    return AuthResponse{typeHeader, success, body};
+RequestMessage createLoginRequestMessage(const UserCredentials& credentials)
+{
+    auto body = createCredentialData(credentials.username, credentials.password);
+    return RequestMessage{RequestHeader::LOGIN_REQUEST, body};
+}
+
+RequestMessage createRegistrationRequestMessage(const UserCredentials& credentials)
+{
+    auto body = createCredentialData(credentials.username, credentials.password);
+    return RequestMessage{RequestHeader::REGISTER_REQUEST, body};
+}
+
+UserCredentials readAuthenticationRequestMessage(const RequestMessage& message)
+{
+    auto username = message.body[USERNAME_KEY].as<std::string>();
+    auto password = message.body[PASSWORD_KEY].as<std::string>();
+    return UserCredentials{username, password};
+}
+
+inline YAML::Node createResponsedata(bool success, const std::string message)
+{
+    YAML::Node data;
+    data[SUCCESS_KEY] = success;
+    data[MESSAGE_KEY] = message;
+
+    return data;
+}
+
+ResponseMessage createLoginResponseMessage(LoginResponseCode code)
+{
+    bool success = (code == LoginResponseCode::LOGIN_OK);
+    auto message = getLoginReponseMessage(code);
+
+    return ResponseMessage{ResponseHeader::LOGIN_RESPONSE, createResponsedata(success, message)};
+}
+
+ResponseMessage createRegistrationResponseMessage(RegistrationResponseCode code)
+{
+    bool success = (code == RegistrationResponseCode::REGISTRATION_OK);
+    auto message = getRegistrationMessage(code);
+
+    return ResponseMessage{ResponseHeader::REGISTER_RESPONSE, createResponsedata(success, message)};
+}
+
+AuthenticationResponse readAuthenticationResponseMessage(const ResponseMessage& responseMessage)
+{
+    auto success = responseMessage.body[SUCCESS_KEY].as<bool>();
+    auto message = responseMessage.body[MESSAGE_KEY].as<std::string>();
+
+    return AuthenticationResponse{success, message};
 }
 
 }

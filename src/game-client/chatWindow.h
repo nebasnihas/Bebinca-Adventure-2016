@@ -32,6 +32,8 @@ public:
 
     void displayText(const std::string &text);
 
+    void setOnTextEntry(std::function<void(std::string)> onTextEntry);
+
 private:
     void resizeOnShapeChange();
 

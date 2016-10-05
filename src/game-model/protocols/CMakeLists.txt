@@ -1,6 +1,13 @@
 add_library(protocols
-        Message.cpp
+        RequestMessage.cpp
+        ResponseMessage.cpp
+        DisplayMessage.cpp
+        PlayerCommand.cpp
         Authentication.cpp
+        )
+
+target_link_libraries(protocols
+        yaml-cpp
         )
 
 set_target_properties(protocols
