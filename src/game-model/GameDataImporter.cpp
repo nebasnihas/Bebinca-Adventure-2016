@@ -14,6 +14,18 @@ void GameDataImporter::loadyamlFile(std::string fileName) {
 	const YAML::Node NPCS = dataFile["NPCS"];
         loadNPCS(NPCS);
 
+    const YAML::Node ROOMS = dataFile["ROOMS"];
+    loadRooms(ROOMS);
+
+    const YAML::Node OBJECTS = dataFile["OBJECTS"];
+    loadObjects(OBJECTS);
+
+    const YAML::Node RESETS = dataFile["RESETS"];
+    loadResets(RESETS);
+
+    const YAML::Node SHOPS = dataFile["SHOPS"];
+    loadShops(SHOPS);
+
 }
 
 //The following five methods take a root node and parse it one level deeper (to get an individual description)
@@ -39,16 +51,57 @@ void GameDataImporter::loadNPCS(YAML::Node NPCS){
 
     }
 }
-//void GameDataImporter::loadRooms(YAML::Node ROOMS);
-//void GameDataImporter::loadObjects(YAML::Node OBJECTS);
-//void GameDataImporter::loadResets(YAML::Node RESETS); //The workflow for RESETS ends here, not sure how to utilize yet
-//void GameDataImporter::loadShops(YAML::Node SHOPS); //The workflow for SHOPS ends here, not sure how to utilize yet
+void GameDataImporter::loadRooms(YAML::Node ROOMS){
+
+    //Create vector to hold instances of ROOM
+    vector<Area> rooms;
+    for(YAML::const_iterator it = ROOMS.begin(); it != ROOMS.end(); ++it){
+
+        const YAML::Node ROOM = *it;
+
+        Area a{};
+
+        rooms.push_back(a);
+    }
+}
+void GameDataImporter::loadObjects(YAML::Node OBJECTS){
+
+    for(YAML::const_iterator it = OBJECTS.begin(); it != OBJECTS.end(); ++it){
+
+        const YAML::Node OBJECT = *it;
+
+
+    }
+}
+
+//The workflow for RESETS ends here, not sure how to utilize yet
+void GameDataImporter::loadResets(YAML::Node RESETS){
+
+    for(YAML::const_iterator it = RESETS.begin(); it != RESETS.end(); ++it){
+
+        const YAML::Node RESET = *it;
+
+
+    }
+}
+
+//The workflow for SHOPS ends here, not sure how to utilize yet
+void GameDataImporter::loadShops(YAML::Node SHOPS){
+
+    for(YAML::const_iterator it = SHOPS.begin(); it != SHOPS.end(); ++it){
+
+        const YAML::Node SHOP = *it;
+
+
+    }
+
+}
 
 //Takes a single object desription, creates an object using the entity constructor, pushes object onto a vector of entities
-void loadSingleObjects(YAML::Node);
+//void loadSingleObjects(YAML::Node);
 
 //Takes a single room description, creates an object using the area constructor, pushes object onto a vector of entities
-void loadSingleRoom(YAML::Node);
+//void loadSingleRoom(YAML::Node);
 
 
 //use main for testing

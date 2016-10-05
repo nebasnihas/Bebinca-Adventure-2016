@@ -2,6 +2,7 @@
 #define GAME_DATA_IMPORTER_HPP
 
 #include "Area.hpp"
+#include "Entity.hpp"
 #include <string>
 #include "yaml-cpp/yaml.h"
 
@@ -11,8 +12,8 @@ class GameDataImporter {
 private:
 
 	std::string datafile;
-	static void loadSingleRoom(YAML::Node);
-	static void loadSingleObjects(YAML::Node);
+	//static void loadSingleRoom(YAML::Node);
+	//static void loadSingleObjects(YAML::Node);
 	//void loadSingleResets(YAML::Node);
 	//void loadSingleShops(YAML::Node);
 
