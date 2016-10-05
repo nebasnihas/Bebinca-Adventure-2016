@@ -5,19 +5,19 @@
 #include <vector>
 #include <string>
 #include <functional>
-#include "MessageSender.h"
 #include "game/GameModel.hpp"
+#include "DisplayMessageBuilder.hpp"
 
 using namespace std;
 
 struct PlayerInfo {
-    int playerID;
+    std::string playerID;
     Connection clientID;
 };
 
 class Command {
 public:
-    typedef function<void (const vector<string>& targets, const PlayerInfo& player, GameModel& gameModel, MessageSender& messageSender)> functionRef;
+    typedef function<DisplayMessageBuilder (const vector<string>& arguments, const PlayerInfo& player, GameModel& gameModel, const std::vector<Connection>& allClients)> functionRef;
 
 
     /**

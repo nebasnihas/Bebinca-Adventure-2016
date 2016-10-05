@@ -7,7 +7,6 @@
 
 
 #include "networking/server.h"
-#include "BufferedMessageSender.h"
 #include "Controller.hpp"
 #include "game/protocols/RequestMessage.hpp"
 #include "game/protocols/Authentication.hpp"
@@ -20,7 +19,6 @@ using namespace networking;
 using namespace protocols;
 
 std::vector<Connection> clients;
-BufferedMessageSender messageSender;
 GameModel gameModel;
 Controller controller;
 
@@ -34,6 +32,7 @@ void onDisconnect(Connection c) {
     printf("Connection lost: %lu\n", c.id);
     auto it = std::remove(clients.begin(), clients.end(), c);
     clients.erase(it, clients.end());
+    //TODO remove player from game
 }
 
 bool validateServerArgs(int argc, char* argv[], unsigned short& port)
@@ -61,8 +60,10 @@ void processLoginRequest(const protocols::RequestMessage& request, Connection cl
 
     auto loginResponse = protocols::createLoginResponseMessage(responseCode);
 
-    messageSender.sendMessage(protocols::serializeResponseMessage(loginResponse), clientId);
-    messageSender.sendAll(server, clients);
+    auto output = protocols::serializeResponseMessage(loginResponse);
+    server.send(Message{clientId, output});
+
+    controller.addNewPlayer(PlayerInfo{loginRequest.username, clientId});
 }
 
 void processRegistrationRequest(const protocols::RequestMessage& request, Connection clientId, Server& server)
@@ -73,8 +74,10 @@ void processRegistrationRequest(const protocols::RequestMessage& request, Connec
 
     auto registrationResponse = protocols::createRegistrationResponseMessage(responseCode);
 
-    messageSender.sendMessage(protocols::serializeResponseMessage(registrationResponse), clientId);
-    messageSender.sendAll(server, clients);
+    auto output = protocols::serializeResponseMessage(registrationResponse);
+    server.send(Message{clientId, output});
+
+    controller.addNewPlayer(PlayerInfo{registrationRequest.username, clientId});
 }
 
 int main(int argc, char *argv[]) {
@@ -108,7 +111,8 @@ int main(int argc, char *argv[]) {
                     break;
                 case protocols::RequestHeader::PLAYER_COMMAND_REQUEST: {
                     auto playerCommand = protocols::readPlayerCommandRequestMessage(requestMessage);
-                    controller.processCommand(playerCommand, clientMessage.connection, gameModel, messageSender);
+                    auto outgoing = controller.processCommand(playerCommand, clientMessage.connection, gameModel, clients);
+                    server.send(outgoing.getOutputMessages());
                     break;
                 }
                 default:
@@ -116,7 +120,6 @@ int main(int argc, char *argv[]) {
             }
         }
 
-        messageSender.sendAll(server, clients);
 
         sleep(1);
     }

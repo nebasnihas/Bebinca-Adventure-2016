@@ -6,21 +6,35 @@ namespace protocols
 {
 
 const std::string MESSAGE_KEY = "msg";
+const std::string SENDER_KEY = "sender";
 
 ResponseMessage createDisplayResponseMessage(const DisplayMessage& message)
 {
     YAML::Node data;
     data[MESSAGE_KEY] = message.message;
 
+    if (message.sender) {
+        data[SENDER_KEY] = message.sender.get();
+    }
+
     return ResponseMessage{ResponseHeader::DISPLAY_MESSAGE_RESPONSE, data};
 }
 
 
-DisplayMessage readDisplayResponseMessage(const ResponseMessage& responseMessage)
+std::string readDisplayResponseMessage(const ResponseMessage& responseMessage)
 {
-    auto messageToDisplay = responseMessage.body[MESSAGE_KEY].as<std::string>();
+    std::string output;
 
-    return DisplayMessage{messageToDisplay};
+    if (responseMessage.body[SENDER_KEY]) {
+        auto sender = responseMessage.body[SENDER_KEY].as<std::string>();
+        output += "[" + sender + "] - ";
+    }
+
+    output += responseMessage.body[MESSAGE_KEY].as<std::string>();
+
+    return output;
 }
+
+
 
 }

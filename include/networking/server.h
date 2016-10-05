@@ -97,6 +97,7 @@ public:
      *  contain carriage returns.
      */
     void send(const std::deque<Message> &messages);
+    void send(const std::vector<Message> &messages); //TODO use gsl span
 
     void send(const Message& message);
 

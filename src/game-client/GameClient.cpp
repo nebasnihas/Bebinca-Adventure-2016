@@ -164,7 +164,7 @@ int main(int argc, char *argv[]) {
                 for (const auto& responseMessage : incomingResponses) {
                     if (responseMessage.header == protocols::ResponseHeader::DISPLAY_MESSAGE_RESPONSE) {
                         auto displayMessage = protocols::readDisplayResponseMessage(responseMessage);
-                        chatWindow.displayText(displayMessage.message);
+                        chatWindow.displayText(displayMessage);
                     }
                 }
                 break;

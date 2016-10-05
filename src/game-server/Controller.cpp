@@ -13,13 +13,12 @@ using namespace std::placeholders;
 
 
 Controller::Controller() {
-    registerForPlayerCommand(Command{"look", std::bind(&Controller::look, this, _1, _2, _3, _4)});
+    registerForPlayerCommand(Command{"look", std::bind(&Controller::lookHandler, this, _1, _2, _3, _4)});
     registerForPlayerCommand(Command{"say", std::bind(&Controller::sayHandler, this, _1, _2, _3, _4)});
 }
 
-void Controller::processCommand(const protocols::PlayerCommand& command, const Connection& client, GameModel& gameModel,
-                                MessageSender& messageSender) {
-
+DisplayMessageBuilder Controller::processCommand(const protocols::PlayerCommand& command, const Connection& client, GameModel& gameModel, std::vector<Connection>& allClients)
+{
     auto cmd = command.command;
     auto cmdArgs = splitString(command.arguments);
 
@@ -28,10 +27,11 @@ void Controller::processCommand(const protocols::PlayerCommand& command, const C
     if (it != playerCommandMap.end()) {
         auto handler = it->second.getMethod();
         auto playerId = clientToPlayerMap[client];
-        handler(cmdArgs, PlayerInfo{playerId, client}, gameModel, messageSender);
+        return handler(cmdArgs, PlayerInfo{playerId, client}, gameModel, allClients);
     } else {
-        auto response = protocols::createDisplayResponseMessage(protocols::DisplayMessage{"<" + cmd + "> is an invalid command."});
-        messageSender.sendMessage(protocols::serializeResponseMessage(response), client);
+        return DisplayMessageBuilder::createMessage("<" + cmd + "> is an invalid command.")
+                .addClient(client)
+                .setSender(DisplayMessageBuilder::SENDER_SERVER);
     }
 }
 
@@ -40,23 +40,22 @@ void Controller::registerForPlayerCommand(const Command &command) {
 }
 
 
-void Controller::look(const std::vector<std::string>& targets, const PlayerInfo& player, GameModel& gameModel, MessageSender& messageSender) {
+DisplayMessageBuilder Controller::lookHandler(const vector<string>& arguments, const PlayerInfo& player, GameModel& gameModel, const std::vector<Connection>& allClients)
+{
 //    auto character = gameModel.getCharacterByID(playerID);
 //    std::string areaDescription = gameModel.getAreaDescription(character->getAreaID());
 
-    auto response = protocols::createDisplayResponseMessage(protocols::DisplayMessage{"You look around..."});
-    messageSender.sendMessage(protocols::serializeResponseMessage(response), player.clientID);
+    return DisplayMessageBuilder::createMessage("You look around...").addClient(player.clientID).setSender(DisplayMessageBuilder::SENDER_SERVER);
 }
 
-void Controller::sayHandler(const std::vector<std::string> &targets, const PlayerInfo& player, GameModel &gameModel, MessageSender &messageSender)
+DisplayMessageBuilder Controller::sayHandler(const vector<string>& arguments, const PlayerInfo& player, GameModel& gameModel, const std::vector<Connection>& allClients)
 {
     std::string str;
-    for (const auto& s : targets) {
+    for (const auto& s : arguments) {
         str += s + " ";
     }
 
-    auto response = protocols::createDisplayResponseMessage(protocols::DisplayMessage{str});
-    messageSender.sendMessage(protocols::serializeResponseMessage(response));
+    return DisplayMessageBuilder::createMessage(str).addClients(allClients).setSender(player.playerID);
 }
 
 void Controller::addNewPlayer(const PlayerInfo &player) {
