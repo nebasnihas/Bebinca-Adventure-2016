@@ -18,8 +18,7 @@ public:
 
     DisplayMessageBuilder look(const vector<string> &targets, const PlayerInfo &player);
     DisplayMessageBuilder move(const std::vector<std::string> &targets, const PlayerInfo &player);
-    DisplayMessageBuilder listPlayers(const std::vector<std::string> &targets,
-                                                     const PlayerInfo &player);
+    DisplayMessageBuilder listPlayers(const std::vector<std::string> &targets, const PlayerInfo &player);
     DisplayMessageBuilder listExits(const std::vector<std::string> &targets, const PlayerInfo &player);
     DisplayMessageBuilder say(const std::vector<std::string> &targets, const PlayerInfo &player);
 
@@ -27,7 +26,7 @@ private:
     string getPlayerAreaID(const PlayerInfo &player);
     Controller& controller;
     GameModel& gameModel;
-
+    const std::vector<Connection>& allClients;
 
 };
 

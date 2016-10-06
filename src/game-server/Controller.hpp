@@ -14,25 +14,25 @@
 
 using namespace networking;
 
+class GameFunctions;
+
 class Controller {
 public:
-    Controller(GameModel& gameModel, std::vector<Connection>& allClients);
+    Controller(GameModel& gameModel, const std::vector<Connection>& allClients) : gameModel{gameModel}, allClients{allClients}{};
     DisplayMessageBuilder processCommand(const protocols::PlayerCommand& command, const Connection& client);
     void addNewPlayer(const PlayerInfo& player);
     void registerCommand(const Command& command);
 
     GameModel& getGameModel() const;
-    std::vector<Connection>& getAllClients() const;
+    const vector<Connection>& getAllClients() const;
 
 private:
-    typedef std::unordered_map<std::string, Command> CommandMap;
     std::unordered_map<Connection, std::string, ConnectionHash> clientToPlayerMap;
     std::unordered_map<std::string, Connection> playerToClientMap;
+    std::unordered_map<std::string, Command>  playerCommandMap;
 
-    CommandMap playerCommandMap;
     GameModel& gameModel;
-    std::vector<Connection>& allClients;
-
+    const std::vector<Connection>& allClients;
 };
 
 

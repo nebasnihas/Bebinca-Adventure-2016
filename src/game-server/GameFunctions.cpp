@@ -4,7 +4,7 @@
 
 using namespace std;
 
-GameFunctions::GameFunctions(Controller &controller) : controller{controller}, gameModel{controller.getGameModel()}{
+GameFunctions::GameFunctions(Controller &controller) : controller{controller}, gameModel{controller.getGameModel()}, allClients{controller.getAllClients()} {
     //TODO: register commands
     controller.registerCommand(Command{"look", std::bind(&GameFunctions::look, this, _1, _2)});
     controller.registerCommand(Command{"go", std::bind(&GameFunctions::move, this, _1, _2)});
@@ -68,7 +68,12 @@ string GameFunctions::getPlayerAreaID(const PlayerInfo &player) {
 }
 
 DisplayMessageBuilder GameFunctions::say(const std::vector<std::string> &targets, const PlayerInfo &player) {
-    return DisplayMessageBuilder::createMessage("say what").addClients(controller.getAllClients()).setSender(DisplayMessageBuilder::SENDER_SERVER);
+    std::string message;
+    for (const auto& target : targets) {
+        message += target + " ";
+    }
+
+    return DisplayMessageBuilder::createMessage(message).addClients(controller.getAllClients()).setSender(player.playerID);
 }
 
 

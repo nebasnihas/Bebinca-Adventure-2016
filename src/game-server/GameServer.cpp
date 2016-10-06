@@ -11,6 +11,7 @@
 #include "game/protocols/RequestMessage.hpp"
 #include "game/protocols/Authentication.hpp"
 #include "Authenticator.hpp"
+#include "GameFunctions.hpp"
 
 #include <boost/lexical_cast.hpp>
 #include <queue>
@@ -21,6 +22,7 @@ using namespace protocols;
 std::vector<Connection> clients;
 GameModel gameModel;
 Controller controller{gameModel, clients};
+GameFunctions gameFunctions{controller};
 
 void onConnect(Connection connection) {
     printf("New connection found: %lu\n", connection.id);

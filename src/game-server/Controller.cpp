@@ -12,16 +12,10 @@
 using namespace networking;
 using namespace std::placeholders;
 
-
-Controller::Controller(GameModel& gameModel, std::vector<Connection>& allClients) : gameModel{gameModel}, allClients{allClients} {
-    GameFunctions gameFunctions{*this};
-}
-
 DisplayMessageBuilder Controller::processCommand(const protocols::PlayerCommand& command, const Connection& client)
 {
     auto cmd = command.command;
     auto cmdArgs = splitString(command.arguments);
-
 
     auto it = playerCommandMap.find(cmd);
     if (it != playerCommandMap.end()) {
@@ -42,10 +36,9 @@ void Controller::registerCommand(const Command &command) {
 void Controller::addNewPlayer(const PlayerInfo &player) {
     clientToPlayerMap.insert(std::make_pair(player.clientID, player.playerID));
     playerToClientMap.insert(std::make_pair(player.playerID, player.clientID));
-    std::cout << allClients.front().id << endl;
 }
 
-std::vector<Connection>& Controller::getAllClients() const {
+const vector<Connection>& Controller::getAllClients() const {
     return allClients;
 }
 
