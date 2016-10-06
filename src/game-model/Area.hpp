@@ -16,7 +16,7 @@ public:
 
 	std::string getID() const { return id; }
 	std::string getAreaName() const { return areaName; }
-    std::unordered_map<std::string, std::string> getConnectedAreas() const { return connectedAreas; }
+    std::unordered_map<std::string, std::string>* getConnectedAreas() const { return (std::unordered_map<std::string, std::string>*)&connectedAreas; }
     std::vector<Entity> getEntityList() const { return entityList; }
 
 	std::string getAreaDescription() const;

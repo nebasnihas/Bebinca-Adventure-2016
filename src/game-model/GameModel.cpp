@@ -2,7 +2,8 @@
 
 #include "GameModel.hpp"
 
-bool GameModel::createCharacter(std::string characterID, std::string characterName) {
+bool GameModel::createCharacter(const std::string& characterID, const std::string& characterName) {
+    // TO-DO: Placeholder for an initial loading area
 	Character character(characterID, "area_tutorial", characterName, Character::Type::WARRIOR, 1);
 	characters.insert(std::pair<std::string, Character>(characterID, character));
 
@@ -10,7 +11,7 @@ bool GameModel::createCharacter(std::string characterID, std::string characterNa
 	return true;
 }
 
-bool GameModel::addArea(Area& area) {
+bool GameModel::addArea(const Area& area) {
 
 	locations.insert(std::pair<std::string, Area>(area.getID(), area));
 
@@ -18,17 +19,17 @@ bool GameModel::addArea(Area& area) {
 	return true;
 }
 
-Area* GameModel::getAreaByID(std::string areaID) {
-	auto aPtr = locations.find(areaID);
+Area* GameModel::getAreaByID(const std::string& areaID) const {
 
-	if (aPtr != locations.end()) {
-		return &aPtr->second;
-	}
+    if (locations.count(areaID) == 1) {
+
+        return (Area*)&(locations.at(areaID));
+    }
 
 	return nullptr;
 }
 
-std::string GameModel::getAreaDescription(std::string areaID) {
+std::string GameModel::getAreaDescription(const std::string& areaID) const {
 
 	std::string description = "";
 
@@ -42,7 +43,7 @@ std::string GameModel::getAreaDescription(std::string areaID) {
 	return description;
 }
 
-std::string GameModel::getEntityDescription(std::string areaID, std::string entityDisplayName) {
+std::string GameModel::getEntityDescription(const std::string& areaID, const std::string& entityDisplayName) const {
 
 	auto area = getAreaByID(areaID);
 
@@ -57,7 +58,7 @@ std::string GameModel::getEntityDescription(std::string areaID, std::string enti
     return "Entity does not exist.";
 }
 
-bool GameModel::moveCharacter(std::string characterID, std::string areaTag) {
+bool GameModel::moveCharacter(const std::string& characterID, const std::string& areaTag) {
 
 	auto cPtr = characters.find(characterID);
 	
@@ -73,9 +74,9 @@ bool GameModel::moveCharacter(std::string characterID, std::string areaTag) {
 			auto connectedAreas = area.getConnectedAreas();
 			
 			// Check if the current area is connected to the target destination
-			auto connectedArea = connectedAreas.find(areaTag);
+			auto connectedArea = connectedAreas->find(areaTag);
 
-            if (connectedArea != connectedAreas.end()) {
+            if (connectedArea != connectedAreas->end()) {
 
 				character->setAreaID(connectedArea->second);
 				return true;
@@ -87,13 +88,32 @@ bool GameModel::moveCharacter(std::string characterID, std::string areaTag) {
 	return false;
 }
 
-Character* GameModel::getCharacterByID(std::string characterID) {
+std::vector<std::string> GameModel::getCharacterIDsInArea(const std::string& areaID) const {
+	Area* area = getAreaByID(areaID);
 
-	auto cPtr = characters.find(characterID);
-	
-	if (cPtr != characters.end()) {
-		return &cPtr->second; 
+	std::vector<std::string> charactersInArea;
+	//TODO consider keep track of character inside area class
+	for (const auto& pair : characters) {
+
+		auto character = pair.second;
+		if (character.getAreaID() == areaID) {
+			charactersInArea.push_back(character.getID());
+		}
 	}
+
+	return charactersInArea;
+}
+
+std::unordered_map<std::string, std::string>* GameModel::getConnectedAreas(const std::string& areaID) const {
+    auto area = getAreaByID(areaID);
+    return area->getConnectedAreas();
+}
+
+Character* GameModel::getCharacterByID(const std::string& characterID) const {
+
+	if (characters.count(characterID) == 1) {
+        return (Character*)&(characters.at(characterID));
+    }
 
 	return nullptr;
 }
