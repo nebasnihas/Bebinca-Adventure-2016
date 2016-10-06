@@ -5,15 +5,30 @@
 
 
 #include <game/GameModel.hpp>
-#include "MessageSender.h"
 #include "Command.hpp"
+#include "Controller.hpp"
+
+using namespace std;
+using namespace std::placeholders;
+
 
 class GameFunctions {
 public:
-    void GameFunctions::look(const std::vector<std::string>& targets, const PlayerInfo& player, GameModel& gameModel, MessageSender& messageSender) {}
-    void GameFunctions::move(const std::vector<std::string>& targets, const PlayerInfo& player, GameModel& gameModel, MessageSender& messageSender) {}
-    void GameFunctions::listPlayers(const std::vector<std::string>& targets, const PlayerInfo& player, GameModel& gameModel, MessageSender& messageSender) {}
-    void GameFunctions::listExits(const std::vector<std::string>& targets, const PlayerInfo& player, GameModel& gameModel, MessageSender& messageSender) {}
+    GameFunctions(Controller& controller);
+
+    DisplayMessageBuilder look(const vector<string> &targets, const PlayerInfo &player);
+    DisplayMessageBuilder move(const std::vector<std::string> &targets, const PlayerInfo &player);
+    DisplayMessageBuilder listPlayers(const std::vector<std::string> &targets,
+                                                     const PlayerInfo &player);
+    DisplayMessageBuilder listExits(const std::vector<std::string> &targets, const PlayerInfo &player);
+    DisplayMessageBuilder say(const std::vector<std::string> &targets, const PlayerInfo &player);
+
+private:
+    string getPlayerAreaID(const PlayerInfo &player);
+    Controller& controller;
+    GameModel& gameModel;
+
+
 };
 
 

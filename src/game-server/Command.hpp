@@ -17,7 +17,7 @@ struct PlayerInfo {
 
 class Command {
 public:
-    typedef function<DisplayMessageBuilder (const vector<string>& arguments, const PlayerInfo& player, GameModel& gameModel, const std::vector<Connection>& allClients)> functionRef;
+    typedef function<DisplayMessageBuilder (const vector<string>& arguments, const PlayerInfo& player)> functionRef;
 
 
     /**

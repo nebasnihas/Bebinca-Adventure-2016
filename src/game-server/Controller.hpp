@@ -16,20 +16,23 @@ using namespace networking;
 
 class Controller {
 public:
-    Controller();
-    DisplayMessageBuilder processCommand(const protocols::PlayerCommand& command, const Connection& client, GameModel& gameModel,
-                        std::vector<Connection>& allClients);
+    Controller(GameModel& gameModel, std::vector<Connection>& allClients);
+    DisplayMessageBuilder processCommand(const protocols::PlayerCommand& command, const Connection& client);
     void addNewPlayer(const PlayerInfo& player);
-    void registerForPlayerCommand(const Command& command);
+    void registerCommand(const Command& command);
+
+    GameModel& getGameModel() const;
+    std::vector<Connection>& getAllClients() const;
+
 private:
     typedef std::unordered_map<std::string, Command> CommandMap;
     std::unordered_map<Connection, std::string, ConnectionHash> clientToPlayerMap;
     std::unordered_map<std::string, Connection> playerToClientMap;
 
     CommandMap playerCommandMap;
+    GameModel& gameModel;
+    std::vector<Connection>& allClients;
 
-    DisplayMessageBuilder lookHandler(const vector<string>& arguments, const PlayerInfo& player, GameModel& gameModel, const std::vector<Connection>& allClients);
-    DisplayMessageBuilder sayHandler(const vector<string>& arguments, const PlayerInfo& player, GameModel& gameModel, const std::vector<Connection>& allClients);
 };
 
 

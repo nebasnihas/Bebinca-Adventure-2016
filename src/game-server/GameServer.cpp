@@ -20,7 +20,7 @@ using namespace protocols;
 
 std::vector<Connection> clients;
 GameModel gameModel;
-Controller controller;
+Controller controller{gameModel, clients};
 
 void onConnect(Connection connection) {
     printf("New connection found: %lu\n", connection.id);
@@ -89,6 +89,7 @@ int main(int argc, char *argv[]) {
 
     Server server{port, onConnect, onDisconnect};
 
+
     bool done = false;
     while (!done) {
         try {
@@ -111,7 +112,7 @@ int main(int argc, char *argv[]) {
                     break;
                 case protocols::RequestHeader::PLAYER_COMMAND_REQUEST: {
                     auto playerCommand = protocols::readPlayerCommandRequestMessage(requestMessage);
-                    auto outgoing = controller.processCommand(playerCommand, clientMessage.connection, gameModel, clients);
+                    auto outgoing = controller.processCommand(playerCommand, clientMessage.connection);
                     server.send(outgoing.getOutputMessages());
                     break;
                 }
