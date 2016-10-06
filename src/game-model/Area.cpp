@@ -1,6 +1,6 @@
 #include "Area.hpp"
 
-Area::Area(std::string id, std::string areaName, std::unordered_map<std::string, std::string> connectedAreas, std::vector<Entity> entityList) {
+Area::Area(std::string id, std::string areaName, std::unordered_map<std::string, std::string> connectedAreas, std::vector<string> description) {
 	this->id = id;
 	this->areaName = areaName;
 	this->connectedAreas = connectedAreas;
