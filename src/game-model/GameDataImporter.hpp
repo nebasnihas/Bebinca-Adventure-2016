@@ -11,14 +11,10 @@ class GameDataImporter {
 
 private:
 
-	std::string datafile;
-	//static void loadSingleRoom(YAML::Node);
-	//static void loadSingleObjects(YAML::Node);
-	//void loadSingleResets(YAML::Node);
-	//void loadSingleShops(YAML::Node);
-
+	std::string dataFile;
 
 public:
+
 
 	//Inputs .YAML file for parsing
     static void loadyamlFile(std::string file);

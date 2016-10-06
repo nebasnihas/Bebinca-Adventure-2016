@@ -6,13 +6,14 @@
 #include <unordered_map>
 
 #include "Entity.hpp"
+#include "GameDataImporter.hpp"
 
 class Area 
 {
 
 public:
 
-	Area(std::string id, std::string areaName, std::unordered_map<std::string, std::string> connectedAreas, std::vector<Entity> entityList);
+	Area(std::string id, std::string areaName, std::unordered_map<std::string, std::string> connectedAreas, std::vector<std::string> description);
 
 	std::string getID() const { return id; }
 	std::string getAreaName() const { return areaName; }
