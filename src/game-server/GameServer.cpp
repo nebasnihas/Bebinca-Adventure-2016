@@ -7,9 +7,8 @@
 
 
 #include "networking/server.h"
-#include "BufferedMessageSender.h"
 #include "Controller.hpp"
-#include "game/protocols/Message.hpp"
+#include "game/protocols/RequestMessage.hpp"
 #include "game/protocols/Authentication.hpp"
 #include "Authenticator.hpp"
 
@@ -20,7 +19,6 @@ using namespace networking;
 using namespace protocols;
 
 std::vector<Connection> clients;
-BufferedMessageSender messageSender;
 GameModel gameModel;
 Controller controller;
 
@@ -34,6 +32,7 @@ void onDisconnect(Connection c) {
     printf("Connection lost: %lu\n", c.id);
     auto it = std::remove(clients.begin(), clients.end(), c);
     clients.erase(it, clients.end());
+    //TODO remove player from game
 }
 
 bool validateServerArgs(int argc, char* argv[], unsigned short& port)
@@ -53,54 +52,32 @@ bool validateServerArgs(int argc, char* argv[], unsigned short& port)
     return true;
 }
 
-void processLoginRequest(const std::string& username, const std::string& password, Connection clientId, Server& server)
+void processLoginRequest(const protocols::RequestMessage& request, Connection clientId, Server& server)
 {
-    std::string response;
-    switch (Authenticator::login(username, password)) {
-        case LoginStatus::INVALID_CREDENTIALS:
-            response = createAuthResponseMessage(AuthType::LOGIN, false, "The credentials do not match\n");
-            break;
-        case LoginStatus::USERNAME_NOT_FOUND:
-            response = createAuthResponseMessage(AuthType::LOGIN, false, "Username not found\n");
-            break;
-        case LoginStatus::OK:
-            response = createAuthResponseMessage(AuthType::LOGIN, true, username);
-            break;
-    }
+    auto loginRequest = protocols::readAuthenticationRequestMessage(request);
 
-    messageSender.sendMessage(createMessage(MessageType::AUTHENTICATION, response), clientId);
-    messageSender.sendAll(server, clients);
+    auto responseCode = Authenticator::login(loginRequest.username, loginRequest.password);
+
+    auto loginResponse = protocols::createLoginResponseMessage(responseCode);
+
+    auto output = protocols::serializeResponseMessage(loginResponse);
+    server.send(Message{clientId, output});
+
+    controller.addNewPlayer(PlayerInfo{loginRequest.username, clientId});
 }
 
-void processRegistrationRequest(const std::string& username, const std::string password, Connection clientId, Server& server)
+void processRegistrationRequest(const protocols::RequestMessage& request, Connection clientId, Server& server)
 {
-    std::string response;
-    switch (Authenticator::registerAccount(username, password)) {
-        case RegistrationStatus::USERNAME_EXISTS:
-            response = createAuthResponseMessage(AuthType::LOGIN, false, "Username already exists");
-            break;
-        case RegistrationStatus::USERNAME_TOO_LONG:
-            response = createAuthResponseMessage(AuthType::LOGIN, false, "Username is too long. max: "
-                                                                         + std::to_string(Authenticator::USERNAME_MAX_LENGTH) + "\n");
-            break;
-        case RegistrationStatus::OK:
-            response = createAuthResponseMessage(AuthType::LOGIN, true, username);
-            break;
-    }
+    auto registrationRequest = protocols::readAuthenticationRequestMessage(request);
 
-    messageSender.sendMessage(createMessage(MessageType::AUTHENTICATION, response), clientId);
-    messageSender.sendAll(server, clients);
-}
+    auto responseCode = Authenticator::registerAccount(registrationRequest.username, registrationRequest.password);
 
-void processAuthenicationRequest(const std::string& request, Connection clientId, Server& server)
-{
-    auto msg = readAuthRequestMessage(request);
+    auto registrationResponse = protocols::createRegistrationResponseMessage(responseCode);
 
-    if (msg.authType == AuthType::LOGIN) {
-        processLoginRequest(msg.userName, msg.password, clientId, server);
-    } else if (msg.authType == AuthType::REGISTER) {
-        processRegistrationRequest(msg.userName, msg.password, clientId, server);
-    }
+    auto output = protocols::serializeResponseMessage(registrationResponse);
+    server.send(Message{clientId, output});
+
+    controller.addNewPlayer(PlayerInfo{registrationRequest.username, clientId});
 }
 
 int main(int argc, char *argv[]) {
@@ -123,15 +100,26 @@ int main(int argc, char *argv[]) {
 
         auto incoming = server.receive();
         for (const auto &clientMessage : incoming) {
-            auto gameMessage = protocols::readMessage(clientMessage.text);
-            if (gameMessage.type == protocols::MessageType::AUTHENTICATION) {
-                processAuthenicationRequest(gameMessage.messageBody, clientMessage.connection, server);
-            } else {
-                controller.processCommand(clientMessage.text, clientMessage.connection, gameModel, messageSender);
+            auto requestMessage = protocols::deserializeRequestMessage(clientMessage.text);
+
+            switch (requestMessage.header) {
+                case protocols::RequestHeader::LOGIN_REQUEST:
+                    processLoginRequest(requestMessage, clientMessage.connection, server);
+                    break;
+                case protocols::RequestHeader::REGISTER_REQUEST:
+                    processRegistrationRequest(requestMessage, clientMessage.connection, server);
+                    break;
+                case protocols::RequestHeader::PLAYER_COMMAND_REQUEST: {
+                    auto playerCommand = protocols::readPlayerCommandRequestMessage(requestMessage);
+                    auto outgoing = controller.processCommand(playerCommand, clientMessage.connection, gameModel, clients);
+                    server.send(outgoing.getOutputMessages());
+                    break;
+                }
+                default:
+                    break;
             }
         }
 
-        messageSender.sendAll(server, clients);
 
         sleep(1);
     }

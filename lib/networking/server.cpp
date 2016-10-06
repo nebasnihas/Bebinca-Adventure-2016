@@ -121,7 +121,13 @@ std::deque<Message> Server::receive() {
 
 
 void Server::send(const std::deque<Message> &messages) {
-    for (auto &message : messages) {
+    for (const auto &message : messages) {
+        send(message);
+    }
+}
+
+void Server::send(const std::vector<Message> &messages) {
+    for (const auto &message : messages) {
         send(message);
     }
 }

@@ -63,7 +63,7 @@ void ChatWindow::update() {
 
 
 void ChatWindow::displayText(const std::string &text) {
-    wprintw(view, "%s", text.c_str());
+    wprintw(view, "%s", (text + "\n").c_str());
 }
 
 
@@ -125,6 +125,11 @@ ChatWindow::getFieldSize() const {
 std::string
 ChatWindow::getFieldString() const {
     return std::string{field_buffer(entryField, 0), getFieldSize()};
+}
+
+void ChatWindow::setOnTextEntry(std::function<void(std::string)> onTextEntry)
+{
+    this->onTextEntry = onTextEntry;
 }
 
 

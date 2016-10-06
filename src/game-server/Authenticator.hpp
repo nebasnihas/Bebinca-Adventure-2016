@@ -6,18 +6,8 @@
 #include <iostream>
 #include <string>
 #include <boost/optional.hpp>
+#include "game/protocols/Authentication.hpp"
 
-enum class LoginStatus {
-    OK,
-    USERNAME_NOT_FOUND,
-    INVALID_CREDENTIALS,
-};
-
-enum class RegistrationStatus {
-    OK,
-    USERNAME_TOO_LONG,
-    USERNAME_EXISTS
-};
 
 class Authenticator {
 private:
@@ -27,8 +17,8 @@ private:
 public:
     static const int USERNAME_MAX_LENGTH = 10;
 
-    static LoginStatus login(const std::string& username, const std::string& password);
-    static RegistrationStatus registerAccount(const std::string& username, const std::string& password);
+    static protocols::LoginResponseCode login(const std::string& username, const std::string& password);
+    static protocols::RegistrationResponseCode registerAccount(const std::string& username, const std::string& password);
     std::string welcomescreen();
     /*Call this function only. Returns the string:username after savefile is created. 
      Returns "nousercreated" if the user decides to quit before creating or logging in*/

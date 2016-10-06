@@ -2,9 +2,9 @@
 add_executable(game-server
         GameServer.cpp
         Authenticator.cpp
-        BufferedMessageSender.cpp
         Command.cpp
         Controller.cpp
+        DisplayMessageBuilder.cpp DisplayMessageBuilder.hpp)
         GameFunctions.cpp GameFunctions.hpp)
 
 target_link_libraries(game-server

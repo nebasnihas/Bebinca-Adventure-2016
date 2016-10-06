@@ -2,31 +2,43 @@
 #define ADVENTURE2016_AUTH_H
 
 #include <string>
+#include "RequestMessage.hpp"
+#include "ResponseMessage.hpp"
+#include "yaml-cpp/yaml.h"
 
 namespace protocols {
-enum class AuthType {
-    LOGIN,
-    REGISTER,
-};
 
-struct AuthResponse {
-    AuthType authType;
-    bool success;
-    std::string messageOrUserID;
-};
-
-struct AuthRequest {
-    AuthType authType;
-    std::string userName;
+struct UserCredentials {
+    std::string username;
     std::string password;
 };
 
-//genric auth request for both login and registration
-std::string createAuthRequestMessage(AuthType type, const std::string& username, const std::string& password);
-std::string createAuthResponseMessage(AuthType type, bool sucess, const std::string& messageBody);
+enum class LoginResponseCode {
+    LOGIN_OK,
+    USERNAME_NOT_FOUND,
+    INVALID_CREDENTIALS,
+};
 
-AuthRequest readAuthRequestMessage(const std::string& text);
-AuthResponse readAuthResponseMessage(const std::string& text);
+
+enum class RegistrationResponseCode {
+    REGISTRATION_OK,
+    USERNAME_TOO_LONG,
+    USERNAME_EXISTS
+};
+
+struct AuthenticationResponse {
+    bool success;
+    std::string msg;
+};
+
+RequestMessage createLoginRequestMessage(const UserCredentials& credentials);
+RequestMessage createRegistrationRequestMessage(const UserCredentials& credentials);
+UserCredentials readAuthenticationRequestMessage(const RequestMessage& message);
+
+ResponseMessage createLoginResponseMessage(LoginResponseCode code);
+ResponseMessage createRegistrationResponseMessage(RegistrationResponseCode code);
+AuthenticationResponse readAuthenticationResponseMessage(const ResponseMessage& responseMessage);
+
 }
 
 #endif //ADVENTURE2016_AUTH_H
