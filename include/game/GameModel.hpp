@@ -10,22 +10,23 @@ class GameModel {
 
 public:
 
-	bool createCharacter(std::string characterID, std::string characterName);
-	bool moveCharacter(std::string characterID, std::string areaID);
-	Character* getCharacterByID(std::string characterID);
+    bool createCharacter(const std::string& characterID, const std::string& characterName);
+    bool moveCharacter(const std::string& characterID, const std::string& areaTag);
+    Character* getCharacterByID(const std::string& characterID) const;
 
-    bool addArea(Area& area);
+    bool addArea(const Area& area);
 
-	Area* getAreaByID(std::string areaID);
-    std::string getAreaDescription(std::string areaID);
+    Area* getAreaByID(const std::string& areaID) const;
+    std::vector<std::string> getCharacterIDsInArea(const std::string& areaID) const;
+    std::unordered_map<std::string, std::string>* getConnectedAreas(const std::string& areaID) const;
+    std::string getAreaDescription(const std::string& areaID) const;
 
-	std::string getEntityDescription(std::string areaID, std::string entityID);
+    std::string getEntityDescription(const std::string& areaID, const std::string& entityID) const;
 
 private:
 
-	std::map<std::string, Character> characters;
-	std::map<std::string, Area> locations;
+    std::map<std::string, Character> characters;
+    std::map<std::string, Area> locations;
 
 };
-
 #endif
