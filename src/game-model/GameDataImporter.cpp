@@ -1,10 +1,13 @@
 #include "GameDataImporter.hpp"
+#include "Area.hpp"
 #include "yaml-cpp/yaml.h"
 #include <fstream>
 #include <iostream>
 #include <vector>
-#include<unordered_map>
+#include <unordered_map>
 #include <typeinfo>
+
+using namespace std;
 
 using std::vector;
 using std::string;
@@ -58,17 +61,40 @@ void GameDataImporter::loadNPCS(YAML::Node NPCS){
 
     }
 }
+
 void GameDataImporter::loadRooms(YAML::Node ROOMS){
 
     //Create vector to hold instances of ROOM
     vector<Area> rooms;
+    std::string roomDescription;
+
+   	/*
+   	Room objects contain:
+
+   	string ID
+   	string roomName
+   	map of connected areas (string, string)
+   	string description (of area)
+
+	*/
+
     for(YAML::const_iterator it = ROOMS.begin(); it != ROOMS.end(); ++it){
 
         const YAML::Node ROOM = *it;
 
+        //Store room descriptions
         vector<string> desc = ROOM["desc"].as<vector<string>>();
+
+        //Store ID and name of room
         string id = ROOM["id"].as<string>();
         string name = ROOM["name"].as<string>();
+
+        //Area newArea = Area(id, name);
+        //rooms.push_back(newArea);
+
+        //cout << "ID: \t" << newArea.getID() << "Name: " << newArea.getTitle() << endl;
+
+
 
         //dir is key, maps to room ID
         unordered_map<string, string> doorsMap;
@@ -88,12 +114,32 @@ void GameDataImporter::loadRooms(YAML::Node ROOMS){
             doorsMap.insert(doorKeyValuePair);
         }
 
-        //Area::Area a{id, name, doorsMap, desc};
+        //Create an Area objects with ID, title, connected areas, and descriptions
+        Area newArea = Area(id, name, doorsMap, desc);
+        rooms.push_back(newArea);
 
-        //rooms.push_back(a);
+        cout << "ID: " << newArea.getID() << endl << "Name: " << newArea.getTitle() << endl;
+
+
+		//Print out contents of map
+		for (const auto &pair : *newArea.getConnectedAreas())
+		{
+    		cout << "m[" << pair.first << "] = " << pair.second << '\n';
+		}
+
+		//Print out description of each Area
+		for (const auto &description : newArea.getDescription())
+		{
+			cout << description << endl;
+		}
     }
 
+    //Might want to return the vector of Area objects
+
+            cout << rooms.size();
+
 }
+
 void GameDataImporter::loadObjects(YAML::Node OBJECTS){
 
     for(YAML::const_iterator it = OBJECTS.begin(); it != OBJECTS.end(); ++it){
