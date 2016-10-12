@@ -1,5 +1,8 @@
-#add_executable(controllerTest ControllerTest.cpp)
-#target_link_libraries(controllerTest gameModel)
-#target_link_libraries(controllerTest controller)
-#
-#set_property(TARGET controllerTest PROPERTY CXX_STANDARD 14)
+add_subdirectory(lib)
+enable_testing()
+
+#exe to run all tests
+add_executable(runAllTests dummy.cpp dummy.cpp)
+target_link_libraries(runAllTests gtest gtest_main gmock_main)
+
+add_test(NAME runAllTests COMMAND runAllTests)
