@@ -37,8 +37,7 @@ void onDisconnect(Connection c) {
     //TODO remove player from game
 }
 
-bool validateServerArgs(int argc, char* argv[], unsigned short& port)
-{
+bool validateServerArgs(int argc, char* argv[], unsigned short& port) {
     if (argc < 2) {
         printf("Usage:\n%s <port>\ne.g. %s 4002\n", argv[0], argv[0]);
         return false;
@@ -54,12 +53,9 @@ bool validateServerArgs(int argc, char* argv[], unsigned short& port)
     return true;
 }
 
-void processLoginRequest(const protocols::RequestMessage& request, Connection clientId, Server& server)
-{
+void processLoginRequest(const protocols::RequestMessage& request, const Connection& clientId, Server& server) {
     auto loginRequest = protocols::readAuthenticationRequestMessage(request);
-
     auto responseCode = Authenticator::login(loginRequest.username, loginRequest.password);
-
     auto loginResponse = protocols::createLoginResponseMessage(responseCode);
 
     auto output = protocols::serializeResponseMessage(loginResponse);
@@ -68,12 +64,9 @@ void processLoginRequest(const protocols::RequestMessage& request, Connection cl
     controller.addNewPlayer(PlayerInfo{loginRequest.username, clientId});
 }
 
-void processRegistrationRequest(const protocols::RequestMessage& request, Connection clientId, Server& server)
-{
+void processRegistrationRequest(const protocols::RequestMessage& request, const Connection& clientId, Server& server) {
     auto registrationRequest = protocols::readAuthenticationRequestMessage(request);
-
     auto responseCode = Authenticator::registerAccount(registrationRequest.username, registrationRequest.password);
-
     auto registrationResponse = protocols::createRegistrationResponseMessage(responseCode);
 
     auto output = protocols::serializeResponseMessage(registrationResponse);
