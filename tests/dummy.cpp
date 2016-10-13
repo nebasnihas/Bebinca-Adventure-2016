@@ -1,6 +1,8 @@
 #include "gtest/gtest.h"
-#include <iostream>
+#include "glog/logging.h"
 
 TEST(SanityTest, test) {
-    std::cout << "it works!" << std::endl;
+    FLAGS_log_dir = "./";
+    google::InitGoogleLogging("runAlltests");
+    LOG(INFO) << "It works!";
 }
