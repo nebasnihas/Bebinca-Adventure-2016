@@ -4,12 +4,15 @@
 #include <unordered_map>
 
 const int MAX_ITEMS = 30;
+const int MAX_PER_STACKED_ITEM = 20;
 
 class Inventory {
 private:
     std::unordered_map<std::string, int> inventory;
 
 public:
+    Inventory();
+    ~Inventory();
     std::string getString() const;
     std::unordered_map<std::string, int> get() const;
     int getSize() const;

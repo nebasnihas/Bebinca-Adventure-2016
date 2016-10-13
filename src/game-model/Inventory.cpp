@@ -1,10 +1,16 @@
 #include <iostream>
 #include "Inventory.hpp"
 
+Inventory::Inventory() {
+    inventory.reserve(MAX_ITEMS);
+}
+
+Inventory::~Inventory() { }
+
 std::string Inventory::getString() const {
     std::string inventoryString = "";
 
-    if (getSize() > 0) {
+    if (!inventory.empty()) {
         for (const auto& item : inventory) {
             inventoryString += item.first + " x" + std::to_string(item.second) + "\n";
         }
@@ -20,26 +26,22 @@ std::unordered_map<std::string, int> Inventory::get() const {
 }
 
 int Inventory::getSize() const {
-    int size = 0;
-
-    for (const auto& item : inventory) {
-        int itemCount = item.second;
-        size += itemCount;
-    }
-
-    return size;
+    return inventory.size();
 }
 
 void Inventory::addItem(const std::string item) {
-    if (getSize() < MAX_ITEMS) {
+    bool inventoryNotFull = getSize() < MAX_ITEMS;
+    bool itemNotFullyStacked = inventory[item] < MAX_PER_STACKED_ITEM;
+
+    if (inventoryNotFull && itemNotFullyStacked) {
         inventory[item]++;
     }
 }
 
 void Inventory::removeItem(const std::string item) {
-    int itemCount = inventory[item];
+    bool stackedItem = inventory[item] > 1;
 
-    if (itemCount > 1) {
+    if (stackedItem) {
         inventory[item]--;
     } else {
         inventory.erase(item);
