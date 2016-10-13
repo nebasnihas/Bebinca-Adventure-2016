@@ -1,8 +1,11 @@
 #include "gtest/gtest.h"
 #include "glog/logging.h"
+#include "gsl/gsl"
 
-TEST(SanityTest, test) {
+TEST(SanityTest, TestExternalLibs) {
     FLAGS_log_dir = "./";
     google::InitGoogleLogging("runAlltests");
-    LOG(INFO) << "It works!";
+    std::string s ("It works!");
+    gsl::string_span<> ss = s;
+    LOG(INFO) << s;
 }
