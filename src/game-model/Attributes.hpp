@@ -13,12 +13,11 @@ public:
     const int VITALITY_BASE_NUM = 8;
 
     Attributes();
-    ~Attributes();
     std::string getString() const;
-    int getAttribute(std::string attribute);
-    void setPrimaryAttribute(std::string primaryAttribute);
-    void increaseAttribute(std::string attribute);
-    bool isValidAttribute(std::string attribute);
+    int getAttribute(const std::string &attribute);
+    void setPrimaryAttribute(const std::string &primaryAttribute);
+    void increaseAttribute(const std::string &attribute);
+    bool isValidAttribute(const std::string &attribute);
     std::string toLower(std::string s);
 };
 

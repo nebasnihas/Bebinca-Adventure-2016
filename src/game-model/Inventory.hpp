@@ -12,12 +12,11 @@ private:
 
 public:
     Inventory();
-    ~Inventory();
     std::string getString() const;
     std::unordered_map<std::string, int> get() const;
     int getSize() const;
-    void addItem(const std::string item);
-    void removeItem(const std::string item);
+    void addItem(const std::string &item);
+    void removeItem(const std::string &item);
     void removeAllItems();
 };
 

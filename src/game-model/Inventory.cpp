@@ -5,8 +5,6 @@ Inventory::Inventory() {
     inventory.reserve(MAX_ITEMS);
 }
 
-Inventory::~Inventory() { }
-
 std::string Inventory::getString() const {
     std::string inventoryString = "";
 
@@ -29,7 +27,7 @@ int Inventory::getSize() const {
     return inventory.size();
 }
 
-void Inventory::addItem(const std::string item) {
+void Inventory::addItem(const std::string &item) {
     bool inventoryNotFull = getSize() < MAX_ITEMS;
     bool itemNotFullyStacked = inventory[item] < MAX_PER_STACKED_ITEM;
 
@@ -38,7 +36,7 @@ void Inventory::addItem(const std::string item) {
     }
 }
 
-void Inventory::removeItem(const std::string item) {
+void Inventory::removeItem(const std::string &item) {
     bool stackedItem = inventory[item] > 1;
 
     if (stackedItem) {

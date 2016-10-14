@@ -13,43 +13,33 @@ protected:
     int exp;
     int damage;
     int armor;
-//    std::unordered_map<std::string, int> skills;
+    Attributes attributes;
+    Inventory inventory;
 
 public:
     const int STARTING_LEVEL = 1;
 
-    Attributes attributes;
-    Inventory inventory;
-
     Character(std::string id, std::string name, std::string areaID);
-    ~Character();
 
     std::string getName() const;
     std::string getID() const;
     std::string getAreaID() const;
-//    Attributes getAttributes() const;
-    std::string getClass() const;
     int getLevel() const;
     int getExp() const;
     int getDamage() const;
     int getArmor() const;
+    Attributes& getAttributes();
+    Inventory& getInventory();
 
-    void setID(std::string id);
-    void setName(std::string name);
-    void setAreaID(std::string areaID);
+    void setID(const std::string& id);
+    void setName(const std::string& name);
+    void setAreaID(const std::string& areaID);
     void setDamage(int damage);
     void setArmor(int armor);
 
     void increaseLevel();
     void increaseExp(int expToAdd);
-
-    //////////////////////////// Skills ////////////////////////////
-//    std::string getSkillsString() const;
-//    int getSkill(std::string skill);
-//    void increaseSkill(std::string skill);
 };
-
-// TODO move derived Character class implementations to separate .cpp files
 
 class WarriorCharacter : public Character {
 public:

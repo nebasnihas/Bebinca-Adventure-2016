@@ -10,8 +10,6 @@ Attributes::Attributes() {
     };
 }
 
-Attributes::~Attributes() { }
-
 std::string Attributes::getString() const {
     std::string attributesString = "";
 
@@ -22,23 +20,23 @@ std::string Attributes::getString() const {
     return attributesString;
 }
 
-int Attributes::getAttribute(std::string attribute) {
+int Attributes::getAttribute(const std::string &attribute) {
     return attributes[toLower(attribute)];
 }
 
-void Attributes::setPrimaryAttribute(std::string primaryAttribute) {
+void Attributes::setPrimaryAttribute(const std::string &primaryAttribute) {
     if (isValidAttribute(primaryAttribute)) {
         attributes[toLower(primaryAttribute)] = PRIMARY_BASE_NUM;
     }
 }
 
-void Attributes::increaseAttribute(std::string attribute) {
+void Attributes::increaseAttribute(const std::string &attribute) {
     if (isValidAttribute(attribute)) {
         attributes[toLower(attribute)]++;
     }
 }
 
-bool Attributes::isValidAttribute(std::string attribute) {
+bool Attributes::isValidAttribute(const std::string &attribute) {
     return attributes.find(toLower(attribute)) != attributes.end();
 }
 
