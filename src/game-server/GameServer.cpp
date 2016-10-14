@@ -10,6 +10,7 @@
 #include "Controller.hpp"
 #include "game/protocols/RequestMessage.hpp"
 #include "game/protocols/Authentication.hpp"
+#include "game/GameDataImporter.hpp"
 #include "Authenticator.hpp"
 #include "GameFunctions.hpp"
 
@@ -37,8 +38,8 @@ void onDisconnect(Connection c) {
     //TODO remove player from game
 }
 
-bool validateServerArgs(int argc, char* argv[], unsigned short& port) {
-    if (argc < 2) {
+bool validateServerArgs(int argc, char* argv[], unsigned short& port, std::string& filename) {
+    if (argc < 3) {
         printf("Usage:\n%s <port>\ne.g. %s 4002\n", argv[0], argv[0]);
         return false;
     }
@@ -49,6 +50,8 @@ bool validateServerArgs(int argc, char* argv[], unsigned short& port) {
         std::cout << "Invalid port number" << std::endl;
         return false;
     }
+
+    filename = std::string(argv[2]);
 
     return true;
 }
@@ -75,15 +78,20 @@ void processRegistrationRequest(const protocols::RequestMessage& request, const 
     controller.addNewPlayer(PlayerInfo{registrationRequest.username, clientId});
 }
 
+void setupGameModel(const std::string& sourceFilepath) {
+    GameDataImporter::loadyamlFile(gameModel, sourceFilepath);
+}
+
 int main(int argc, char *argv[]) {
     unsigned short port;
-    if (!validateServerArgs(argc, argv, port))
+    std::string sourceFile;
+    if (!validateServerArgs(argc, argv, port, sourceFile))
     {
         return 1;
     }
 
     Server server{port, onConnect, onDisconnect};
-
+    setupGameModel(sourceFile);
 
     bool done = false;
     while (!done) {

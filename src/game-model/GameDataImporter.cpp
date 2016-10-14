@@ -1,4 +1,4 @@
-#include "GameDataImporter.hpp"
+#include "game/GameDataImporter.hpp"
 #include "Area.hpp"
 #include "yaml-cpp/yaml.h"
 #include <fstream>
@@ -6,6 +6,7 @@
 #include <vector>
 #include <unordered_map>
 #include <typeinfo>
+#include <boost/algorithm/string/join.hpp>
 
 using namespace std;
 
@@ -15,32 +16,33 @@ using std::unordered_map;
 
 #include <string>
 
+
 //NOTE: If compiling in command line, must include -lyaml-cpp flag at the end of g++ sequence
 
-void GameDataImporter::loadyamlFile(std::string fileName) {
+void GameDataImporter::loadyamlFile(GameModel& gameModel, std::string fileName) {
 	//Loading source .yaml file,split at initial nodes (NPCS, ROOM, OBJECTS, RESETS, SHOPS)
 
     YAML::Node dataFile = YAML::LoadFile(fileName);
 	const YAML::Node NPCS = dataFile["NPCS"];
-    loadNPCS(NPCS);
+    loadNPCS(gameModel, NPCS);
 
     const YAML::Node ROOMS = dataFile["ROOMS"];
-    loadRooms(ROOMS);
+    loadRooms(gameModel, ROOMS);
 
     const YAML::Node OBJECTS = dataFile["OBJECTS"];
-    loadObjects(OBJECTS);
+    loadObjects(gameModel, OBJECTS);
 
     const YAML::Node RESETS = dataFile["RESETS"];
-    loadResets(RESETS);
+    loadResets(gameModel, RESETS);
 
     const YAML::Node SHOPS = dataFile["SHOPS"];
-    loadShops(SHOPS);
+    loadShops(gameModel, SHOPS);
 
 }
 
 //The following five methods take a root node and parse it one level deeper (to get an individual description)
 
-void GameDataImporter::loadNPCS(YAML::Node NPCS){
+void GameDataImporter::loadNPCS(GameModel& gameModel, YAML::Node NPCS){
     //Sequence Iterator
     for(YAML::const_iterator it = NPCS.begin(); it != NPCS.end(); ++it){
 
@@ -62,7 +64,7 @@ void GameDataImporter::loadNPCS(YAML::Node NPCS){
     }
 }
 
-void GameDataImporter::loadRooms(YAML::Node ROOMS){
+void GameDataImporter::loadRooms(GameModel& gameModel, YAML::Node ROOMS){
 
     //Create vector to hold instances of ROOM
     vector<Area> rooms;
@@ -84,6 +86,7 @@ void GameDataImporter::loadRooms(YAML::Node ROOMS){
 
         //Store room descriptions
         vector<string> desc = ROOM["desc"].as<vector<string>>();
+        string description = boost::algorithm::join(desc, " ");
 
         //Store ID and name of room
         string id = ROOM["id"].as<string>();
@@ -115,7 +118,7 @@ void GameDataImporter::loadRooms(YAML::Node ROOMS){
         }
 
         //Create an Area objects with ID, title, connected areas, and descriptions
-        Area newArea = Area(id, name, doorsMap, desc);
+        Area newArea = Area(id, name, doorsMap, description);
         rooms.push_back(newArea);
 
         cout << "ID: " << newArea.getID() << endl << "Name: " << newArea.getTitle() << endl;
@@ -128,19 +131,19 @@ void GameDataImporter::loadRooms(YAML::Node ROOMS){
 		}
 
 		//Print out description of each Area
-		for (const auto &description : newArea.getDescription())
-		{
-			cout << description << endl;
-		}
+		cout << newArea.getDescription() << endl;
+
     }
 
     //Might want to return the vector of Area objects
-
-            cout << rooms.size();
+    for (const auto& room : rooms) {
+        gameModel.addArea(room);
+    }
+    cout << rooms.size();
 
 }
 
-void GameDataImporter::loadObjects(YAML::Node OBJECTS){
+void GameDataImporter::loadObjects(GameModel& gameModel, YAML::Node OBJECTS){
 
     for(YAML::const_iterator it = OBJECTS.begin(); it != OBJECTS.end(); ++it){
 
@@ -161,7 +164,7 @@ void GameDataImporter::loadObjects(YAML::Node OBJECTS){
 }
 
 //The workflow for RESETS ends here, not sure how to utilize yet
-void GameDataImporter::loadResets(YAML::Node RESETS){
+void GameDataImporter::loadResets(GameModel& gameModel, YAML::Node RESETS){
 
     for(YAML::const_iterator it = RESETS.begin(); it != RESETS.end(); ++it){
 
@@ -181,7 +184,7 @@ void GameDataImporter::loadResets(YAML::Node RESETS){
 }
 
 //The workflow for SHOPS ends here, not sure how to utilize yet
-void GameDataImporter::loadShops(YAML::Node SHOPS){
+void GameDataImporter::loadShops(GameModel& gameModel, YAML::Node SHOPS){
 
     for(YAML::const_iterator it = SHOPS.begin(); it != SHOPS.end(); ++it){
 
@@ -195,7 +198,7 @@ void GameDataImporter::loadShops(YAML::Node SHOPS){
 
 
 //use main for testing
-int main() {
+/*int main() {
 
 
 	GameDataImporter::loadyamlFile("../../data/mgoose.yml");
@@ -203,4 +206,4 @@ int main() {
 
 
 	return 0;
-}
+}*/

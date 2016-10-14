@@ -6,7 +6,6 @@
 #include <unordered_map>
 
 #include "Entity.hpp"
-#include "GameDataImporter.hpp"
 
 class Area 
 {
@@ -15,14 +14,14 @@ class Area
 
 public:
 
-	Area(std::string id, std::string title, Doors connectedAreas, std::vector<std::string> description);
+	Area(const std::string &id, const std::string &title, Doors connectedAreas, const std::string &description);
 
 	//for testing
-	Area(std::string id, std::string title);
+	Area(const std::string &id, const std::string &title);
 
 	std::string getID() const;
 	std::string getTitle() const;
-	std::vector<std::string> getDescription() const;
+	std::string getDescription() const;
 	Doors* getConnectedAreas() const;
     
 
@@ -46,7 +45,7 @@ private:
     std::string title;
 	Doors connectedAreas;
 
-    std::vector<std::string> description;
+    std::string description;
 	std::vector<Entity> entityList;
 
 	//TO-DO: Add more detail to an area

@@ -36,6 +36,7 @@ void Controller::registerCommand(const Command &command) {
 void Controller::addNewPlayer(const PlayerInfo &player) {
     clientToPlayerMap.insert(std::make_pair(player.clientID, player.playerID));
     playerToClientMap.insert(std::make_pair(player.playerID, player.clientID));
+    gameModel.createCharacter(player.playerID, player.playerID);
 }
 
 const vector<Connection>& Controller::getAllClients() const {

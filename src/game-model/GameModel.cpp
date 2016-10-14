@@ -1,6 +1,4 @@
-#include <algorithm>
-
-#include "GameModel.hpp"
+#include "game/GameModel.hpp"
 
 bool GameModel::createCharacter(const std::string& characterID, const std::string& characterName) {
     // TO-DO: Placeholder for an initial loading area
@@ -11,9 +9,9 @@ bool GameModel::createCharacter(const std::string& characterID, const std::strin
 	return true;
 }
 
-bool GameModel::addArea(const Area& area) {
+bool GameModel::addArea(const Area area) {
 
-	locations.insert(std::pair<std::string, Area>(area.getID(), area));
+	locations.insert(std::pair<std::string, Area>(area.getID(), std::move(area)));
 
 	// No failure case yet...
 	return true;
@@ -37,7 +35,7 @@ std::string GameModel::getAreaDescription(const std::string& areaID) const {
 
 	if (area != nullptr) {
 
-		description = area->getAreaDescription();
+		description = area->getDescription();
 	}
 
 	return description;

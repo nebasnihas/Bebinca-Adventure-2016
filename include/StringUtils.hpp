@@ -25,7 +25,14 @@ static inline std::pair<std::string, std::string> separateFirstWord(const std::s
 static inline std::vector<std::string> splitString(const std::string& text)
 {
     std::vector<std::string> tokens;
-    boost::split(tokens, text, boost::is_any_of(" \t"));
+    if(text.empty()) {
+        return tokens;
+    }
+
+    std::string tmp = text;
+    boost::trim(tmp);
+
+    boost::split(tokens, tmp, boost::is_any_of(" \t"), boost::token_compress_on);
     return tokens;
 }
 

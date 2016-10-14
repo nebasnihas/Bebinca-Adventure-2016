@@ -1,14 +1,14 @@
 #include "Area.hpp"
 
 
-Area::Area(std::string id, std::string title, Area::Doors connectedAreas, std::vector<std::string> description)
+Area::Area(const std::string &id, const std::string &title, Doors connectedAreas, const std::string &description)
     : id(id)
     , title(title)
     , connectedAreas(connectedAreas)
     , description(description)
 { }
 
-Area::Area(std::string id, std::string title)
+Area::Area(const std::string &id, const std::string &title)
     : id(id)
     , title(title)
 { }
@@ -19,7 +19,7 @@ std::string Area::getTitle() const { return title; }
 
 std::string Area::getID() const { return id; }
 
-std::vector<std::string> Area::getDescription() const { return description; }
+std::string Area::getDescription() const { return description; }
 
 Area::Doors* Area::getConnectedAreas() const
 { 
