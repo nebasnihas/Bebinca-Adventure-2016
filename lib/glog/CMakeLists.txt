@@ -454,95 +454,95 @@ endif (UNIX OR (APPLE AND HAVE_DLADDR))
 
 # Unit testing
 
-add_executable (logging_unittest
-  src/logging_unittest.cc
-)
-
-target_link_libraries (logging_unittest PRIVATE glog)
-
-add_executable (stl_logging_unittest
-  src/stl_logging_unittest.cc
-)
-
-target_link_libraries (stl_logging_unittest PRIVATE glog)
-
-if (HAVE_NO_DEPRECATED)
-  set_property (TARGET stl_logging_unittest APPEND PROPERTY COMPILE_OPTIONS
-    -Wno-deprecated)
-endif (HAVE_NO_DEPRECATED)
-
-if (HAVE_UNORDERED_MAP AND HAVE_UNORDERED_SET)
-  target_compile_definitions (stl_logging_unittest PRIVATE
-    GLOG_STL_LOGGING_FOR_UNORDERED)
-endif (HAVE_UNORDERED_MAP AND HAVE_UNORDERED_SET)
-
-if (HAVE_TR1_UNORDERED_MAP AND HAVE_TR1_UNORDERED_SET)
-  target_compile_definitions (stl_logging_unittest PRIVATE
-    GLOG_STL_LOGGING_FOR_TR1_UNORDERED)
-endif (HAVE_TR1_UNORDERED_MAP AND HAVE_TR1_UNORDERED_SET)
-
-if (HAVE_EXT_HASH_MAP AND HAVE_EXT_HASH_SET)
-  target_compile_definitions (stl_logging_unittest PRIVATE
-    GLOG_STL_LOGGING_FOR_EXT_HASH)
-endif (HAVE_EXT_HASH_MAP AND HAVE_EXT_HASH_SET)
-
-if (HAVE_EXT_SLIST)
-  target_compile_definitions (stl_logging_unittest PRIVATE
-    GLOG_STL_LOGGING_FOR_EXT_SLIST)
-endif (HAVE_EXT_SLIST)
-
-if (HAVE_SYMBOLIZE)
-  add_executable (symbolize_unittest
-    src/symbolize_unittest.cc
-  )
-
-  target_link_libraries (symbolize_unittest PRIVATE glog)
-endif (HAVE_SYMBOLIZE)
-
-add_executable (demangle_unittest
-  src/demangle_unittest.cc
-)
-
-target_link_libraries (demangle_unittest PRIVATE glog)
-
-if (HAVE_STACKTRACE)
-  add_executable (stacktrace_unittest
-    src/stacktrace_unittest.cc
-  )
-
-  target_link_libraries (stacktrace_unittest PRIVATE glog)
-endif (HAVE_STACKTRACE)
-
-add_executable (utilities_unittest
-  src/utilities_unittest.cc
-)
-
-target_link_libraries (utilities_unittest PRIVATE glog)
-
-if (HAVE_STACKTRACE AND HAVE_SYMBOLIZE)
-  add_executable (signalhandler_unittest
-    src/signalhandler_unittest.cc
-  )
-
-  target_link_libraries (signalhandler_unittest PRIVATE glog)
-endif (HAVE_STACKTRACE AND HAVE_SYMBOLIZE)
-
-add_test (NAME demangle COMMAND demangle_unittest)
-add_test (NAME logging COMMAND logging_unittest)
-
-if (TARGET signalhandler_unittest)
-  add_test (NAME signalhandler COMMAND signalhandler_unittest)
-endif (TARGET signalhandler_unittest)
-
-if (TARGET stacktrace_unittest)
-  add_test (NAME stacktrace COMMAND stacktrace_unittest)
-endif (TARGET stacktrace_unittest)
-
-add_test (NAME stl_logging COMMAND stl_logging_unittest)
-
-if (TARGET symbolize_unittest)
-  add_test (NAME symbolize COMMAND symbolize_unittest)
-endif (TARGET symbolize_unittest)
+#add_executable (logging_unittest
+#  src/logging_unittest.cc
+#)
+#
+#target_link_libraries (logging_unittest PRIVATE glog)
+#
+#add_executable (stl_logging_unittest
+#  src/stl_logging_unittest.cc
+#)
+#
+#target_link_libraries (stl_logging_unittest PRIVATE glog)
+#
+#if (HAVE_NO_DEPRECATED)
+#  set_property (TARGET stl_logging_unittest APPEND PROPERTY COMPILE_OPTIONS
+#    -Wno-deprecated)
+#endif (HAVE_NO_DEPRECATED)
+#
+#if (HAVE_UNORDERED_MAP AND HAVE_UNORDERED_SET)
+#  target_compile_definitions (stl_logging_unittest PRIVATE
+#    GLOG_STL_LOGGING_FOR_UNORDERED)
+#endif (HAVE_UNORDERED_MAP AND HAVE_UNORDERED_SET)
+#
+#if (HAVE_TR1_UNORDERED_MAP AND HAVE_TR1_UNORDERED_SET)
+#  target_compile_definitions (stl_logging_unittest PRIVATE
+#    GLOG_STL_LOGGING_FOR_TR1_UNORDERED)
+#endif (HAVE_TR1_UNORDERED_MAP AND HAVE_TR1_UNORDERED_SET)
+#
+#if (HAVE_EXT_HASH_MAP AND HAVE_EXT_HASH_SET)
+#  target_compile_definitions (stl_logging_unittest PRIVATE
+#    GLOG_STL_LOGGING_FOR_EXT_HASH)
+#endif (HAVE_EXT_HASH_MAP AND HAVE_EXT_HASH_SET)
+#
+#if (HAVE_EXT_SLIST)
+#  target_compile_definitions (stl_logging_unittest PRIVATE
+#    GLOG_STL_LOGGING_FOR_EXT_SLIST)
+#endif (HAVE_EXT_SLIST)
+#
+#if (HAVE_SYMBOLIZE)
+#  add_executable (symbolize_unittest
+#    src/symbolize_unittest.cc
+#  )
+#
+#  target_link_libraries (symbolize_unittest PRIVATE glog)
+#endif (HAVE_SYMBOLIZE)
+#
+#add_executable (demangle_unittest
+#  src/demangle_unittest.cc
+#)
+#
+#target_link_libraries (demangle_unittest PRIVATE glog)
+#
+#if (HAVE_STACKTRACE)
+#  add_executable (stacktrace_unittest
+#    src/stacktrace_unittest.cc
+#  )
+#
+#  target_link_libraries (stacktrace_unittest PRIVATE glog)
+#endif (HAVE_STACKTRACE)
+#
+#add_executable (utilities_unittest
+#  src/utilities_unittest.cc
+#)
+#
+#target_link_libraries (utilities_unittest PRIVATE glog)
+#
+#if (HAVE_STACKTRACE AND HAVE_SYMBOLIZE)
+#  add_executable (signalhandler_unittest
+#    src/signalhandler_unittest.cc
+#  )
+#
+#  target_link_libraries (signalhandler_unittest PRIVATE glog)
+#endif (HAVE_STACKTRACE AND HAVE_SYMBOLIZE)
+#
+#add_test (NAME demangle COMMAND demangle_unittest)
+#add_test (NAME logging COMMAND logging_unittest)
+#
+#if (TARGET signalhandler_unittest)
+#  add_test (NAME signalhandler COMMAND signalhandler_unittest)
+#endif (TARGET signalhandler_unittest)
+#
+#if (TARGET stacktrace_unittest)
+#  add_test (NAME stacktrace COMMAND stacktrace_unittest)
+#endif (TARGET stacktrace_unittest)
+#
+#add_test (NAME stl_logging COMMAND stl_logging_unittest)
+#
+#if (TARGET symbolize_unittest)
+#  add_test (NAME symbolize COMMAND symbolize_unittest)
+#endif (TARGET symbolize_unittest)
 
 install (TARGETS glog
   EXPORT glog-targets
