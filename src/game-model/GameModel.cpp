@@ -3,6 +3,7 @@
 bool GameModel::createCharacter(const std::string& characterID, const std::string& characterName) {
     // TO-DO: Placeholder for an initial loading area
 	Character character(characterID, "area_tutorial", characterName, Character::Type::WARRIOR, 1);
+	character.setAreaID(this->getDefaultLocationID());
 	characters.insert(std::pair<std::string, Character>(characterID, character));
 
 	// No failure case yet...
@@ -15,6 +16,14 @@ bool GameModel::addArea(const Area area) {
 
 	// No failure case yet...
 	return true;
+}
+
+std::string GameModel::getDefaultLocationID() const {
+	return this->defaultLocation;
+}
+
+void GameModel::setDefaultLocationID(const std::string& locationID) {
+	this->defaultLocation = locationID;
 }
 
 Area* GameModel::getAreaByID(const std::string& areaID) const {

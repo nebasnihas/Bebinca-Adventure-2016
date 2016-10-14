@@ -26,9 +26,9 @@ DisplayMessageBuilder GameFunctions::look(const std::vector<std::string> &target
 }
 
 DisplayMessageBuilder GameFunctions::move(const std::vector<std::string> &targets, const PlayerInfo &player) {
-    auto areaID = gameModel.getCharacterByID(player.playerID)->getAreaID();
     string message;
     if (gameModel.moveCharacter(player.playerID, targets[0])) {
+        auto areaID = gameModel.getCharacterByID(player.playerID)->getAreaID();
         message = gameModel.getAreaDescription(areaID);
     }
     else {
@@ -39,9 +39,9 @@ DisplayMessageBuilder GameFunctions::move(const std::vector<std::string> &target
 
 DisplayMessageBuilder GameFunctions::listPlayers(const std::vector<std::string> &targets, const PlayerInfo &player) {
     auto areaID = getPlayerAreaID(player);
-    string message;
+    string message = "Players in the area:\n";
     for (auto player: gameModel.getCharacterIDsInArea(areaID)) {
-        message += gameModel.getCharacterByID(player)->getName() + "  ";
+        message += gameModel.getCharacterByID(player)->getName() + " \n";
     }
     return DisplayMessageBuilder::createMessage(message).addClient(player.clientID).setSender(DisplayMessageBuilder::SENDER_SERVER);
 }

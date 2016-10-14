@@ -136,6 +136,7 @@ void GameDataImporter::loadRooms(GameModel& gameModel, YAML::Node ROOMS){
     }
 
     //Might want to return the vector of Area objects
+    gameModel.setDefaultLocationID(rooms[0].getID());
     for (const auto& room : rooms) {
         gameModel.addArea(room);
     }

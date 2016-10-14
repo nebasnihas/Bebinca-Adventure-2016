@@ -17,6 +17,8 @@ public:
 	Character* getCharacterByID(const std::string& characterID) const;
 
     bool addArea(const Area area);
+	std::string getDefaultLocationID() const;
+	void setDefaultLocationID(const std::string& locationID);
 
 	Area* getAreaByID(const std::string& areaID) const;
 	std::vector<std::string> getCharacterIDsInArea(const std::string& areaID) const;
@@ -29,7 +31,7 @@ private:
 
 	std::map<std::string, Character> characters;
 	std::map<std::string, Area> locations;
-
+	std::string defaultLocation;
 };
 
 #endif
