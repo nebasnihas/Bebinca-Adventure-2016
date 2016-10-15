@@ -1,11 +1,11 @@
 
 #include "Command.hpp"
 
-std::string Command::getKeyword() const {
-    return this->text;
+const std::string& Command::getKeyword() const {
+    return text;
 }
 
-Command::functionRef Command::getMethod() const {
+const Command::functionRef& Command::getMethod() const {
     return method;
 }
 

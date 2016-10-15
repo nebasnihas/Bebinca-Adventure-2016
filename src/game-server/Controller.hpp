@@ -11,24 +11,31 @@
 #include "networking/server.h"
 #include "game/protocols/PlayerCommand.hpp"
 #include "DisplayMessageBuilder.hpp"
-
-using namespace networking;
+#include "boost/bimap/unordered_set_of.hpp"
+#include "boost/bimap.hpp"
 
 class GameFunctions;
 
 class Controller {
 public:
-    Controller(GameModel& gameModel, const std::vector<Connection>& allClients) : gameModel{gameModel}, allClients{allClients}{};
-    DisplayMessageBuilder processCommand(const protocols::PlayerCommand& command, const Connection& client);
+    Controller(GameModel& gameModel, const std::vector<networking::Connection>& allClients) : gameModel{gameModel}, allClients{allClients}{};
+    DisplayMessageBuilder processCommand(const protocols::PlayerCommand& command, const networking::Connection& client);
     void addNewPlayer(const PlayerInfo& player);
+    void removePlayer(const networking::Connection& cliendID);
+    void removePlayer(const std::string& playerID);
     void registerCommand(const Command& command);
 
     GameModel& getGameModel() const;
-    const vector<Connection>& getAllClients() const;
+    const std::vector<networking::Connection>& getAllClients() const;
 
 private:
-    std::unordered_map<Connection, std::string, ConnectionHash> clientToPlayerMap;
-    std::unordered_map<std::string, Connection> playerToClientMap;
+    using PlayerMap = boost::bimap<
+            boost::bimaps::unordered_set_of<std::string>,
+            boost::bimaps::unordered_set_of<networking::Connection, networking::ConnectionHash>
+            >;
+    using PlayerMapPair = PlayerMap::value_type;
+
+    PlayerMap playerMap;
     std::unordered_map<std::string, Command>  playerCommandMap;
 
     GameModel& gameModel;

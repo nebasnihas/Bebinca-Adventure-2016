@@ -18,15 +18,15 @@ DisplayMessageBuilder Controller::processCommand(const protocols::PlayerCommand&
     auto cmdArgs = splitString(command.arguments);
 
     auto it = playerCommandMap.find(cmd);
-    if (it != playerCommandMap.end()) {
-        auto handler = it->second.getMethod();
-        auto playerId = clientToPlayerMap[client];
-        return handler(cmdArgs, PlayerInfo{playerId, client});
-    } else {
+    if (it == playerCommandMap.end()) {
         return DisplayMessageBuilder::createMessage("<" + cmd + "> is an invalid command.")
                 .addClient(client)
                 .setSender(DisplayMessageBuilder::SENDER_SERVER);
     }
+    auto handler = it->second.getMethod();
+
+    auto playerId = playerMap.right.find(client)->second;
+    return handler(cmdArgs, PlayerInfo{playerId, client});
 }
 
 void Controller::registerCommand(const Command &command) {
@@ -34,12 +34,11 @@ void Controller::registerCommand(const Command &command) {
 }
 
 void Controller::addNewPlayer(const PlayerInfo &player) {
-    clientToPlayerMap.insert(std::make_pair(player.clientID, player.playerID));
-    playerToClientMap.insert(std::make_pair(player.playerID, player.clientID));
+    playerMap.insert(PlayerMapPair{player.playerID, player.clientID});
     gameModel.createCharacter(player.playerID, player.playerID);
 }
 
-const vector<Connection>& Controller::getAllClients() const {
+const std::vector<Connection>& Controller::getAllClients() const {
     return allClients;
 }
 

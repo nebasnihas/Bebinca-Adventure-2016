@@ -8,22 +8,19 @@
 #include "Command.hpp"
 #include "Controller.hpp"
 
-using namespace std;
-using namespace std::placeholders;
-
 
 class GameFunctions {
 public:
     GameFunctions(Controller& controller);
 
-    DisplayMessageBuilder look(const vector<string> &targets, const PlayerInfo &player);
+    DisplayMessageBuilder look(const std::vector<std::string> &targets, const PlayerInfo &player);
     DisplayMessageBuilder move(const std::vector<std::string> &targets, const PlayerInfo &player);
     DisplayMessageBuilder listPlayers(const std::vector<std::string> &targets, const PlayerInfo &player);
     DisplayMessageBuilder listExits(const std::vector<std::string> &targets, const PlayerInfo &player);
     DisplayMessageBuilder say(const std::vector<std::string> &targets, const PlayerInfo &player);
 
 private:
-    string getPlayerAreaID(const PlayerInfo &player);
+    std::string getPlayerAreaID(const PlayerInfo &player);
     Controller& controller;
     GameModel& gameModel;
     const std::vector<Connection>& allClients;

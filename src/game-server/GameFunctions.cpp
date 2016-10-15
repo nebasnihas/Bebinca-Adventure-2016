@@ -1,58 +1,58 @@
-
-
 #include "GameFunctions.hpp"
 
-using namespace std;
 
 GameFunctions::GameFunctions(Controller &controller) : controller{controller}, gameModel{controller.getGameModel()}, allClients{controller.getAllClients()} {
-    controller.registerCommand(Command{"look", std::bind(&GameFunctions::look, this, _1, _2)});
-    controller.registerCommand(Command{"go", std::bind(&GameFunctions::move, this, _1, _2)});
-    controller.registerCommand(Command{"players", std::bind(&GameFunctions::listPlayers, this, _1, _2)});
-    controller.registerCommand(Command{"exits", std::bind(&GameFunctions::listExits, this, _1, _2)});
-    controller.registerCommand(Command{"say", std::bind(&GameFunctions::say, this, _1, _2)});
+    controller.registerCommand(Command{"look", std::bind(&GameFunctions::look, this, std::placeholders::_1, std::placeholders::_2)});
+    controller.registerCommand(Command{"go", std::bind(&GameFunctions::move, this, std::placeholders::_1, std::placeholders::_2)});
+    controller.registerCommand(Command{"players", std::bind(&GameFunctions::listPlayers, this, std::placeholders::_1, std::placeholders::_2)});
+    controller.registerCommand(Command{"exits", std::bind(&GameFunctions::listExits, this, std::placeholders::_1, std::placeholders::_2)});
+    controller.registerCommand(Command{"say", std::bind(&GameFunctions::say, this, std::placeholders::_1, std::placeholders::_2)});
 }
 
 DisplayMessageBuilder GameFunctions::look(const std::vector<std::string> &targets, const PlayerInfo &player) {
     auto areaID = gameModel.getCharacterByID(player.playerID)->getAreaID();
-    string description;
+    std::string description;
+
     if (targets.empty()) {
         description = gameModel.getAreaDescription(areaID);
-    }
-    else {
+    } else {
         auto targetEntity = targets[0];
         description = gameModel.getEntityDescription(areaID, targetEntity);
     }
+
     return DisplayMessageBuilder::createMessage(description).addClient(player.clientID).setSender(DisplayMessageBuilder::SENDER_SERVER);
 }
 
 DisplayMessageBuilder GameFunctions::move(const std::vector<std::string> &targets, const PlayerInfo &player) {
-    string message;
+    std::string message;
     if (gameModel.moveCharacter(player.playerID, targets[0])) {
         auto areaID = gameModel.getCharacterByID(player.playerID)->getAreaID();
         message = gameModel.getAreaDescription(areaID);
-    }
-    else {
+    } else {
         message = "Area not found";
     }
+
     return DisplayMessageBuilder::createMessage(message).addClient(player.clientID).setSender(DisplayMessageBuilder::SENDER_SERVER);
 }
 
 DisplayMessageBuilder GameFunctions::listPlayers(const std::vector<std::string> &targets, const PlayerInfo &player) {
     auto areaID = getPlayerAreaID(player);
-    string message = "Players in the area:\n";
-    for (auto player: gameModel.getCharacterIDsInArea(areaID)) {
-        message += gameModel.getCharacterByID(player)->getName() + " \n";
+    std::string message = "Players in the area:\n";
+    for (const auto& playerIDs: gameModel.getCharacterIDsInArea(areaID)) {
+        message += gameModel.getCharacterByID(playerIDs)->getName() + " \n";
     }
+
     return DisplayMessageBuilder::createMessage(message).addClient(player.clientID).setSender(DisplayMessageBuilder::SENDER_SERVER);
 }
 
 DisplayMessageBuilder GameFunctions::listExits(const std::vector<std::string> &targets, const PlayerInfo &player) {
     auto areaID = getPlayerAreaID(player);
     auto connectedAreaMap = *gameModel.getConnectedAreas(areaID);
-    string message;
+    std::string message = "Exits:\n";
     for (auto mapEntry: connectedAreaMap) {
         message += mapEntry.first + "\n";
     }
+
     return DisplayMessageBuilder::createMessage(message).addClient(player.clientID).setSender(DisplayMessageBuilder::SENDER_SERVER);
 }
 
@@ -61,10 +61,11 @@ DisplayMessageBuilder GameFunctions::say(const std::vector<std::string> &targets
     for (const auto& target : targets) {
         message += target + " ";
     }
+
     return DisplayMessageBuilder::createMessage(message).addClients(controller.getAllClients()).setSender(player.playerID);
 }
 
-string GameFunctions::getPlayerAreaID(const PlayerInfo &player) {
+std::string GameFunctions::getPlayerAreaID(const PlayerInfo &player) {
     return gameModel.getCharacterByID(player.playerID)->getAreaID();
 }
 

@@ -8,16 +8,14 @@
 #include "game/GameModel.hpp"
 #include "DisplayMessageBuilder.hpp"
 
-using namespace std;
-
 struct PlayerInfo {
     std::string playerID;
-    Connection clientID;
+    networking::Connection clientID;
 };
 
 class Command {
 public:
-    typedef function<DisplayMessageBuilder (const vector<string>& arguments, const PlayerInfo& player)> functionRef;
+    typedef std::function<DisplayMessageBuilder (const std::vector<std::string>& arguments, const PlayerInfo& player)> functionRef;
 
 
     /**
@@ -28,9 +26,9 @@ public:
      * @param method
      * @return
      */
-    Command(const string& keyword, functionRef method) : text{keyword}, method{method} {};
-    std::string getKeyword() const;
-    functionRef getMethod() const;
+    Command(const std::string& keyword, const functionRef& method) : text{keyword}, method{method} {};
+    const std::string& getKeyword() const;
+    const functionRef& getMethod() const;
 
 private:
     std::string text;
