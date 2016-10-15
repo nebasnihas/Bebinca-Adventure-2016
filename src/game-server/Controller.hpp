@@ -18,15 +18,19 @@ class GameFunctions;
 
 class Controller {
 public:
-    Controller(GameModel& gameModel, const std::vector<networking::Connection>& allClients) : gameModel{gameModel}, allClients{allClients}{};
-    DisplayMessageBuilder processCommand(const protocols::PlayerCommand& command, const networking::Connection& client);
-    void addNewPlayer(const PlayerInfo& player);
-    void removePlayer(const networking::Connection& cliendID);
-    void removePlayer(const std::string& playerID);
-    void registerCommand(const Command& command);
+    Controller(GameModel& gameModel, Server& server) : gameModel{gameModel}, server{server}{};
 
-    GameModel& getGameModel() const;
+    void registerCommand(const Command& command);
+    DisplayMessageBuilder processCommand(const protocols::PlayerCommand& command, const networking::Connection& client);
+
+    void addNewPlayer(const PlayerInfo& player);
+    void removePlayer(const networking::Connection& clientID);
+    void disconnectPlayer(const std::string& playerID);
+
+    const Connection& getClientID(const std::string& playerID) const;
+    const std::string& getPlayerID(const networking::Connection& clientID) const;
     const std::vector<networking::Connection>& getAllClients() const;
+    GameModel& getGameModel() const;
 
 private:
     using PlayerMap = boost::bimap<
@@ -35,11 +39,15 @@ private:
             >;
     using PlayerMapPair = PlayerMap::value_type;
 
+    //bimap from playerID to clientID
     PlayerMap playerMap;
+    //keep a list of all connected clients, since its useful when sending messages
+    std::vector<Connection> allClients;
+
     std::unordered_map<std::string, Command>  playerCommandMap;
 
     GameModel& gameModel;
-    const std::vector<Connection>& allClients;
+    networking::Server& server;
 };
 
 

@@ -13,6 +13,7 @@
 #include "game/GameDataImporter.hpp"
 #include "Authenticator.hpp"
 #include "GameFunctions.hpp"
+#include "glog/logging.h"
 
 #include <boost/lexical_cast.hpp>
 #include <queue>
@@ -20,43 +21,34 @@
 using namespace networking;
 using namespace protocols;
 
-std::vector<Connection> clients;
-GameModel gameModel;
-Controller controller{gameModel, clients};
-GameFunctions gameFunctions{controller};
-
-void onConnect(Connection connection) {
-    printf("New connection found: %lu\n", connection.id);
-    clients.push_back(connection);
+void onConnect(Connection c) {
+    LOG(INFO) << "New connection found: " << c.id;
 }
 
-
+//TODO find better way to disconnect
+std::vector<networking::Connection> disconnectedClients;
 void onDisconnect(Connection c) {
-    printf("Connection lost: %lu\n", c.id);
-    auto it = std::remove(clients.begin(), clients.end(), c);
-    clients.erase(it, clients.end());
-    //TODO remove player from game
+    LOG(INFO) << "Connection lost: " << c.id;
+    disconnectedClients.push_back(c);
 }
 
-bool validateServerArgs(int argc, char* argv[], unsigned short& port, std::string& filename) {
+void validateServerArgs(int argc, char* argv[], unsigned short& port, std::string& filename) {
     if (argc < 3) {
-        printf("Usage:\n%s <port>\ne.g. %s 4002\n", argv[0], argv[0]);
-        return false;
+        std::cout << "Usage:\n" << argv[0] << " <port> <pathToMap>\ne.g. " << argv[0] << "4002 mgoose.yml\n" << std::endl;
+        exit(1);
     }
 
     try {
         port = boost::lexical_cast<ushort>(argv[1]);
     } catch (const boost::bad_lexical_cast&) {
-        std::cout << "Invalid port number" << std::endl;
-        return false;
+        std::cerr << "Invalid port number" << std::endl;
+        exit(1);
     }
 
     filename = std::string(argv[2]);
-
-    return true;
 }
 
-void processLoginRequest(const protocols::RequestMessage& request, const Connection& clientId, Server& server) {
+void processLoginRequest(const protocols::RequestMessage& request, const Connection& clientId, Server& server, Controller& controller) {
     auto loginRequest = protocols::readAuthenticationRequestMessage(request);
     auto responseCode = Authenticator::login(loginRequest.username, loginRequest.password);
     auto loginResponse = protocols::createLoginResponseMessage(responseCode);
@@ -64,10 +56,13 @@ void processLoginRequest(const protocols::RequestMessage& request, const Connect
     auto output = protocols::serializeResponseMessage(loginResponse);
     server.send(Message{clientId, output});
 
-    controller.addNewPlayer(PlayerInfo{loginRequest.username, clientId});
+    //TODO character select. for now skip it and add the player after sucess
+    if (responseCode == protocols::LoginResponseCode::LOGIN_OK) {
+        controller.addNewPlayer(PlayerInfo{loginRequest.username, clientId});
+    }
 }
 
-void processRegistrationRequest(const protocols::RequestMessage& request, const Connection& clientId, Server& server) {
+void processRegistrationRequest(const protocols::RequestMessage& request, const Connection& clientId, Server& server, Controller& controller) {
     auto registrationRequest = protocols::readAuthenticationRequestMessage(request);
     auto responseCode = Authenticator::registerAccount(registrationRequest.username, registrationRequest.password);
     auto registrationResponse = protocols::createRegistrationResponseMessage(responseCode);
@@ -75,30 +70,34 @@ void processRegistrationRequest(const protocols::RequestMessage& request, const 
     auto output = protocols::serializeResponseMessage(registrationResponse);
     server.send(Message{clientId, output});
 
-    controller.addNewPlayer(PlayerInfo{registrationRequest.username, clientId});
-}
-
-void setupGameModel(const std::string& sourceFilepath) {
-    GameDataImporter::loadyamlFile(gameModel, sourceFilepath);
+    if (responseCode == protocols::RegistrationResponseCode::REGISTRATION_OK) {
+        controller.addNewPlayer(PlayerInfo{registrationRequest.username, clientId});
+    }
 }
 
 int main(int argc, char *argv[]) {
+    //TODO configuration and arg checking
+    FLAGS_log_dir = "./";
+    google::InitGoogleLogging("GameServer");
     unsigned short port;
     std::string sourceFile;
-    if (!validateServerArgs(argc, argv, port, sourceFile))
-    {
-        return 1;
-    }
+    validateServerArgs(argc, argv, port, sourceFile);
 
+    //Setup server
     Server server{port, onConnect, onDisconnect};
-    setupGameModel(sourceFile);
+
+    //Setup game
+    GameModel gameModel;
+    GameDataImporter::loadyamlFile(gameModel, sourceFile);
+    Controller controller{gameModel, server};
+    GameFunctions gameFunctions{controller};
 
     bool done = false;
     while (!done) {
         try {
             server.update();
         } catch (std::exception &e) {
-            printf("Exception from Server update:\n%s\n\n", e.what());
+            LOG(ERROR) << "Exception from Server update:\n" << e.what();
             done = true;
         }
 
@@ -108,10 +107,10 @@ int main(int argc, char *argv[]) {
 
             switch (requestMessage.header) {
                 case protocols::RequestHeader::LOGIN_REQUEST:
-                    processLoginRequest(requestMessage, clientMessage.connection, server);
+                    processLoginRequest(requestMessage, clientMessage.connection, server, controller);
                     break;
                 case protocols::RequestHeader::REGISTER_REQUEST:
-                    processRegistrationRequest(requestMessage, clientMessage.connection, server);
+                    processRegistrationRequest(requestMessage, clientMessage.connection, server, controller);
                     break;
                 case protocols::RequestHeader::PLAYER_COMMAND_REQUEST: {
                     auto playerCommand = protocols::readPlayerCommandRequestMessage(requestMessage);
@@ -123,6 +122,11 @@ int main(int argc, char *argv[]) {
                     break;
             }
         }
+
+        for (const auto& client: disconnectedClients) {
+            controller.removePlayer(client);
+        }
+        disconnectedClients.clear();
 
 
         sleep(1);

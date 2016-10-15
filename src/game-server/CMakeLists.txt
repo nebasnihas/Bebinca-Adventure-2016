@@ -11,6 +11,7 @@ target_link_libraries(game-server
         networking
         game
         protocols
+        glog
         )
 
 set_target_properties(game-server
