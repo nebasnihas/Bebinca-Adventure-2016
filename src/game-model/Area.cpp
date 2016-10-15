@@ -1,38 +1,61 @@
 #include "Area.hpp"
 
-Area::Area(std::string id, std::string areaName, std::unordered_map<std::string, std::string> connectedAreas, std::vector<std::string> description) {
-	this->id = id;
-	this->areaName = areaName;
-	this->connectedAreas = connectedAreas;
-	this->entityList = entityList;
+
+Area::Area(const std::string &id, const std::string &title, Doors connectedAreas, const std::string &description)
+    : id(id)
+    , title(title)
+    , connectedAreas(connectedAreas)
+    , description(description)
+{ }
+
+Area::Area(const std::string &id, const std::string &title)
+    : id(id)
+    , title(title)
+{ }
+
+
+//Accessors
+std::string Area::getTitle() const { return title; }
+
+std::string Area::getID() const { return id; }
+
+std::string Area::getDescription() const { return description; }
+
+Area::Doors* Area::getConnectedAreas() const
+{ 
+    return (Doors*) &connectedAreas;
 }
 
-std::string Area::getAreaDescription() const {
-	// Placeholder function
-	std::string description = "";
-	description += "Temporary description for " + this->getAreaName() + ".";
 
-	if (entityList.size() > 0) {
+//TODO : explain this function
 
-        description += "\nIn this area:\n";
+// std::string Area::getAreaDescription() const {
+// 	// Placeholder function
+// 	std::string description = "";
+// 	description += "Temporary description for " + this->getTitle() + ".";
 
-        for (Entity entity : entityList) {
-            description += entity.getDisplayName() + "\n";
-        }
+// 	if (entityList.size() > 0) {
 
-        description += "\nConnected to the:\n";
+//         description += "\nIn this area:\n";
 
-        for (auto pair : connectedAreas) {
-            description += pair.first + "\n";
-        }
-    }
+//         for (Entity entity : entityList) {
+//             description += entity.getDisplayName() + "\n";
+//         }
 
-    return description;
-}
+//         description += "\nConnected to the:\n";
 
-Area* Area::loadAreaFromFile(std::string filePath) {
-    // TO-DO: Implement function once file format has been decided
-    //        Prefer loading from file contents instead of filepath if possible
-    //        Change in function signature will be needed
+//         for (auto pair : connectedAreas) {
+//             description += pair.first + "\n";
+//         }
+//     }
 
-}
+//     return description;
+// }
+// }
+
+// Area* Area::loadAreaFromFile(std::string filePath) {
+//     // TO-DO: Implement function once file format has been decided
+//     //        Prefer loading from file contents instead of filepath if possible
+//     //        Change in function signature will be needed
+
+// }
