@@ -112,25 +112,23 @@ void Server::update() {
     ioService.poll();
 }
 
-
 std::deque<Message> Server::receive() {
     auto oldIncoming = std::move(incoming);
     incoming = std::deque<Message>{};
     return oldIncoming;
 }
 
-
-void Server::send(const std::deque<Message> &messages) {
+void Server::send(const gsl::span<Message> messages) {
     for (const auto &message : messages) {
         send(message);
     }
 }
 
-void Server::send(const std::vector<Message> &messages) {
-    for (const auto &message : messages) {
-        send(message);
-    }
-}
+//void Server::send(const std::vector<Message>& messages) {
+//    for (const auto &message : messages) {
+//        send(message);
+//    }
+//}
 
 void Server::send(const Message &message)
 {

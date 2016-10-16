@@ -10,29 +10,45 @@
 #include "game/GameModel.hpp"
 #include "networking/server.h"
 #include "game/protocols/PlayerCommand.hpp"
-#include "DisplayMessageBuilder.hpp"
-
-using namespace networking;
+#include "MessageBuilder.hpp"
+#include "boost/bimap/unordered_set_of.hpp"
+#include "boost/bimap.hpp"
 
 class GameFunctions;
 
 class Controller {
 public:
-    Controller(GameModel& gameModel, const std::vector<Connection>& allClients) : gameModel{gameModel}, allClients{allClients}{};
-    DisplayMessageBuilder processCommand(const protocols::PlayerCommand& command, const Connection& client);
-    void addNewPlayer(const PlayerInfo& player);
-    void registerCommand(const Command& command);
+    Controller(GameModel& gameModel, networking::Server& server) : gameModel{gameModel}, server{server}{};
 
+    void registerCommand(const Command& command);
+    std::unique_ptr<MessageBuilder> processCommand(const protocols::PlayerCommand& command,
+                                                   const networking::Connection& client);
+
+    void addNewPlayer(const PlayerInfo& player);
+    void removePlayer(const networking::Connection& clientID);
+    void disconnectPlayer(const std::string& playerID);
+
+    const networking::Connection& getClientID(const std::string& playerID) const;
+    const std::string& getPlayerID(const networking::Connection& clientID) const;
+    const std::vector<networking::Connection>& getAllClients() const;
     GameModel& getGameModel() const;
-    const vector<Connection>& getAllClients() const;
 
 private:
-    std::unordered_map<Connection, std::string, ConnectionHash> clientToPlayerMap;
-    std::unordered_map<std::string, Connection> playerToClientMap;
+    using PlayerMap = boost::bimap<
+            boost::bimaps::unordered_set_of<std::string>,
+            boost::bimaps::unordered_set_of<networking::Connection, networking::ConnectionHash>
+            >;
+    using PlayerMapPair = PlayerMap::value_type;
+
+    //bimap from playerID to clientID
+    PlayerMap playerMap;
+    //keep a list of all connected clients, since its useful when sending messages
+    std::vector<networking::Connection> allClients;
+
     std::unordered_map<std::string, Command>  playerCommandMap;
 
     GameModel& gameModel;
-    const std::vector<Connection>& allClients;
+    networking::Server& server;
 };
 
 
