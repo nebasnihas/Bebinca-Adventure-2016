@@ -2,14 +2,14 @@
 
 const std::string DisplayMessageBuilder::SENDER_SERVER = "Server"; //TODO reserve default name
 
-DisplayMessageBuilder& DisplayMessageBuilder::addClient(const Connection& client)
+DisplayMessageBuilder& DisplayMessageBuilder::addClient(const networking::Connection& client)
 {
     clientList.push_back(client);
 
     return *this;
 }
 
-DisplayMessageBuilder& DisplayMessageBuilder::addClients(const std::vector<Connection>& clients)
+DisplayMessageBuilder& DisplayMessageBuilder::addClients(const std::vector<networking::Connection>& clients)
 {
     clientList.reserve(clientList.size() + clients.size());
     clientList.insert(clientList.end(), clients.begin(), clients.end());
@@ -17,7 +17,7 @@ DisplayMessageBuilder& DisplayMessageBuilder::addClients(const std::vector<Conne
     return *this;
 }
 
-DisplayMessageBuilder& DisplayMessageBuilder::addClients(const std::initializer_list<Connection>& clients)
+DisplayMessageBuilder& DisplayMessageBuilder::addClients(const std::initializer_list<networking::Connection>& clients)
 {
     clientList.reserve(clientList.size() + clients.size());
     clientList.insert(clientList.end(), clients.begin(), clients.end());
@@ -36,17 +36,22 @@ DisplayMessageBuilder DisplayMessageBuilder::createMessage(const std::string& me
     return DisplayMessageBuilder(message);
 }
 
-std::vector<networking::Message> DisplayMessageBuilder::getOutputMessages() const
+std::vector<networking::Message> DisplayMessageBuilder::buildMessages() const
 {
-    std::vector<networking::Message> output(clientList.size());
+    std::vector<networking::Message> output;
+    output.reserve(clientList.size());
 
     for (const auto& client : clientList) {
         auto messageForClient = protocols::DisplayMessage{message, sender};
         auto responseMessage = protocols::createDisplayResponseMessage(messageForClient);
         auto serializedResponseMessage = protocols::serializeResponseMessage(responseMessage);
 
-        output.push_back(Message{client, serializedResponseMessage});
+        output.push_back(networking::Message{client, serializedResponseMessage});
     }
 
     return output;
+}
+
+DisplayMessageBuilder::operator std::unique_ptr<MessageBuilder>() {
+    return std::make_unique<DisplayMessageBuilder>(*this);
 }

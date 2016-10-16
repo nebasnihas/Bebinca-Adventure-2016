@@ -5,25 +5,27 @@
 
 
 #include <game/GameModel.hpp>
+#include <memory>
 #include "Command.hpp"
 #include "Controller.hpp"
+#include "DisplayMessageBuilder.hpp"
 
 
 class GameFunctions {
 public:
     GameFunctions(Controller& controller);
 
-    DisplayMessageBuilder look(const std::vector<std::string> &targets, const PlayerInfo &player);
-    DisplayMessageBuilder move(const std::vector<std::string> &targets, const PlayerInfo &player);
-    DisplayMessageBuilder listPlayers(const std::vector<std::string> &targets, const PlayerInfo &player);
-    DisplayMessageBuilder listExits(const std::vector<std::string> &targets, const PlayerInfo &player);
-    DisplayMessageBuilder say(const std::vector<std::string> &targets, const PlayerInfo &player);
+    std::unique_ptr<MessageBuilder> look(const std::vector<std::string>& targets, const PlayerInfo& player);
+    std::unique_ptr<MessageBuilder> move(const std::vector<std::string>& targets, const PlayerInfo& player);
+    std::unique_ptr<MessageBuilder> listPlayers(const std::vector<std::string>& targets, const PlayerInfo& player);
+    std::unique_ptr<MessageBuilder> listExits(const std::vector<std::string>& targets, const PlayerInfo& player);
+    std::unique_ptr<MessageBuilder> say(const std::vector<std::string>& targets, const PlayerInfo& player);
 
 private:
     std::string getPlayerAreaID(const PlayerInfo &player);
     Controller& controller;
     GameModel& gameModel;
-    const std::vector<Connection>& allClients;
+    const std::vector<networking::Connection>& allClients;
 
 };
 

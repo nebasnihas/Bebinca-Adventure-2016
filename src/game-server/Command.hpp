@@ -6,7 +6,8 @@
 #include <string>
 #include <functional>
 #include "game/GameModel.hpp"
-#include "DisplayMessageBuilder.hpp"
+#include "MessageBuilder.hpp"
+#include <memory>
 
 struct PlayerInfo {
     std::string playerID;
@@ -15,7 +16,7 @@ struct PlayerInfo {
 
 class Command {
 public:
-    typedef std::function<DisplayMessageBuilder (const std::vector<std::string>& arguments, const PlayerInfo& player)> functionRef;
+    typedef std::function<std::unique_ptr<MessageBuilder> (const std::vector<std::string>& arguments, const PlayerInfo& player)> functionRef;
 
 
     /**

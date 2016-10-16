@@ -1,6 +1,8 @@
 #include <functional>
 #include "ServerLoop.hpp"
 
+using namespace networking;
+
 ServerLoop::ServerLoop(unsigned short serverPort, const std::string& mapFilePath)
         : server{serverPort, [this](Connection c){this->onConnect(c);}, [this](Connection c){this->onDisconnect(c);}},
           controller{gameModel, server},
@@ -31,8 +33,8 @@ void ServerLoop::update() {
                 break;
             case protocols::RequestHeader::PLAYER_COMMAND_REQUEST: {
                 auto playerCommand = protocols::readPlayerCommandRequestMessage(requestMessage);
-                auto outgoing = controller.processCommand(playerCommand, clientMessage.connection);
-                server.send(outgoing.getOutputMessages());
+                auto outgoing = controller.processCommand(playerCommand, clientMessage.connection)->buildMessages();
+                server.send(outgoing);
                 break;
             }
             default:

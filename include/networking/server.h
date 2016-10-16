@@ -16,6 +16,7 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include "gsl/gsl"
 
 namespace networking {
 /**
@@ -96,8 +97,8 @@ public:
      *  Send a list of messages to their respective Clients. The messages may not
      *  contain carriage returns.
      */
-    void send(const std::deque<Message> &messages);
-    void send(const std::vector<Message> &messages); //TODO use gsl span
+    void send(gsl::span<Message> messages); //TODO get this to work
+//    void send(const std::vector<Message>& messages);
 
     void send(const Message& message);
 
