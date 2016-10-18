@@ -15,6 +15,7 @@ class Authenticator {
 private:
     static void set_savefilevals(const std::string& user, const std::string& pass);
     static bool save_file_exists(const std::string& user);
+    static std::string get_saveloc(const std::string& user);
     
 public:
     static const int USERNAME_MAX_LENGTH = 10;
