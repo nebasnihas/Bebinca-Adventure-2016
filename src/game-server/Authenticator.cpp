@@ -22,18 +22,18 @@
  world
  */
 
-LoginStatus Authenticator::login(const std::string& username, const std::string& password) {
+protocols::LoginResponseCode Authenticator::login(const std::string& username, const std::string& password) {
     
     std::string file_user, file_pass; // vars to store file data
     std::string savefile_name = "savefiles/" + username + ".yml";
     
     if (username.length() > USERNAME_MAX_LENGTH) {
-        return LoginStatus::INVALID_CREDENTIALS;
+        return protocols::LoginResponseCode::INVALID_CREDENTIALS;
     }
     
     if(!save_file_exists(savefile_name)){
         //check if the save file exists
-        return LoginStatus::USERNAME_NOT_FOUND;
+        return protocols::LoginResponseCode::USERNAME_NOT_FOUND;
     } else {
         
         //Load the yml file
@@ -44,28 +44,28 @@ LoginStatus Authenticator::login(const std::string& username, const std::string&
         
         //Check if credentials match
         if(file_user == username && file_pass == password){
-            return LoginStatus::OK;
+            return protocols::LoginResponseCode::LOGIN_OK;
         } else {
-            return LoginStatus::INVALID_CREDENTIALS;
+            return protocols::LoginResponseCode::INVALID_CREDENTIALS;
         }
     }
 }
 
-RegistrationStatus Authenticator::registerAccount(const std::string& username, const std::string& password) {
+protocols::RegistrationResponseCode Authenticator::registerAccount(const std::string& username, const std::string& password) {
     
     std::string savefile_name = "savefiles/" + username + ".yml";
     
     if (username.length() > USERNAME_MAX_LENGTH) {
-        return RegistrationStatus::USERNAME_TOO_LONG;
+        return protocols::RegistrationResponseCode::USERNAME_TOO_LONG;
     }
     
     if(save_file_exists(savefile_name)){
-        return RegistrationStatus::USERNAME_EXISTS;
+        return protocols::RegistrationResponseCode::USERNAME_EXISTS;
     }
     
     set_savefilevals(username, password);
     
-    return RegistrationStatus::OK;
+    return protocols::RegistrationResponseCode::REGISTRATION_OK;
 }
 
 bool Authenticator::save_file_exists(const std::string& user){
