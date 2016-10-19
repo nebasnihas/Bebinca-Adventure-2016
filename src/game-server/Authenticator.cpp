@@ -43,21 +43,21 @@ protocols::LoginResponseCode Authenticator::login(const std::string& username, c
     if(!save_file_exists(savefile_name)){
         //check if the save file exists
         return protocols::LoginResponseCode::USERNAME_NOT_FOUND;
-    } else {
-        
-        //Load the yml file
-        YAML::Node user_yaml = YAML::LoadFile(savefile_name);
-        
-        file_user = user_yaml["username"].as<std::string>();
-        file_pass = user_yaml["password"].as<std::string>();
-        
-        //Check if credentials match
-        if(file_user == username && file_pass == password){
-            return protocols::LoginResponseCode::LOGIN_OK;
-        } else {
-            return protocols::LoginResponseCode::INVALID_CREDENTIALS;
-        }
     }
+        
+    //Load the yml file
+    YAML::Node user_yaml = YAML::LoadFile(savefile_name);
+        
+    file_user = user_yaml["username"].as<std::string>();
+    file_pass = user_yaml["password"].as<std::string>();
+        
+    //Check if credentials match
+    if(file_user == username && file_pass == password){
+        return protocols::LoginResponseCode::LOGIN_OK;
+    } else {
+        return protocols::LoginResponseCode::INVALID_CREDENTIALS;
+    }
+
 }
 
 protocols::RegistrationResponseCode Authenticator::registerAccount(const std::string& username, const std::string& password) {
@@ -103,23 +103,21 @@ void Authenticator::set_savefilevals(const std::string& user, const std::string&
     }
 
 
-        std::string savefile_name = get_saveloc(user);
+    std::string savefile_name = get_saveloc(user);
 
-        //Create emitter with key:values
+    //Create emitter with key:values
+    YAML::Emitter credentials_map;
+    credentials_map << YAML::BeginMap;
+    credentials_map << YAML::Key << "username";
+    credentials_map << YAML::Value << user;
+    credentials_map << YAML::Key << "password";
+    credentials_map << YAML::Value << pass;
+    credentials_map << YAML::EndMap;
 
-        YAML::Emitter credentials_map;
-        credentials_map << YAML::BeginMap;
-        credentials_map << YAML::Key << "username";
-        credentials_map << YAML::Value << user;
-        credentials_map << YAML::Key << "password";
-        credentials_map << YAML::Value << pass;
-        credentials_map << YAML::EndMap;
-
-
-        std::ofstream f;
-        f.open(savefile_name);
-        f << credentials_map.c_str(); //Dump contents as string
-        f.close();
+    std::ofstream f;
+    f.open(savefile_name);
+    f << credentials_map.c_str(); //Dump contents as string
+    f.close();
 
 }
 
