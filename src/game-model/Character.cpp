@@ -1,8 +1,7 @@
 #include "Character.hpp"
 
-Character::Character(std::string id, std::string areaID, std::string name, Type type, int level) : id(id), areaID(areaID), name(name), type(type), level(level) {
-    // TODO determine unique stats and attacks for character type
-    // TODO initialize skills
+Character::Character(std::string id, std::string name, std::string areaID)
+    : id(id), name(name), areaID(areaID), level(STARTING_LEVEL) {
 }
 
 std::string Character::getID() const {
@@ -17,58 +16,54 @@ std::string Character::getAreaID() const {
     return areaID;
 }
 
-Character::Type Character::getType() const {
-    return type;
-}
-
-void Character::setID(std::string id) {
-    this->id = id;
-}
-
-void Character::setAreaID(std::string areaID) {
-    this->areaID = areaID;
-}
-
-//////////////////////////// Level ////////////////////////////
-
-void Character::increaseLevel() {
-    level++;
-}
-
 int Character::getLevel() const {
     return level;
 }
 
-//////////////////////////// Stats ////////////////////////////
-
-std::unordered_map<std::string, int> Character::getStats() const {
-    return stats;
+int Character::getExp() const {
+    return exp;
 }
 
-int Character::getStat(std::string stat) {
-    return stats[stat];
+int Character::getDamage() const {
+    return damage;
 }
 
-void Character::increaseStat(std::string stat) {
-    stats[stat]++;
+int Character::getArmor() const {
+    return armor;
 }
 
-//////////////////////////// Skills ////////////////////////////
-
-std::string Character::getSkillsString() const {
-    std::string skillString;
-
-    for (const auto& item : skills) {
-        skillString += item.first + ": " + std::to_string(item.second) + "\n";
-    }
-
-    return skillString;
+Attributes& Character::getAttributes() {
+    return attributes;
 }
 
-int Character::getSkill(std::string skill) {
-    return skills[skill];
+Inventory& Character::getInventory() {
+    return inventory;
 }
 
-void Character::increaseSkill(std::string skill) {
-    skills[skill]++;
+void Character::setID(const std::string& id) {
+    this->id = id;
+}
+
+void Character::setName(const std::string& name) {
+    this->name = name;
+}
+
+void Character::setAreaID(const std::string& areaID) {
+    this->areaID = areaID;
+}
+
+void Character::setDamage(int damage) {
+    this->damage = damage;
+}
+
+void Character::setArmor(int armor) {
+    this->armor = armor;
+}
+
+void Character::increaseLevel() {
+    this->level++;
+}
+
+void Character::increaseExp(int expToAdd) {
+    this->exp += expToAdd;
 }

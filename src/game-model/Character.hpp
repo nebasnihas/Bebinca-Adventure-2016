@@ -1,52 +1,80 @@
 #ifndef CHARACTER_H
 #define CHARACTER_H
 
-#include <iostream>
+#include "Attributes.hpp"
 #include "Inventory.hpp"
 
 class Character {
+protected:
+    std::string id;
+    std::string name;
+    std::string areaID;
+    int level;
+    int exp;
+    int damage;
+    int armor;
+    Attributes attributes;
+    Inventory inventory;
+
 public:
-    Inventory inventory;// TODO move to private section
+    const int STARTING_LEVEL = 1;
 
-    enum class Type {
-        WARRIOR,
-        ARCHER,
-        MAGE
-    };
+    Character(std::string id, std::string name, std::string areaID);
 
-    Character(std::string characterID, std::string areaID, std::string name, Type type, int level);
     std::string getName() const;
     std::string getID() const;
     std::string getAreaID() const;
-    Type getType() const;
-    void setID(std::string id);
-    void setAreaID(std::string areaID);
+    int getLevel() const;
+    int getExp() const;
+    int getDamage() const;
+    int getArmor() const;
+    Attributes& getAttributes();
+    Inventory& getInventory();
 
-    //////////////////////////// Level ////////////////////////////
+    void setID(const std::string& id);
+    void setName(const std::string& name);
+    void setAreaID(const std::string& areaID);
+    void setDamage(int damage);
+    void setArmor(int armor);
 
     void increaseLevel();
-    int getLevel() const;
+    void increaseExp(int expToAdd);
+};
 
-    //////////////////////////// Stats ////////////////////////////
+class WarriorCharacter : public Character {
+public:
+    WarriorCharacter(std::string id, std::string name, std::string areaID)
+    : Character(id, name, areaID) {
+        attributes.setPrimaryAttribute("strength");
+    }
 
-    std::unordered_map<std::string, int> getStats() const;
-    int getStat(std::string stat);
-    void increaseStat(std::string stat);
+    std::string getClass() {
+        return "warrior";
+    }
+};
 
-    //////////////////////////// Skills ////////////////////////////
+class WizardCharacter : public Character {
+public:
+    WizardCharacter(std::string id, std::string name, std::string areaID)
+            : Character(id, name, areaID) {
+        attributes.setPrimaryAttribute("intelligence");
+    }
 
-    std::string getSkillsString() const;
-    int getSkill(std::string skill);
-    void increaseSkill(std::string skill);
+    std::string getClass() {
+        return "wizard";
+    }
+};
 
-private:
-    std::string name;
-    std::string id;
-    std::string areaID;
-    Type type;
-    int level;
-    std::unordered_map<std::string, int> stats;
-    std::unordered_map<std::string, int> skills;
+class RangerCharacter : public Character {
+public:
+    RangerCharacter(std::string id, std::string name, std::string areaID)
+            : Character(id, name, areaID) {
+        attributes.setPrimaryAttribute("dexterity");
+    }
+
+    std::string getClass() {
+        return "ranger";
+    }
 };
 
 #endif
