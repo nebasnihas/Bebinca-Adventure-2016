@@ -97,8 +97,9 @@ void Authenticator::set_savefilevals(const std::string& user, const std::string&
 
     //Check for directory if does not exist then create it.
     struct stat stct = {0};
-    if(stat("savefiles/", &stct) == -1){
-        mkdir("savefiles/",0700);
+    const char location[] = "savefiles/";
+    if(stat(location, &stct) == -1){
+        mkdir(location,0700);
     }
 
 
