@@ -1,0 +1,74 @@
+
+/*
+- Image Art generator library from www.mcs.csueastbay.edu/~tebo/classes/1160/ascii-art/
+- Modified a bit tailored to Bebinca's Adventure game
+- Class generates two things: an ascii art of Bmp img and ascii art of text
+- Find/Place source images in assets/bmpimgs
+- Find/Place font txt files in assets/fontsets/<fontname>/<letter>.txt
+- Object list,Image specifications and Font Usage on WIKI [link:https://csil-git1.cs.surrey.sfu.ca/373-16-3-bebinca/adventure2016/wikis/AsciiPrinter-Class ]
+*/
+
+#ifndef AsciiPrinter_hpp
+#define AsciiPrinter_hpp
+
+#include <stdio.h>
+#include <iostream>
+#include <fstream>
+#include <cmath>
+#include <cstdlib>
+#include <string>
+
+using namespace std;
+
+class AsciiPrinter {
+    
+private:
+    
+    //Types to hold BMP File header data
+    typedef unsigned short uint16;
+    typedef unsigned int uint32;
+    
+    //BMP File header format Ref: paulbourke.net/dataformats/bmp/
+    typedef struct bmp_file_header{
+        uint16 filetype; // BM
+        uint32 filesize; // in 32-bit integers
+        uint32 reserved; // must be 0
+        uint32 offset;	  // byte offset to start of data
+        uint32 bytesInHeader;	// 40
+        uint32 width;			// in pixels
+        uint32 height;			// in pixels
+        uint16 planes;			// 1
+        uint16 bitsPerPixel;	// 1,4,8, or 24
+        uint32 compression;	// 0 = none, 1 = 8bit RLE, 2 = 4 bit RLE
+        uint32 size;			// of image, in bytes
+        uint32 horizRes;		// in pixels/m
+        uint32 vertRes;		//      "
+        uint32 indicesUsed;	// # color indices used by the bitmap
+        uint32 indicesImportant; // # important indices (0=all)
+    }BMPFileHeader;
+    
+    //String to print both image and font and return it
+    string ascii_print;
+    
+    //Functions -------
+    
+    //Extract File Data
+    static uint16 extractShort(ifstream &f);
+    static uint32 extractInt(ifstream &f);
+    
+    static void readHeader(ifstream& f, BMPFileHeader& header);
+    
+public:
+    
+    //Print Object: Returns a Multitext string of ASCII art of an object in the assets/bmpimgs folder
+    //Styles: default, numbers
+    //printObject0: Call this method if object argument being passed is a variable (type:string)
+    static string printObject0(const string style,const string &objname);
+    //printObject1: Call this method if the object string is directly typed in function call
+    static string printObject1(const string style,const string objname);
+    
+    
+    
+};
+
+#endif /* AsciiPrinter_hpp */
