@@ -29,3 +29,7 @@ target_link_libraries(game-server ${Boost_LIBRARIES})
 install(TARGETS game-server
         RUNTIME DESTINATION bin
         )
+
+add_custom_command(TARGET game-server PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/data $<TARGET_FILE_DIR:game-server>)

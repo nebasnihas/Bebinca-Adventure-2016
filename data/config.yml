@@ -1,0 +1,5 @@
+port: 4000
+map-file: "mgoose.yml"
+ticks-per-second: 10
+google-log:
+  log-directory: "./"

@@ -10,34 +10,56 @@
 #include <boost/lexical_cast.hpp>
 #include "glog/logging.h"
 #include "ServerLoop.hpp"
+#include "yaml-cpp/yaml.h"
 
-void validateServerArgs(int argc, char* argv[], unsigned short& port, std::string& filename) {
-    if (argc < 3) {
-        std::cout << "Usage:\n" << argv[0] << " <port> <pathToMap>\ne.g. " << argv[0] << "4002 mgoose.yml\n" << std::endl;
-        exit(1);
+const std::string PORT_KEY = "port";
+const std::string TICKS_KEY = "ticks-per-second";
+const std::string MAPFILE_KEY = "map-file";
+
+std::string configFilePath = "config.yml";
+
+void initGoogleLog(const YAML::Node& configRootNode) {
+    if (auto googleLogSettings = configRootNode["google-log"]) {
+        if (auto logDirectory = googleLogSettings["log-directory"]) {
+            FLAGS_log_dir = logDirectory.as<std::string>();
+        }
     }
 
-    try {
-        port = boost::lexical_cast<ushort>(argv[1]);
-    } catch (const boost::bad_lexical_cast&) {
-        std::cerr << "Invalid port number" << std::endl;
-        exit(1);
+    google::InitGoogleLogging("GameServer");
+}
+
+template<typename T>
+T getConfigValueAs(const std::string key, const YAML::Node& configRootNode) {
+    if (!configRootNode[key]) {
+        std::cerr << "Error. Configuration file: '" << configFilePath << "' does not contain the required key: " << key
+                  << std::endl;
+        exit(-1);
     }
 
-    filename = std::string(argv[2]);
+    return configRootNode[key].as<T>();
 }
 
 int main(int argc, char *argv[]) {
-    //TODO configuration using file
-    FLAGS_log_dir = "./";
-    google::InitGoogleLogging("GameServer");
-    unsigned short port;
-    std::string sourceFile;
-    validateServerArgs(argc, argv, port, sourceFile);
+    const std::string usage = "Searching for config.yml in current path. "
+            "Pass the path of the config file as a command line argument if you want to use that instead.";
+
+    if (argc < 2) {
+        std::cout << usage << std::endl;
+    } else {
+        configFilePath = argv[1];
+    }
+
+    //configuration
+    YAML::Node root = YAML::LoadFile(configFilePath);
+    auto port = getConfigValueAs<unsigned short>(PORT_KEY, root);
+    auto mapFile = getConfigValueAs<std::string>(MAPFILE_KEY, root);
+    auto ticksPerSecond = getConfigValueAs<unsigned int>(TICKS_KEY, root);
+
+    initGoogleLog(root);
 
     //start server
-    ServerLoop loop{port, sourceFile};
-    Looper looper{5}; //TODO add tick rate to config file
+    ServerLoop loop{port, mapFile};
+    Looper looper{ticksPerSecond};
     looper.run(loop);
 
     return 0;
