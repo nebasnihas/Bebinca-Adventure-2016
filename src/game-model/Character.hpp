@@ -19,7 +19,7 @@ protected:
 public:
     const int STARTING_LEVEL = 1;
 
-    Character(std::string id, std::string name, std::string areaID);
+    Character(const std::string& id, const std::string& name, const std::string& areaID);
 
     std::string getName() const;
     std::string getID() const;
@@ -37,13 +37,14 @@ public:
     void setDamage(int damage);
     void setArmor(int armor);
 
+    void setLevel(int newLevel);
     void increaseLevel();
     void increaseExp(int expToAdd);
 };
 
 class WarriorCharacter : public Character {
 public:
-    WarriorCharacter(std::string id, std::string name, std::string areaID)
+    WarriorCharacter(const std::string& id, const std::string& name, const std::string& areaID)
     : Character(id, name, areaID) {
         attributes.setPrimaryAttribute("strength");
     }
@@ -55,7 +56,7 @@ public:
 
 class WizardCharacter : public Character {
 public:
-    WizardCharacter(std::string id, std::string name, std::string areaID)
+    WizardCharacter(const std::string& id, const std::string& name, const std::string& areaID)
             : Character(id, name, areaID) {
         attributes.setPrimaryAttribute("intelligence");
     }
@@ -67,7 +68,7 @@ public:
 
 class RangerCharacter : public Character {
 public:
-    RangerCharacter(std::string id, std::string name, std::string areaID)
+    RangerCharacter(const std::string& id, const std::string& name, const std::string& areaID)
             : Character(id, name, areaID) {
         attributes.setPrimaryAttribute("dexterity");
     }
