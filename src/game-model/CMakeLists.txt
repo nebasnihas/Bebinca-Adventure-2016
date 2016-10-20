@@ -4,6 +4,7 @@ add_library(game Area.cpp
             GameModel.cpp
             Inventory.cpp
             GameDataImporter.cpp
+            Attributes.cpp
             )
 
 set_property(TARGET game PROPERTY CXX_STANDARD 14)

@@ -2,8 +2,8 @@
 
 bool GameModel::createCharacter(const std::string& characterID, const std::string& characterName) {
     // TO-DO: Placeholder for an initial loading area
-	Character character(characterID, "area_tutorial", characterName, Character::Type::WARRIOR, 1);
-	character.setAreaID(this->getDefaultLocationID());
+	std::string areaID = this->getDefaultLocationID();
+	Character character(characterID, characterName, areaID);
 	characters.insert(std::pair<std::string, Character>(characterID, character));
 
 	// No failure case yet...

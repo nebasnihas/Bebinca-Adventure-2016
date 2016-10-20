@@ -1,6 +1,6 @@
 #include "Character.hpp"
 
-Character::Character(std::string id, std::string name, std::string areaID)
+Character::Character(const std::string& id, const std::string& name, const std::string& areaID)
     : id(id), name(name), areaID(areaID), level(STARTING_LEVEL) {
 }
 
@@ -58,6 +58,10 @@ void Character::setDamage(int damage) {
 
 void Character::setArmor(int armor) {
     this->armor = armor;
+}
+
+void Character::setLevel(int newLevel) {
+    this->level = newLevel;
 }
 
 void Character::increaseLevel() {
