@@ -13,8 +13,7 @@
 
 class ServerLoop : public Loop {
 public:
-    //TODO use config file
-    ServerLoop(unsigned short serverPort, const std::string& mapFilePath);
+    ServerLoop(unsigned short serverPort, const std::string& mapFilePath, const YAML::Node& commandsConfigNode);
 
     virtual void processInputs(bool& quit) override;
     virtual void update() override;

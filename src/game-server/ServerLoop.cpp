@@ -1,13 +1,15 @@
 #include <functional>
+#include <iostream>
 #include "ServerLoop.hpp"
 
 using namespace networking;
 
-ServerLoop::ServerLoop(unsigned short serverPort, const std::string& mapFilePath)
+ServerLoop::ServerLoop(unsigned short serverPort, const std::string& mapFilePath, const YAML::Node& commandsConfigNode)
         : server{serverPort, [this](Connection c){this->onConnect(c);}, [this](Connection c){this->onDisconnect(c);}},
-          controller{gameModel, server},
+          controller{gameModel, server, commandsConfigNode},
           gameFunctions{controller} {
     GameDataImporter::loadyamlFile(gameModel, mapFilePath);
+    std::cout << "Server ready. Listening on port: " << serverPort << std::endl;
 }
 
 void ServerLoop::processInputs(bool& quit) {

@@ -15,6 +15,7 @@
 const std::string PORT_KEY = "port";
 const std::string TICKS_KEY = "ticks-per-second";
 const std::string MAPFILE_KEY = "map-file";
+const std::string COMMANDS_KEY = "commands";
 
 std::string configFilePath = "config.yml";
 
@@ -54,11 +55,12 @@ int main(int argc, char *argv[]) {
     auto port = getConfigValueAs<unsigned short>(PORT_KEY, root);
     auto mapFile = getConfigValueAs<std::string>(MAPFILE_KEY, root);
     auto ticksPerSecond = getConfigValueAs<unsigned int>(TICKS_KEY, root);
+    auto commandBindings = root[COMMANDS_KEY];
 
     initGoogleLog(root);
 
     //start server
-    ServerLoop loop{port, mapFile};
+    ServerLoop loop{port, mapFile, commandBindings};
     Looper looper{ticksPerSecond};
     looper.run(loop);
 

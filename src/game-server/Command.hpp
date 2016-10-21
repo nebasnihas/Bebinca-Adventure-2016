@@ -27,13 +27,23 @@ public:
      * @param method
      * @return
      */
-    Command(const std::string& keyword, const functionRef& method) : text{keyword}, method{method} {};
+    Command(const std::string& keyword, const functionRef& method) : keyword{keyword}, method{method} {};
     const std::string& getKeyword() const;
     const functionRef& getMethod() const;
+    const std::string& getDesc() const;
+    const std::string& getUsage() const;
+    const std::vector<std::string> getAliases() const;
 
+    void setDesc(const std::string& desc);
+    void setUsage(const std::string& usage);
+    void addAlias(const std::string& alias);
 private:
-    std::string text;
+    std::string keyword;
     functionRef method;
+    std::string desc = "No Desc";
+    //just a usage message, maybe do actual parsing based on this later
+    std::string usage = "No usage";
+    std::vector<std::string> aliases;
 };
 
 

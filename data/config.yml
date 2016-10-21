@@ -1,5 +1,33 @@
+#Port number for the server
 port: 4000
+#Path to the map file
 map-file: "mgoose.yml"
+#The number of ticks per second that the server should target
 ticks-per-second: 10
+#Options for logging
 google-log:
   log-directory: "./"
+#Options for commands. each command will always have a base keyword and optional aliases.
+#To configure, add configurations for command-<base keyword>
+#desc: description of the command when user types help <command>
+#usage: prints out how to use the command when user types help <command>
+#alias: alternative keywords to trigger the command
+commands:
+  command-look:
+    desc: "Look at the area, or at an entity."
+    usage: "[object]"
+  command-go:
+    desc: "Move to a connected area."
+    usage: "<direction>"
+    alias:
+      - "move"
+      - "g"
+  command-players:
+    desc: "Get the players in the current area"
+    usage: ""
+  command-exits:
+    desc: "Get the list of exits you can move to."
+    usage: ""
+  command-say:
+    desc: "Say something to all the players"
+    usage: "<text>"

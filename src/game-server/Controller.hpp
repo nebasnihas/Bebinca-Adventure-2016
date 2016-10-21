@@ -5,6 +5,7 @@
 #include <map>
 #include <functional>
 #include <vector>
+#include <memory>
 
 #include "Command.hpp"
 #include "game/GameModel.hpp"
@@ -18,7 +19,8 @@ class GameFunctions;
 
 class Controller {
 public:
-    Controller(GameModel& gameModel, networking::Server& server) : gameModel{gameModel}, server{server}{};
+    Controller(GameModel& gameModel, networking::Server& server, const YAML::Node& commandBindingsNode)
+            : gameModel{gameModel}, server{server}, bindings{commandBindingsNode}{};
 
     void registerCommand(const Command& command);
     std::unique_ptr<MessageBuilder> processCommand(const protocols::PlayerCommand& command,
@@ -45,10 +47,12 @@ private:
     //keep a list of all connected clients, since its useful when sending messages
     std::vector<networking::Connection> allClients;
 
-    std::unordered_map<std::string, Command>  playerCommandMap;
+    std::unordered_map<std::string, std::shared_ptr<Command>>  playerCommandMap;
 
     GameModel& gameModel;
     networking::Server& server;
+
+    YAML::Node bindings;
 };
 
 
