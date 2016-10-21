@@ -40,9 +40,9 @@ public:
 private:
     std::string keyword;
     functionRef method;
-    std::string desc = "No Desc";
+    std::string desc = "No Description";
     //just a usage message, maybe do actual parsing based on this later
-    std::string usage = "No usage";
+    std::string usage;
     std::vector<std::string> aliases;
 };
 

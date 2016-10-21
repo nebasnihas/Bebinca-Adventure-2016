@@ -19,8 +19,7 @@ class GameFunctions;
 
 class Controller {
 public:
-    Controller(GameModel& gameModel, networking::Server& server, const YAML::Node& commandBindingsNode)
-            : gameModel{gameModel}, server{server}, bindings{commandBindingsNode}{};
+    Controller(GameModel& gameModel, networking::Server& server, const YAML::Node& commandBindingsNode);
 
     void registerCommand(const Command& command);
     std::unique_ptr<MessageBuilder> processCommand(const protocols::PlayerCommand& command,
@@ -53,6 +52,11 @@ private:
     networking::Server& server;
 
     YAML::Node bindings;
+
+    //help command
+    std::unique_ptr<MessageBuilder> help(const std::vector<std::string>& targets, const PlayerInfo& player);
+    std::unique_ptr<MessageBuilder> allCommandsHelp(const networking::Connection& clientID);
+    std::string getCommandAliasesHelpMessage(const std::string command);
 };
 
 
