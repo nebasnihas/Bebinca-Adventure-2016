@@ -6,6 +6,7 @@
 
 #include <game/GameModel.hpp>
 #include <memory>
+#include <boost/optional.hpp>
 #include "Command.hpp"
 #include "Controller.hpp"
 #include "DisplayMessageBuilder.hpp"

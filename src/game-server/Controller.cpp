@@ -24,7 +24,7 @@ std::unique_ptr<MessageBuilder> Controller::processCommand(const protocols::Play
     }
     auto handler = it->second.getMethod();
 
-    auto playerID = getPlayerID(client);
+    auto playerID = getPlayerID(client).get();
     return handler(cmdArgs, PlayerInfo{playerID, client});
 }
 
@@ -53,7 +53,7 @@ GameModel& Controller::getGameModel() const {
 }
 
 void Controller::removePlayer(const networking::Connection& clientID) {
-    auto player = getPlayerID(clientID);
+    auto player = getPlayerID(clientID).get();
 
     playerMap.right.erase(clientID);
     allClients.erase(std::remove(allClients.begin(), allClients.end(), clientID), allClients.end());
@@ -65,17 +65,27 @@ void Controller::removePlayer(const networking::Connection& clientID) {
     server.send(outMsg);
 }
 
-const Connection& Controller::getClientID(const std::string& playerID) const {
-    return playerMap.left.find(playerID)->second;
+const boost::optional<Connection> Controller::getClientID(const std::string& playerID) const {
+    boost::optional<Connection> clientID;
+    if (playerMap.left.find(playerID) == playerMap.left.end()) {
+        return clientID;
+    }
+    clientID = playerMap.left.find(playerID)->second;
+    return clientID;
 }
 
-const std::string& Controller::getPlayerID(const networking::Connection& clientID) const {
-    return playerMap.right.find(clientID)->second;
+const boost::optional<std::string> Controller::getPlayerID(const networking::Connection& clientID) const {
+    boost::optional<std::string> playerID;
+    if (playerMap.right.find(clientID) == playerMap.right.end()) {
+        return playerID;
+    }
+    playerID = playerMap.right.find(clientID)->second;
+    return playerID;
 }
 
 void Controller::disconnectPlayer(const std::string& playerID) {
     auto clientId = getClientID(playerID);
-    server.disconnect(clientId);
+    server.disconnect(clientId.get());
 }
 
 

@@ -1,3 +1,4 @@
+#include <iostream>
 #include "GameFunctions.hpp"
 
 
@@ -90,7 +91,7 @@ std::unique_ptr<MessageBuilder> GameFunctions::shout(const std::vector<std::stri
 
     std::vector<networking::Connection> localClients;
     for (const auto &player: gameModel.getCharacterIDsInArea(areaID)) {
-        localClients.push_back(controller.getClientID(player));
+        localClients.push_back(controller.getClientID(player).get());
     }
 
     return DisplayMessageBuilder::createMessage(message)
@@ -100,22 +101,31 @@ std::unique_ptr<MessageBuilder> GameFunctions::shout(const std::vector<std::stri
 
 std::unique_ptr<MessageBuilder> GameFunctions::whisper(const std::vector<std::string> &targets, const PlayerInfo &player) {
     auto targetPlayerID = *targets.begin();
+    std::string message;
     //TODO: Confirm player exists
     auto targetClient = controller.getClientID(targetPlayerID);
 
-    std::vector<networking::Connection> targetClients;
-    targetClients.push_back(targetClient);
+    if (!targetClient) {
+        message = "nope";
+        return DisplayMessageBuilder::createMessage(message)
+                .addClient(controller.getClientID(player.playerID).get())
+                .setSender(DisplayMessageBuilder::SENDER_SERVER);
+    }
+    else {
+        std::vector<networking::Connection> targetClients;
+        targetClients.push_back(targetClient.get());
 
-    std::string message;
-    auto target = targets.begin();
-    std::advance(target, 1);
-    for (target; target != targets.end(); target++ ) {
-        message += *target + " ";
+
+        auto target = targets.begin();
+        std::advance(target, 1);
+        for (target; target != targets.end(); target++ ) {
+            message += *target + " ";
+        }
+        return DisplayMessageBuilder::createMessage(message)
+                .addClients(targetClients)
+                .setSender(player.playerID);
     }
 
-    return DisplayMessageBuilder::createMessage(message)
-            .addClients(targetClients)
-            .setSender(player.playerID);
 }
 
 
