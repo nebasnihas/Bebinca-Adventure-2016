@@ -1,5 +1,6 @@
-#include "game/GameDataImporter.hpp"
+#include "../../include/game/GameDataImporter.hpp"
 #include "Area.hpp"
+#include "Entity.hpp"
 #include "yaml-cpp/yaml.h"
 #include <fstream>
 #include <iostream>
@@ -19,24 +20,24 @@ using std::unordered_map;
 
 //NOTE: If compiling in command line, must include -lyaml-cpp flag at the end of g++ sequence
 
-void GameDataImporter::loadyamlFile(GameModel& gameModel, std::string fileName) {
+void GameDataImporter::loadyamlFile(/*GameModel& gameModel,*/ std::string fileName) {
 	//Loading source .yaml file,split at initial nodes (NPCS, ROOM, OBJECTS, RESETS, SHOPS)
 
     YAML::Node dataFile = YAML::LoadFile(fileName);
-	const YAML::Node NPCS = dataFile["NPCS"];
-    loadNPCS(gameModel, NPCS);
+	//const YAML::Node NPCS = dataFile["NPCS"];
+    //loadNPCS(gameModel, NPCS);
 
-    const YAML::Node ROOMS = dataFile["ROOMS"];
-    loadRooms(gameModel, ROOMS);
+    //const YAML::Node ROOMS = dataFile["ROOMS"];
+    //loadRooms(gameModel, ROOMS);
 
     const YAML::Node OBJECTS = dataFile["OBJECTS"];
-    loadObjects(gameModel, OBJECTS);
+    loadObjects(/*gameModel,*/ OBJECTS);
 
-    const YAML::Node RESETS = dataFile["RESETS"];
-    loadResets(gameModel, RESETS);
+    //const YAML::Node RESETS = dataFile["RESETS"];
+    //loadResets(gameModel, RESETS);
 
-    const YAML::Node SHOPS = dataFile["SHOPS"];
-    loadShops(gameModel, SHOPS);
+    //const YAML::Node SHOPS = dataFile["SHOPS"];
+    //loadShops(gameModel, SHOPS);
 
 }
 
@@ -136,32 +137,61 @@ void GameDataImporter::loadRooms(GameModel& gameModel, YAML::Node ROOMS){
     }
 
     //Might want to return the vector of Area objects
-    gameModel.setDefaultLocationID(rooms[0].getID());
-    for (const auto& room : rooms) {
-        gameModel.addArea(room);
-    }
+    //gameModel.setDefaultLocationID(rooms[0].getID());
+    // for (const auto& room : rooms) {
+    //     gameModel.addArea(room);
+    // }
     cout << rooms.size();
 
 }
 
-void GameDataImporter::loadObjects(GameModel& gameModel, YAML::Node OBJECTS){
+void GameDataImporter::loadObjects(/*GameModel& gameModel,*/ YAML::Node OBJECTS){
+
+    
+    vector<Entity> objects;
+/*
+Split up objects in YML file and store them in the objects class
+*/
 
     for(YAML::const_iterator it = OBJECTS.begin(); it != OBJECTS.end(); ++it){
 
         const YAML::Node OBJECT = *it;
 
         vector<string> attributes = OBJECT["attributes"].as<vector<string>>();
+
+
+        //COST
         int cost = OBJECT["cost"].as<int>();
+
         vector<string> extra = OBJECT["extra"].as<vector<string>>();
         string objectId = OBJECT["id"].as<string>();
         string item_type = OBJECT["item_type"].as<string>();
+        vector<string> keywords = OBJECT["keywords"].as<vector<string>>();
+        
         vector<string> longdesc = OBJECT["longdesc"].as<vector<string>>();
+        string description = boost::algorithm::join(longdesc, " ");
+
+        //cout << description << endl;
+
         string shortdesc = OBJECT["shortdesc"].as<string>();
         vector<string> wear_flags = OBJECT["wear_flags"].as<vector<string>>();
         int weight = OBJECT["weight"].as<int>();
 
-
+        //Create objects of type Entity and store in vector ob Objects
+        Entity newObject = Entity(attributes, cost, extra, objectId, item_type, keywords, description, shortdesc, wear_flags, weight);
+        objects.push_back(newObject);
     }
+
+    cout << "Number of objects in Mother goose area: " << objects.size() << endl;
+
+    for (auto object : objects)
+    {
+        cout << "Cost of Mother Goose objects: " << object.getCost() << endl;
+        cout << "Description: " << object.getDescription() << endl;
+        cout << "Type: " << object.getType() << endl;
+        cout << "ID: " << object.getID() << endl;
+    }
+
 }
 
 //The workflow for RESETS ends here, not sure how to utilize yet
@@ -199,7 +229,7 @@ void GameDataImporter::loadShops(GameModel& gameModel, YAML::Node SHOPS){
 
 
 //use main for testing
-/*int main() {
+int main() {
 
 
 	GameDataImporter::loadyamlFile("../../data/mgoose.yml");
@@ -207,4 +237,4 @@ void GameDataImporter::loadShops(GameModel& gameModel, YAML::Node SHOPS){
 
 
 	return 0;
-}*/
+}
