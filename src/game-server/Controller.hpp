@@ -51,12 +51,12 @@ private:
     GameModel& gameModel;
     networking::Server& server;
 
-    YAML::Node bindings;
+    YAML::Node cmdConfig;
 
     //help command
     std::unique_ptr<MessageBuilder> help(const std::vector<std::string>& targets, const PlayerInfo& player);
     std::unique_ptr<MessageBuilder> allCommandsHelp(const networking::Connection& clientID);
-    std::string getCommandAliasesHelpMessage(const std::string command);
+    std::string getCommandBindingsHelpMessage(const std::string command);
 };
 
 

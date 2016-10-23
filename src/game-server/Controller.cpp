@@ -14,7 +14,8 @@ using namespace networking;
 using namespace std::placeholders;
 
 Controller::Controller(GameModel& gameModel, networking::Server& server, const YAML::Node& commandBindingsNode)
-        : gameModel{gameModel}, server{server}, bindings{commandBindingsNode} {
+        : gameModel{gameModel}, server{server}, cmdConfig{commandBindingsNode} {
+    CHECK(cmdConfig) << "No configuration for commands";
     registerCommand(Command{"help", std::bind(&Controller::help, this, std::placeholders::_1, std::placeholders::_2)});
 }
 
@@ -25,7 +26,7 @@ std::unique_ptr<MessageBuilder> Controller::processCommand(const protocols::Play
 
     auto it = playerCommandMap.find(cmd);
     if (it == playerCommandMap.end()) {
-        return DisplayMessageBuilder::createMessage("<" + cmd + "> is an invalid command.")
+        return DisplayMessageBuilder::createMessage("<" + cmd + "> is an invalid command. Type help")
                 .addClient(client)
                 .setSender(DisplayMessageBuilder::SENDER_SERVER);
     }
@@ -37,29 +38,21 @@ std::unique_ptr<MessageBuilder> Controller::processCommand(const protocols::Play
 
 void Controller::registerCommand(const Command& command) {
     auto cmd = std::make_shared<Command>(command);
-    playerCommandMap.emplace(cmd->getKeyword(), cmd);
-
-    //no configuration
-    if (!bindings) {
-        return;
-    }
 
     //read configuration and setup bindings
     const std::string DESC_KEY = "desc";
     const std::string USAGE_KEY = "usage";
-    const std::string ALIAS_KEY = "alias";
+    const std::string BINDINGS_KEY = "bindings";
     const std::string key = "command-" + command.getKeyword();
 
     //Get the yaml node for the binding configuration for this command
-    const auto& bindingNode = bindings[key];
-    if (!bindingNode) {
-        LOG(INFO) << "No bindings found for command: " << cmd->getKeyword();
-        return;
-    }
+    const auto& configNode = cmdConfig[key];
+    CHECK(configNode) << "Command configuration doesn't exist for: " << cmd->getKeyword();
     LOG(INFO) << "Configuring options for command: " << cmd->getKeyword();
 
     //Get the description of this command
-    if (const auto& descNode = bindingNode[DESC_KEY]) {
+    const auto& descNode = configNode[DESC_KEY];
+    if (descNode) {
         LOG(INFO) << "Found description for command: " << cmd->getKeyword();
         cmd->setDesc(descNode.as<std::string>());
     } else {
@@ -67,30 +60,31 @@ void Controller::registerCommand(const Command& command) {
     }
 
     //Get the usage for this command
-    if (const auto& usageNode = bindingNode[USAGE_KEY]) {
+    const auto& usageNode = configNode[USAGE_KEY];
+    if (usageNode) {
         LOG(INFO) << "Found usage for command: " << cmd->getKeyword();
         cmd->setUsage(usageNode.as<std::string>());
     } else {
         LOG(WARNING) << "No usage found for command: " << cmd->getKeyword();
     }
 
-    //Add each alias to command map
-    const auto& aliasNode = bindingNode[ALIAS_KEY];
-    if (!aliasNode) {
-        LOG(INFO) << "No aliases found for command: " << cmd->getKeyword();
-        return;
-    }
+    //Add each binding to command map
+    const auto& bindingsNode = configNode[BINDINGS_KEY];
+    CHECK(bindingsNode) << "No bindings configuration found for command: " << cmd->getKeyword();
 
-    LOG(INFO) << "Found aliases for command:" << cmd->getKeyword();
-    for (const auto& alias : aliasNode.as<std::vector<std::string>>()) {
-        if (playerCommandMap.count(alias) == 1) {
-            LOG(WARNING) << "Alias: " << alias << " already exists.";
+    auto bindings = bindingsNode.as<std::vector<std::string>>();
+    CHECK(!bindings.empty()) << "No bindings for command: " << cmd->getKeyword();
+
+    LOG(INFO) << "Found bindings for command:" << cmd->getKeyword();
+    for (const auto& binding : bindings) {
+        if (playerCommandMap.count(binding) == 1) {
+            LOG(WARNING) << "Command binding: " << binding << " already exists.";
             break;
         }
 
-        LOG(INFO) << "Adding alias " << alias << " to command: " << cmd->getKeyword();
-        cmd->addAlias(alias);
-        playerCommandMap.emplace(alias, cmd);
+        LOG(INFO) << "Adding binding " << binding << " to command: " << cmd->getKeyword();
+        cmd->addBinding(binding);
+        playerCommandMap.emplace(binding, cmd);
     }
 }
 
@@ -159,7 +153,7 @@ std::unique_ptr<MessageBuilder> Controller::help(const std::vector<std::string>&
         message = "Help for command <" + it->second->getKeyword() + ">\n";
         message += "\tDescription: " + it->second->getDesc() + "\n";
         message += "\tUsage: " + command + " " + it->second->getUsage() + "\n";
-        message += "\t" + getCommandAliasesHelpMessage(command);
+        message += "\t" + getCommandBindingsHelpMessage(command);
     }
 
     return DisplayMessageBuilder::createMessage(message).addClient(player.clientID)
@@ -167,17 +161,16 @@ std::unique_ptr<MessageBuilder> Controller::help(const std::vector<std::string>&
 }
 
 std::unique_ptr<MessageBuilder> Controller::allCommandsHelp(const networking::Connection& clientID) {
+    //Get al unique commands
     std::unordered_set<std::string> commands;
     for (const auto& it : playerCommandMap) {
         commands.insert(it.second->getKeyword());
     }
 
-    std::string message = "Available commands. Type help <command> for more information\n";
+    std::string message = "List of available commands. Type help <command> for more information\n";
     for (const auto& cmd : commands) {
-        message += cmd;
-        if (!playerCommandMap[cmd]->getAliases().empty()) {
-            message += " - " + getCommandAliasesHelpMessage(cmd);
-        }
+        message += "Command: " + cmd;
+        message += " - " + getCommandBindingsHelpMessage(cmd);
         message += "\n";
     }
 
@@ -185,10 +178,10 @@ std::unique_ptr<MessageBuilder> Controller::allCommandsHelp(const networking::Co
             .setSender(DisplayMessageBuilder::SENDER_SERVER);
 }
 
-std::string Controller::getCommandAliasesHelpMessage(const std::string command) {
+std::string Controller::getCommandBindingsHelpMessage(const std::string command) {
     std::string message;
-    message += "Aliases:[";
-    message += boost::algorithm::join(playerCommandMap[command]->getAliases(), ",");
+    message += "Bindings:[";
+    message += boost::algorithm::join(playerCommandMap[command]->getBindings(), ",");
     message += "]";
 
     return message;

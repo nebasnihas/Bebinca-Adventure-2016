@@ -17,8 +17,8 @@ const std::string& Command::getUsage() const {
     return usage;
 }
 
-const std::vector<std::string> Command::getAliases() const {
-    return aliases;
+const std::vector<std::string> Command::getBindings() const {
+    return bindings;
 }
 
 void Command::setDesc(const std::string& desc) {
@@ -29,8 +29,8 @@ void Command::setUsage(const std::string& usage) {
     this->usage = usage;
 }
 
-void Command::addAlias(const std::string& alias) {
-    aliases.push_back(alias);
+void Command::addBinding(const std::string& binding) {
+    bindings.push_back(binding);
 }
 
 

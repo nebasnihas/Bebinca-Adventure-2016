@@ -32,18 +32,18 @@ public:
     const functionRef& getMethod() const;
     const std::string& getDesc() const;
     const std::string& getUsage() const;
-    const std::vector<std::string> getAliases() const;
+    const std::vector<std::string> getBindings() const;
 
     void setDesc(const std::string& desc);
     void setUsage(const std::string& usage);
-    void addAlias(const std::string& alias);
+    void addBinding(const std::string& binding);
 private:
     std::string keyword;
     functionRef method;
     std::string desc = "No Description";
     //just a usage message, maybe do actual parsing based on this later
     std::string usage;
-    std::vector<std::string> aliases;
+    std::vector<std::string> bindings;
 };
 
 
