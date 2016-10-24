@@ -13,7 +13,7 @@ GameFunctions::GameFunctions(Controller &controller) : controller{controller}, g
 }
 
 std::unique_ptr<MessageBuilder> GameFunctions::look(const std::vector<std::string>& targets, const PlayerInfo& player) {
-    auto areaID = gameModel.getCharacterByID(player.playerID)->getAreaID();
+    auto areaID = getPlayerAreaID(player);
     std::string description;
 
     if (targets.empty()) {
@@ -34,6 +34,7 @@ std::unique_ptr<MessageBuilder> GameFunctions::move(const std::vector<std::strin
         auto areaID = gameModel.getCharacterByID(player.playerID)->getAreaID();
         message = gameModel.getAreaDescription(areaID);
     } else {
+        //TODO: extract into string resource
         message = "Area not found";
     }
 
@@ -42,8 +43,7 @@ std::unique_ptr<MessageBuilder> GameFunctions::move(const std::vector<std::strin
             .setSender(DisplayMessageBuilder::SENDER_SERVER);
 }
 
-std::unique_ptr<MessageBuilder> GameFunctions::listPlayers(const std::vector<std::string>& targets,
-                                                           const PlayerInfo& player) {
+std::unique_ptr<MessageBuilder> GameFunctions::listPlayers(const std::vector<std::string>& targets, const PlayerInfo& player) {
     auto areaID = getPlayerAreaID(player);
     //TODO: extract into string resource file
     std::string message = "Players in the area:\n";
@@ -56,8 +56,7 @@ std::unique_ptr<MessageBuilder> GameFunctions::listPlayers(const std::vector<std
             .setSender(DisplayMessageBuilder::SENDER_SERVER);
 }
 
-std::unique_ptr<MessageBuilder> GameFunctions::listExits(const std::vector<std::string>& targets,
-                                                         const PlayerInfo& player) {
+std::unique_ptr<MessageBuilder> GameFunctions::listExits(const std::vector<std::string>& targets, const PlayerInfo& player) {
     auto areaID = getPlayerAreaID(player);
     auto connectedAreaMap = *gameModel.getConnectedAreas(areaID);
     //TODO: extract into string resource file
@@ -102,30 +101,25 @@ std::unique_ptr<MessageBuilder> GameFunctions::shout(const std::vector<std::stri
 std::unique_ptr<MessageBuilder> GameFunctions::whisper(const std::vector<std::string> &targets, const PlayerInfo &player) {
     auto targetPlayerID = *targets.begin();
     std::string message;
-    //TODO: Confirm player exists
     auto targetClient = controller.getClientID(targetPlayerID);
 
     if (!targetClient) {
-        message = "nope";
+        //TODO: extract into string resources
+        message = "Player Not Found";
         return DisplayMessageBuilder::createMessage(message)
-                .addClient(controller.getClientID(player.playerID).get())
+                .addClient(player.clientID)
                 .setSender(DisplayMessageBuilder::SENDER_SERVER);
     }
     else {
-        std::vector<networking::Connection> targetClients;
-        targetClients.push_back(targetClient.get());
-
-
-        auto target = targets.begin();
-        std::advance(target, 1);
-        for (target; target != targets.end(); target++ ) {
-            message += *target + " ";
+        auto targetsIterator = targets.begin();
+        std::advance(targetsIterator, 1);
+        for (targetsIterator; targetsIterator != targets.end(); targetsIterator++ ) {
+            message += *targetsIterator + " ";
         }
         return DisplayMessageBuilder::createMessage(message)
-                .addClients(targetClients)
+                .addClient(targetClient.get())
                 .setSender(player.playerID);
     }
-
 }
 
 

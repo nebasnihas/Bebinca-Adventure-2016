@@ -66,21 +66,15 @@ void Controller::removePlayer(const networking::Connection& clientID) {
 }
 
 const boost::optional<Connection> Controller::getClientID(const std::string& playerID) const {
-    boost::optional<Connection> clientID;
-    if (playerMap.left.find(playerID) == playerMap.left.end()) {
-        return clientID;
-    }
-    clientID = playerMap.left.find(playerID)->second;
-    return clientID;
+    auto playerMapIterator = playerMap.left.find(playerID);
+    bool playerNotFound = playerMapIterator == playerMap.left.end();
+    return (playerNotFound) ? boost::optional<Connection>{} : playerMapIterator->second;
 }
 
 const boost::optional<std::string> Controller::getPlayerID(const networking::Connection& clientID) const {
-    boost::optional<std::string> playerID;
-    if (playerMap.right.find(clientID) == playerMap.right.end()) {
-        return playerID;
-    }
-    playerID = playerMap.right.find(clientID)->second;
-    return playerID;
+    auto playerMapIterator = playerMap.right.find(clientID);
+    bool playerNotFound = playerMapIterator == playerMap.right.end();
+    return (playerNotFound) ? boost::optional<std::string>{} : playerMapIterator->second;
 }
 
 void Controller::disconnectPlayer(const std::string& playerID) {
