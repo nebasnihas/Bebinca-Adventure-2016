@@ -16,8 +16,8 @@ std::unique_ptr<MessageBuilder> GameFunctions::look(const std::vector<std::strin
     if (targets.empty()) {
         description = gameModel.getAreaDescription(areaID);
     } else {
-        auto targetEntity = targets[0];
-        description = gameModel.getEntityDescription(areaID, targetEntity);
+        auto targetObject = targets[0];
+        description = gameModel.getObjectDescription(areaID, targetObject);
     }
 
     return DisplayMessageBuilder::createMessage(description).addClient(player.clientID).setSender(DisplayMessageBuilder::SENDER_SERVER);

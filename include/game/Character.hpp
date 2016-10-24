@@ -1,6 +1,9 @@
 #ifndef CHARACTER_H
 #define CHARACTER_H
 
+#include <iostream>
+#include <exception>
+
 #include "Attributes.hpp"
 #include "Inventory.hpp"
 
@@ -42,6 +45,10 @@ public:
     void increaseExp(int expToAdd);
 };
 
+/*
+ *  VARIOUS CHARACTER TYPES
+ */
+
 class WarriorCharacter : public Character {
 public:
     WarriorCharacter(const std::string& id, const std::string& name, const std::string& areaID)
@@ -77,5 +84,19 @@ public:
         return "ranger";
     }
 };
+
+/*
+ *  VARIOUS CHARACTER EXCEPTIONS
+ */
+
+struct InvalidCharacterException : public std::exception
+{
+
+    virtual const char* what() const throw()
+    {
+        return "This is an invalid character.";
+    }
+
+}; //Invalid character exception
 
 #endif

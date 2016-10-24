@@ -1,13 +1,4 @@
 #include "../../include/game/GameDataImporter.hpp"
-#include "Area.hpp"
-#include "Entity.hpp"
-#include "yaml-cpp/yaml.h"
-#include <fstream>
-#include <iostream>
-#include <vector>
-#include <unordered_map>
-#include <typeinfo>
-#include <boost/algorithm/string/join.hpp>
 
 using namespace std;
 
@@ -15,12 +6,11 @@ using std::vector;
 using std::string;
 using std::unordered_map;
 
-#include <string>
 
 
 //NOTE: If compiling in command line, must include -lyaml-cpp flag at the end of g++ sequence
 
-void GameDataImporter::loadyamlFile(/*GameModel& gameModel,*/ std::string fileName) {
+void GameDataImporter::loadyamlFile(GameModel& gameModel, const std::string& fileName) {
 	//Loading source .yaml file,split at initial nodes (NPCS, ROOM, OBJECTS, RESETS, SHOPS)
 
     YAML::Node dataFile = YAML::LoadFile(fileName);
@@ -147,11 +137,11 @@ void GameDataImporter::loadRooms(GameModel& gameModel, YAML::Node ROOMS){
 
 void GameDataImporter::loadObjects(/*GameModel& gameModel,*/ YAML::Node OBJECTS){
 
-    
-    vector<Entity> objects;
-/*
-Split up objects in YML file and store them in the objects class
-*/
+    vector<Object> objects = {};
+
+    /*
+    Split up objects in YML file and store them in the objects class
+    */
 
     for(YAML::const_iterator it = OBJECTS.begin(); it != OBJECTS.end(); ++it){
 
@@ -177,8 +167,8 @@ Split up objects in YML file and store them in the objects class
         vector<string> wear_flags = OBJECT["wear_flags"].as<vector<string>>();
         int weight = OBJECT["weight"].as<int>();
 
-        //Create objects of type Entity and store in vector ob Objects
-        Entity newObject = Entity(attributes, cost, extra, objectId, item_type, keywords, description, shortdesc, wear_flags, weight);
+        //Create objects of type Object and store in vector ob Objects
+        Object newObject = Object(attributes, cost, extra, objectId, item_type, keywords, description, shortdesc, wear_flags, weight);
         objects.push_back(newObject);
     }
 
@@ -229,12 +219,9 @@ void GameDataImporter::loadShops(GameModel& gameModel, YAML::Node SHOPS){
 
 
 //use main for testing
-int main() {
-
-
-	GameDataImporter::loadyamlFile("../../data/mgoose.yml");
-
-
-
-	return 0;
-}
+//int main() {
+//
+//    GameModel gameModel = GameModel();
+//	GameDataImporter::loadyamlFile(gameModel, "../../data/mgoose.yml");
+//	return 0;
+//}

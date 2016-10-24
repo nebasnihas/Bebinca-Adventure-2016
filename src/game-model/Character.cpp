@@ -1,8 +1,29 @@
-#include "Character.hpp"
+#include "../../include/game/Character.hpp"
+
 
 Character::Character(const std::string& id, const std::string& name, const std::string& areaID)
-    : id(id), name(name), areaID(areaID), level(STARTING_LEVEL) {
-}
+    : id(id)
+    , name(name)
+    , areaID(areaID)
+    , level(STARTING_LEVEL) 
+    {
+
+        try
+        {
+            if (id == "" ||
+                name == "" ||
+                areaID == ""
+                )
+            {
+                throw InvalidCharacterException();
+            }
+        }
+        catch(InvalidCharacterException& e)
+        {
+            std::cout << e.what() << std::endl;
+        }
+
+    }
 
 std::string Character::getID() const {
     return id;
