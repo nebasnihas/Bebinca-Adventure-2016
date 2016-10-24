@@ -6,7 +6,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-#include "client.h"
+#include "networking/client.h"
 #include "transferMessage.h"
 
 using namespace networking;
@@ -22,10 +22,9 @@ void Client::update() {
 }
 
 
-std::string Client::receive() {
-    auto result = incomingMessage.str();
-    incomingMessage.str(std::string{});
-    incomingMessage.clear();
+std::vector<std::string> Client::receive() {
+    auto result = incomingMessages;
+    incomingMessages.clear();
     return result;
 }
 
@@ -70,7 +69,7 @@ void Client::readMessage() {
                                       if (!errorCode) {
                                           if (size > 0) {
                                               auto message = extractMessage(readBuffer);
-                                              incomingMessage.write(message.c_str(), message.size());
+                                              incomingMessages.push_back(message);
                                               this->readMessage();
                                           }
                                       } else {
