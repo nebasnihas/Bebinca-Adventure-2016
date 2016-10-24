@@ -5,7 +5,10 @@ add_library(game Area.cpp
             Inventory.cpp
             GameDataImporter.cpp
             Attributes.cpp
-            )
+            combat/CombatManager.cpp
+            combat/CombatInstance.cpp
+            combat/CharacterInstance.cpp
+            combat/CombatAction.cpp)
 
 set_property(TARGET game PROPERTY CXX_STANDARD 14)
 
