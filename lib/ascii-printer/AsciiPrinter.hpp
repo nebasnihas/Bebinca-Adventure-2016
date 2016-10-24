@@ -1,12 +1,11 @@
-
 /*
-- Image Art generator library from www.mcs.csueastbay.edu/~tebo/classes/1160/ascii-art/
-- Modified a bit tailored to Bebinca's Adventure game
-- Class generates two things: an ascii art of Bmp img and ascii art of text
-- Find/Place source images in assets/bmpimgs
-- Find/Place font txt files in assets/fontsets/<fontname>/<letter>.txt
-- Object list,Image specifications and Font Usage on WIKI [link:https://csil-git1.cs.surrey.sfu.ca/373-16-3-bebinca/adventure2016/wikis/AsciiPrinter-Class ]
-*/
+ - Image Art generator library from www.mcs.csueastbay.edu/~tebo/classes/1160/ascii-art/
+ - Modified a bit tailored to Bebinca's Adventure game
+ - Class generates two things: an ascii art of Bmp img and ascii art of text
+ - Find/Place source images in assets/bmpimgs
+ - Find/Place font txt files in assets/fontsets/<fontname>/<letter>.txt
+ - Object list,Image specifications and Font Usage on WIKI [link:https://csil-git1.cs.surrey.sfu.ca/373-16-3-bebinca/adventure2016/wikis/AsciiPrinter-Class ]
+ */
 
 #ifndef AsciiPrinter_hpp
 #define AsciiPrinter_hpp
@@ -17,6 +16,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <string>
+#include <algorithm>
 
 using namespace std;
 
@@ -58,6 +58,28 @@ private:
     
     static void readHeader(ifstream& f, BMPFileHeader& header);
     
+    static string processString(const string &word);
+    static void to_lower(string& word);
+    
+    //Methods supporting word streams upto  letters. Multiple methods so that memory (allocation) is not
+    //wasted if unnecessary
+    static string word1(string& word);
+    static string word2(string& word);
+    static string word3(string& word);
+    static string word4(string& word);
+    static string word5(string& word);
+    static string word6(string& word);
+    static string word7(string& word);
+    static string word8(string& word);
+    static string word9(string& word);
+    static string word10(string& word);
+    
+    //To be added
+    // static string sentence_helper(const string font_type, const string& sentence);
+    
+    
+    
+    
 public:
     
     //Print Object: Returns a Multitext string of ASCII art of an object in the assets/bmpimgs folder
@@ -68,7 +90,14 @@ public:
     static string printObject1(const string style,const string objname);
     
     
+    //Print Word: Returns a Multitext string of ASCII art of the word
+    //Font Types: (...to be upadted)
+    static string printWord0(const string font_type, const string &word);
+    static string printWord1(const string font_type, const string word);
     
+    //To be added
+    // static string printSentence(const string font_type, const string &sentence);
+    // static string printSentence(const string font_type, const string sentence);
 };
 
 #endif /* AsciiPrinter_hpp */
