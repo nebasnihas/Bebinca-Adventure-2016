@@ -44,9 +44,7 @@ void GameDataImporter::loadyamlFile(GameModel& gameModel, std::string fileName) 
 
 void GameDataImporter::loadNPCS(GameModel& gameModel, YAML::Node NPCS){
     //Sequence Iterator
-    for(YAML::const_iterator it = NPCS.begin(); it != NPCS.end(); ++it){
-
-        const YAML::Node NPC = *it;
+    for(YAML::Node NPC : NPCS){
 
         string armor = NPC["armor"].as<string>();
         string damage = NPC["damage"].as<string>();
@@ -80,9 +78,7 @@ void GameDataImporter::loadRooms(GameModel& gameModel, YAML::Node ROOMS){
 
 	*/
 
-    for(YAML::const_iterator it = ROOMS.begin(); it != ROOMS.end(); ++it){
-
-        const YAML::Node ROOM = *it;
+    for(YAML::Node ROOM : ROOMS){
 
         //Store room descriptions
         vector<string> desc = ROOM["desc"].as<vector<string>>();
@@ -102,9 +98,7 @@ void GameDataImporter::loadRooms(GameModel& gameModel, YAML::Node ROOMS){
         //dir is key, maps to room ID
         unordered_map<string, string> doorsMap;
         const YAML::Node doors = ROOM["doors"];
-        for(YAML::const_iterator it = doors.begin(); it != doors.end(); ++it){
-
-            const YAML::Node door = *it;
+        for(YAML::Node door : doors){
 
             string dir = door["dir"].as<string>();
             string to = door["to"].as<string>();
@@ -146,9 +140,7 @@ void GameDataImporter::loadRooms(GameModel& gameModel, YAML::Node ROOMS){
 
 void GameDataImporter::loadObjects(GameModel& gameModel, YAML::Node OBJECTS){
 
-    for(YAML::const_iterator it = OBJECTS.begin(); it != OBJECTS.end(); ++it){
-
-        const YAML::Node OBJECT = *it;
+    for(YAML::Node OBJECT : OBJECTS){
 
         vector<string> attributes = OBJECT["attributes"].as<vector<string>>();
         int cost = OBJECT["cost"].as<int>();
@@ -160,16 +152,13 @@ void GameDataImporter::loadObjects(GameModel& gameModel, YAML::Node OBJECTS){
         vector<string> wear_flags = OBJECT["wear_flags"].as<vector<string>>();
         int weight = OBJECT["weight"].as<int>();
 
-
     }
 }
 
 //The workflow for RESETS ends here, not sure how to utilize yet
 void GameDataImporter::loadResets(GameModel& gameModel, YAML::Node RESETS){
 
-    for(YAML::const_iterator it = RESETS.begin(); it != RESETS.end(); ++it){
-
-        const YAML::Node RESET = *it;
+    for(YAML::Node RESET : RESETS){
 
         //ie. does it reset npc, equip, door etc.
         string resetAction = RESET["action"].as<string>();
@@ -187,9 +176,7 @@ void GameDataImporter::loadResets(GameModel& gameModel, YAML::Node RESETS){
 //The workflow for SHOPS ends here, not sure how to utilize yet
 void GameDataImporter::loadShops(GameModel& gameModel, YAML::Node SHOPS){
 
-    for(YAML::const_iterator it = SHOPS.begin(); it != SHOPS.end(); ++it){
-
-        const YAML::Node SHOP = *it;
+    for(YAML::Node SHOP : SHOPS){
         //no data on shops in mgoose file
 
     }
