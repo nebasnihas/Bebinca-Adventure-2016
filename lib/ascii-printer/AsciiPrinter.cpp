@@ -1,5 +1,4 @@
-//ascii-printer
-
+//AsciiPrinter
 
 #include "AsciiPrinter.hpp"
 
@@ -24,6 +23,20 @@ uint32 AsciiPrinter::extractInt (ifstream &f)
     f.read (buf, 4);
     uint32 value = buf[0] | (buf[1] << 8) | (buf[2] << 16) | (buf[3] << 24);
     return value;
+}
+
+void AsciiPrinter::to_lower(string& word){
+    
+    transform(word.begin(), word.end(), word.begin(), ::tolower);
+}
+
+string AsciiPrinter::get_loc(const string &font_type){
+    
+    string type = font_type;
+    to_lower(type);
+    
+    const string find_loc = "assets/fontsets/" + type + "/";
+    return find_loc;
 }
 
 void AsciiPrinter::readHeader(ifstream &f, BMPFileHeader &header){
@@ -55,17 +68,17 @@ string AsciiPrinter::printObject0(const string style, const string &objname){
     unsigned char *image;
     char def_shades[MAX_SHADES] = {'#','$','O','=','+','|','-','^','.',' '};
     char num_shades[MAX_SHADES] = {'0','1','2','3','4','5','6','7','8','.'};
-
+    
     // = {'#','$','O','=','+','|','-','^','.',' '};
     // = {'0','1','2','3','4','5','6','7','8','9'};
     int average_color = 0;
     
-
+    
     string ret_string;
     ifstream bmpfile;
     BMPFileHeader header;
     
-    string filepath = "assets/bmpimgs/" + objname + ".bmp";
+    const string filepath = "assets/bmpimgs/" + objname + ".bmp";
     
     // Open the image file
     bmpfile.open (filepath, ios::in | ios::binary);
@@ -94,7 +107,7 @@ string AsciiPrinter::printObject0(const string style, const string &objname){
     bmpfile.close();
     
     //char tempoutput[3][3];
-    string temo;
+    //string temo;
     for(int y = height-1; y >= 0; y--) {
         
         for(int x = 0; x < width; x++) {
@@ -126,4 +139,43 @@ string AsciiPrinter::printObject0(const string style, const string &objname){
     
     return ret_string;
     
-   }
+}
+
+
+string AsciiPrinter::word1(const string font_type, const string& word){
+    
+    string sf_1 = get_loc(font_type);
+    sf_1 += word[0];
+    sf_1 += ".txt";
+    
+    ifstream pf_1(sf_1);
+    
+    string pc_1;
+    string ret_string;
+    
+    if(pf_1.is_open()){
+        while (getline(pf_1, pc_1)){
+            ret_string += pc_1;
+            ret_string += "\n";
+        }
+        pf_1.close();
+    }
+    
+    return ret_string;
+    
+}
+
+
+
+/*
+ string printWord0(const string font_type, const string &word){
+ 
+ }
+ 
+ string printWord1(const string font_type, const string word){
+ 
+ 
+ 
+ }
+ 
+ */

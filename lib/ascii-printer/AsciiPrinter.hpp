@@ -58,21 +58,21 @@ private:
     
     static void readHeader(ifstream& f, BMPFileHeader& header);
     
-    static string processString(const string &word);
+    static string get_loc(const string &font_type);
     static void to_lower(string& word);
     
-    //Methods supporting word streams upto  letters. Multiple methods so that memory (allocation) is not
+    //Methods supporting word streams upto  10 letters. Multiple methods so that memory (allocation) is not
     //wasted if unnecessary
-    static string word1(string& word);
-    static string word2(string& word);
-    static string word3(string& word);
-    static string word4(string& word);
-    static string word5(string& word);
-    static string word6(string& word);
-    static string word7(string& word);
-    static string word8(string& word);
-    static string word9(string& word);
-    static string word10(string& word);
+    //-----Function moved to public for debug purpose--------//
+    static string word2(const string font_type, const string& word);
+    static string word3(const string font_type, const string& word);
+    static string word4(const string font_type, const string& word);
+    static string word5(const string font_type, const string& word);
+    static string word6(const string font_type, const string& word);
+    static string word7(const string font_type, const string& word);
+    static string word8(const string font_type, const string& word);
+    static string word9(const string font_type, const string& word);
+    static string word10(const string font_type, const string& word);
     
     //To be added
     // static string sentence_helper(const string font_type, const string& sentence);
@@ -94,6 +94,11 @@ public:
     //Font Types: (...to be upadted)
     static string printWord0(const string font_type, const string &word);
     static string printWord1(const string font_type, const string word);
+    
+    //-------------For Debug purpose----------------
+    static string word1(const string font_type, const string& word);
+    //-----------------------------------------------
+    
     
     //To be added
     // static string printSentence(const string font_type, const string &sentence);
