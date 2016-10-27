@@ -3,6 +3,8 @@
 #include "AsciiPrinter.hpp"
 
 #define MAX_SHADES 10
+#define MAX_WORD_COUNT 10
+#define DEBUG 1
 
 typedef unsigned short uint16;
 typedef unsigned int uint32;
@@ -35,7 +37,7 @@ string AsciiPrinter::get_loc(const string &font_type){
     string type = font_type;
     to_lower(type);
     
-    const string find_loc = "assets/fontsets/" + type + "/";
+    const string find_loc = "./assets/fontsets/" + type + "/";
     return find_loc;
 }
 
@@ -83,6 +85,27 @@ void AsciiPrinter::readHeader(ifstream &f, BMPFileHeader &header){
     header.vertRes = extractInt (f);
     header.indicesUsed = extractInt (f);
     header.indicesImportant = extractInt (f);
+    
+    /* DEBUG FLAGS------
+     #ifdef DEBUG
+     cout << "filetype " << header.filetype << endl;
+     cout << "filesize " << header.filesize << endl;
+     cout << "reserved " << header.reserved << endl;
+     cout << "offset " << header.offset << endl;
+     cout << "bytesInHeader " << header.bytesInHeader << endl;
+     cout << "width " << int(header.width) << endl;
+     cout << "height " << int(header.height) << endl;
+     cout << "planes " << header.planes << endl;
+     cout << "bitsPerPixel " << header.bitsPerPixel << endl;
+     cout << "compression " << header.compression << endl;
+     cout << "size " << header.size << endl;
+     cout << "horizRes " << header.horizRes << endl;
+     cout << "vertRes " << header.vertRes << endl;
+     cout << "indicesUsed " << header.indicesUsed << endl;
+     cout << "indicesImportant " << header.indicesImportant << endl;
+     #endif
+     */
+    
 }
 
 string AsciiPrinter::printObject1(const string style, const string objname){
@@ -171,38 +194,566 @@ string AsciiPrinter::printObject0(const string style, const string &objname){
 
 string AsciiPrinter::word1(const string font_type, const string& word){
     
+    string ret_string;
     string sf_1 = get_loc(font_type);
-    sf_1 += word[0];
-    sf_1 += ".txt";
+    string w_1 = word;
+    to_lower(w_1);
+    
+    process_letter_location(w_1[0], sf_1);
+    
+    /* DEBUG Flag
+     #ifdef DEBUG
+     cout << "The full location is " << sf_1 << endl;
+     #endif
+     */
     
     ifstream pf_1(sf_1);
-    
     string pc_1;
-    string ret_string;
     
     if(pf_1.is_open()){
         while (getline(pf_1, pc_1)){
             ret_string += pc_1;
+            
             ret_string += "\n";
+            
+            /* DEBUG FLAGS
+             #ifdef DEBUG
+             cout << pc_1
+             << "\n";
+             #endif
+             */
+            
         }
         pf_1.close();
     }
     
     return ret_string;
+}
+
+string AsciiPrinter::word2(const string font_type, const string& word){
     
+    string ret_string;
+    
+    string w_1 = word;
+    to_lower(w_1);
+    
+    vector<string> sf;
+    for (int i=0; i < get_word_size(w_1); i++){
+        sf.push_back(get_loc(font_type));
+        process_letter_location(w_1[i], sf[i]);
+    }
+    
+    
+    /*DEBUG flag
+     #ifdef DEBUG
+     for(string s:sf){
+     cout << "The element: " << s << endl;
+     }
+     #endif
+     */
+    
+    ifstream pf[2];
+    for(int i=0; i < get_word_size(w_1); i++){
+        pf[i].open((sf[i]));
+    }
+    
+    string pc[2];
+    
+    if(pf[0].is_open()){
+        while (getline(pf[0],pc[0])){
+            getline(pf[1],pc[1]);
+            
+            ret_string += pc[0];
+            ret_string += pc[1];
+            
+            ret_string += "\n";
+        }
+        
+        for(int i=0; i < get_word_size(w_1); i++){
+            pf[i].close();
+        }
+    }
+    
+    return ret_string;
+}
+
+
+string AsciiPrinter::word3(const string font_type, const string& word){
+    
+    string ret_string;
+    
+    string w_1 = word;
+    to_lower(w_1);
+    
+    vector<string> sf;
+    for (int i=0; i < get_word_size(w_1); i++){
+        sf.push_back(get_loc(font_type));
+        process_letter_location(w_1[i], sf[i]);
+    }
+    
+    
+    ifstream pf[3];
+    for(int i=0; i < get_word_size(w_1); i++){
+        pf[i].open((sf[i]));
+    }
+    
+    string pc[3];
+    
+    if(pf[0].is_open()){
+        while (getline(pf[0],pc[0])){
+            getline(pf[1],pc[1]);
+            getline(pf[2],pc[2]);
+            
+            ret_string += pc[0];
+            ret_string += pc[1];
+            ret_string += pc[2];
+            
+            ret_string += "\n";
+        }
+        
+        for(int i=0; i < get_word_size(w_1); i++){
+            pf[i].close();
+        }
+    }
+    
+    return ret_string;
+}
+
+string AsciiPrinter::word4(const string font_type, const string& word){
+    
+    string ret_string;
+    
+    string w_1 = word;
+    to_lower(w_1);
+    
+    vector<string> sf;
+    for (int i=0; i < get_word_size(w_1); i++){
+        sf.push_back(get_loc(font_type));
+        process_letter_location(w_1[i], sf[i]);
+    }
+    
+    
+    ifstream pf[4];
+    for(int i=0; i < get_word_size(w_1); i++){
+        pf[i].open((sf[i]));
+    }
+    
+    string pc[4];
+    
+    if(pf[0].is_open()){
+        while (getline(pf[0],pc[0])){
+            getline(pf[1],pc[1]);
+            getline(pf[2],pc[2]);
+            getline(pf[3],pc[3]);
+            
+            ret_string += pc[0];
+            ret_string += pc[1];
+            ret_string += pc[2];
+            ret_string += pc[3];
+            
+            ret_string += "\n";
+        }
+        
+        for(int i=0; i < get_word_size(w_1); i++){
+            pf[i].close();
+        }
+    }
+    
+    return ret_string;
+}
+
+string AsciiPrinter::word5(const string font_type, const string& word){
+    
+    string ret_string;
+    
+    string w_1 = word;
+    to_lower(w_1);
+    
+    vector<string> sf;
+    for (int i=0; i < get_word_size(w_1); i++){
+        sf.push_back(get_loc(font_type));
+        process_letter_location(w_1[i], sf[i]);
+    }
+    
+    
+    ifstream pf[5];
+    for(int i=0; i < get_word_size(w_1); i++){
+        pf[i].open((sf[i]));
+    }
+    
+    string pc[5];
+    
+    if(pf[0].is_open()){
+        while (getline(pf[0],pc[0])){
+            getline(pf[1],pc[1]);
+            getline(pf[2],pc[2]);
+            getline(pf[3],pc[3]);
+            getline(pf[4],pc[4]);
+            
+            ret_string += pc[0];
+            ret_string += pc[1];
+            ret_string += pc[2];
+            ret_string += pc[3];
+            ret_string += pc[4];
+            
+            ret_string += "\n";
+        }
+        
+        for(int i=0; i < get_word_size(w_1); i++){
+            pf[i].close();
+        }
+    }
+    
+    return ret_string;
+}
+
+string AsciiPrinter::word6(const string font_type, const string& word){
+    
+    string ret_string;
+    
+    string w_1 = word;
+    to_lower(w_1);
+    
+    vector<string> sf;
+    for (int i=0; i < get_word_size(w_1); i++){
+        sf.push_back(get_loc(font_type));
+        process_letter_location(w_1[i], sf[i]);
+    }
+    
+    
+    ifstream pf[6];
+    for(int i=0; i < get_word_size(w_1); i++){
+        pf[i].open((sf[i]));
+    }
+    
+    string pc[6];
+    
+    if(pf[0].is_open()){
+        while (getline(pf[0],pc[0])){
+            getline(pf[1],pc[1]);
+            getline(pf[2],pc[2]);
+            getline(pf[3],pc[3]);
+            getline(pf[4],pc[4]);
+            getline(pf[5],pc[5]);
+            
+            ret_string += pc[0];
+            ret_string += pc[1];
+            ret_string += pc[2];
+            ret_string += pc[3];
+            ret_string += pc[4];
+            ret_string += pc[5];
+            
+            
+            ret_string += "\n";
+        }
+        
+        for(int i=0; i < get_word_size(w_1); i++){
+            pf[i].close();
+        }
+    }
+    
+    return ret_string;
+}
+
+
+string AsciiPrinter::word7(const string font_type, const string& word){
+    
+    string ret_string;
+    
+    string w_1 = word;
+    to_lower(w_1);
+    
+    vector<string> sf;
+    for (int i=0; i < get_word_size(w_1); i++){
+        sf.push_back(get_loc(font_type));
+        process_letter_location(w_1[i], sf[i]);
+    }
+    
+    
+    ifstream pf[7];
+    for(int i=0; i < get_word_size(w_1); i++){
+        pf[i].open((sf[i]));
+    }
+    
+    string pc[7];
+    
+    if(pf[0].is_open()){
+        while (getline(pf[0],pc[0])){
+            getline(pf[1],pc[1]);
+            getline(pf[2],pc[2]);
+            getline(pf[3],pc[3]);
+            getline(pf[4],pc[4]);
+            getline(pf[5],pc[5]);
+            getline(pf[6],pc[6]);
+            
+            ret_string += pc[0];
+            ret_string += pc[1];
+            ret_string += pc[2];
+            ret_string += pc[3];
+            ret_string += pc[4];
+            ret_string += pc[5];
+            ret_string += pc[6];
+            
+            
+            ret_string += "\n";
+        }
+        
+        for(int i=0; i < get_word_size(w_1); i++){
+            pf[i].close();
+        }
+    }
+    
+    return ret_string;
+}
+
+string AsciiPrinter::word8(const string font_type, const string& word){
+    
+    string ret_string;
+    
+    string w_1 = word;
+    to_lower(w_1);
+    
+    vector<string> sf;
+    for (int i=0; i < get_word_size(w_1); i++){
+        sf.push_back(get_loc(font_type));
+        process_letter_location(w_1[i], sf[i]);
+    }
+    
+    
+    ifstream pf[8];
+    for(int i=0; i < get_word_size(w_1); i++){
+        pf[i].open((sf[i]));
+    }
+    
+    string pc[8];
+    
+    if(pf[0].is_open()){
+        while (getline(pf[0],pc[0])){
+            getline(pf[1],pc[1]);
+            getline(pf[2],pc[2]);
+            getline(pf[3],pc[3]);
+            getline(pf[4],pc[4]);
+            getline(pf[5],pc[5]);
+            getline(pf[6],pc[6]);
+            getline(pf[7],pc[7]);
+            
+            ret_string += pc[0];
+            ret_string += pc[1];
+            ret_string += pc[2];
+            ret_string += pc[3];
+            ret_string += pc[4];
+            ret_string += pc[5];
+            ret_string += pc[6];
+            ret_string += pc[7];
+            
+            
+            ret_string += "\n";
+        }
+        
+        for(int i=0; i < get_word_size(w_1); i++){
+            pf[i].close();
+        }
+    }
+    
+    return ret_string;
+}
+
+string AsciiPrinter::word9(const string font_type, const string& word){
+    
+    string ret_string;
+    
+    string w_1 = word;
+    to_lower(w_1);
+    
+    vector<string> sf;
+    for (int i=0; i < get_word_size(w_1); i++){
+        sf.push_back(get_loc(font_type));
+        process_letter_location(w_1[i], sf[i]);
+    }
+    
+    
+    ifstream pf[9];
+    for(int i=0; i < get_word_size(w_1); i++){
+        pf[i].open((sf[i]));
+    }
+    
+    string pc[9];
+    
+    if(pf[0].is_open()){
+        while (getline(pf[0],pc[0])){
+            getline(pf[1],pc[1]);
+            getline(pf[2],pc[2]);
+            getline(pf[3],pc[3]);
+            getline(pf[4],pc[4]);
+            getline(pf[5],pc[5]);
+            getline(pf[6],pc[6]);
+            getline(pf[7],pc[7]);
+            getline(pf[8],pc[8]);
+            
+            ret_string += pc[0];
+            ret_string += pc[1];
+            ret_string += pc[2];
+            ret_string += pc[3];
+            ret_string += pc[4];
+            ret_string += pc[5];
+            ret_string += pc[6];
+            ret_string += pc[7];
+            ret_string += pc[8];
+            
+            
+            ret_string += "\n";
+        }
+        
+        for(int i=0; i < get_word_size(w_1); i++){
+            pf[i].close();
+        }
+    }
+    
+    return ret_string;
+}
+
+string AsciiPrinter::word10(const string font_type, const string& word){
+    
+    string ret_string;
+    
+    string w_1 = word;
+    to_lower(w_1);
+    
+    vector<string> sf;
+    for (int i=0; i < get_word_size(w_1); i++){
+        sf.push_back(get_loc(font_type));
+        process_letter_location(w_1[i], sf[i]);
+    }
+    
+    
+    ifstream pf[10];
+    for(int i=0; i < get_word_size(w_1); i++){
+        pf[i].open((sf[i]));
+    }
+    
+    string pc[10];
+    
+    if(pf[0].is_open()){
+        while (getline(pf[0],pc[0])){
+            getline(pf[1],pc[1]);
+            getline(pf[2],pc[2]);
+            getline(pf[3],pc[3]);
+            getline(pf[4],pc[4]);
+            getline(pf[5],pc[5]);
+            getline(pf[6],pc[6]);
+            getline(pf[7],pc[7]);
+            getline(pf[8],pc[8]);
+            getline(pf[9],pc[9]);
+            
+            ret_string += pc[0];
+            ret_string += pc[1];
+            ret_string += pc[2];
+            ret_string += pc[3];
+            ret_string += pc[4];
+            ret_string += pc[5];
+            ret_string += pc[6];
+            ret_string += pc[7];
+            ret_string += pc[8];
+            ret_string += pc[9];
+            
+            
+            ret_string += "\n";
+        }
+        
+        for(int i=0; i < get_word_size(w_1); i++){
+            pf[i].close();
+        }
+    }
+    
+    return ret_string;
 }
 
 
 
-/*
- string printWord0(const string font_type, const string &word){
- 
- }
- 
- string printWord1(const string font_type, const string word){
- 
- 
- 
- }
- 
- */
+
+string AsciiPrinter::printWord0(const string font_type, const string &word){
+    
+    string type = process_font_type(font_type);
+    string this_word = word;
+    string processed_word;
+    bool flag = false;
+    
+    for(char c:word){
+        if (c == ' '){
+            flag = true;
+        }
+    }
+    
+    if(flag){
+        return "words cant be sentences";
+    }
+    
+    const int count = get_word_size(this_word);
+    
+    if(count > MAX_WORD_COUNT){
+        return "Word size is too long";
+    }
+    
+    
+    switch (count) {
+        case 0:
+            processed_word = "Blank word";
+            break;
+            
+        case 1:
+            processed_word = word1(type, this_word);
+            break;
+            
+        case 2:
+            processed_word = word2(type, this_word);
+            break;
+            
+        case 3:
+            processed_word = word3(type, this_word);
+            break;
+            
+        case 4:
+            processed_word = word4(type, this_word);
+            break;
+            
+        case 5:
+            processed_word = word5(type, this_word);
+            break;
+            
+        case 6:
+            processed_word = word6(type, this_word);
+            break;
+            
+        case 7:
+            processed_word = word7(type, this_word);
+            break;
+            
+        case 8:
+            processed_word = word8(type, this_word);
+            break;
+            
+        case 9:
+            processed_word = word9(type, this_word);
+            break;
+            
+        case 10:
+            processed_word = word10(type, this_word);
+            break;
+            
+        default:
+            processed_word = "Error";
+            break;
+    }
+    
+    return processed_word;
+}
+
+
+string AsciiPrinter::printWord1(const string font_type, const string word){
+    
+    string type = process_font_type(font_type);
+    return printWord0(font_type, word);
+}
+
+
+

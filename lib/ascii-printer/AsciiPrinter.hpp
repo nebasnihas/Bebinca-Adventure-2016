@@ -17,6 +17,7 @@
 #include <cstdlib>
 #include <string>
 #include <algorithm>
+#include <vector>
 
 using namespace std;
 
@@ -58,6 +59,7 @@ private:
     
     static void readHeader(ifstream& f, BMPFileHeader& header);
     
+    
     static string get_loc(const string &font_type);
     static void to_lower(string& word);
     static void process_letter_location(const char &c, string& word_file);
@@ -67,6 +69,7 @@ private:
     //Methods supporting word streams upto  10 letters. Multiple methods so that memory (allocation) is not
     //wasted if unnecessary
     //-----Function moved to public for debug purpose--------//
+    static string word1(const string font_type, const string& word);
     static string word2(const string font_type, const string& word);
     static string word3(const string font_type, const string& word);
     static string word4(const string font_type, const string& word);
@@ -99,7 +102,7 @@ public:
     static string printWord1(const string font_type, const string word);
     
     //-------------For Debug purpose----------------
-    static string word1(const string font_type, const string& word);
+    
     //-----------------------------------------------
     
     
