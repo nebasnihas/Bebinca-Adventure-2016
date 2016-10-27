@@ -60,6 +60,9 @@ private:
     
     static string get_loc(const string &font_type);
     static void to_lower(string& word);
+    static void process_letter_location(const char &c, string& word_file);
+    static int get_word_size(string& word);
+    static string process_font_type(const string& font_type);
     
     //Methods supporting word streams upto  10 letters. Multiple methods so that memory (allocation) is not
     //wasted if unnecessary

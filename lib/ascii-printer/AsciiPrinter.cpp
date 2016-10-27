@@ -39,6 +39,33 @@ string AsciiPrinter::get_loc(const string &font_type){
     return find_loc;
 }
 
+void AsciiPrinter::process_letter_location(const char &c, string &word_file){
+    
+    word_file += c;
+    word_file += ".txt";
+    
+}
+
+int AsciiPrinter::get_word_size(string &word){
+    long long_word = word.size();
+    const int word_size = int(long_word);
+    return word_size;
+}
+
+string AsciiPrinter::process_font_type(const string &font_type){
+    
+    string type = font_type;
+    to_lower(type);
+    
+    if(type == "default"){
+        return "default";
+    } else if (type == "test"){
+        return "test";
+    }//Add more font types here
+    
+    return "default";
+}
+
 void AsciiPrinter::readHeader(ifstream &f, BMPFileHeader &header){
     
     header.filetype = extractShort (f);
