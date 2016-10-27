@@ -42,6 +42,8 @@ public:
     void increaseExp(int expToAdd);
 };
 
+
+//Creatable Character Classes
 class WarriorCharacter : public Character {
 public:
     WarriorCharacter(const std::string& id, const std::string& name, const std::string& areaID)
@@ -76,6 +78,13 @@ public:
     std::string getClass() {
         return "ranger";
     }
+
+//NPCS
+class NPC : public Character{
+public:
+    NPC()
+};
+
 };
 
 #endif
