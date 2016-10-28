@@ -47,20 +47,24 @@ void addMockAreas()
 			std::unordered_map<std::string, std::string> {
 				{"Area2", "Mall"},
 				{"Area3", "Library"}
-			}, "This is your home.");
+			}, "This is your home.",
+			std::vector<std::string>{});
 
 	Area a2("Area2", 
 			"Mall", 
 			std::unordered_map<std::string, std::string>{
 				{"Area1", "Home"}, 
 				{"Area3", "Library"}
-			}, "This is the mall.");
+			}, "This is the mall.",
+			std::vector<std::string>{});
 
 	Area a3("Area3", 
 			"Library", 
 			std::unordered_map<std::string, std::string>{
 				{"Area2", "Mall"}
-			}, "This is the city's library.");
+			}, "This is the city's library.",
+			std::vector<std::string>{});
+
 
 	gameModel.addArea(a1);
 	gameModel.addArea(a2);

@@ -13,7 +13,7 @@
 class Area 
 {
 
-	typedef std::unordered_map<std::string, std::string> Doors;
+	using Doors =  std::unordered_map<std::string, std::string>;
 
 public:
 
@@ -21,7 +21,7 @@ public:
 	// Constructors
 	//---------------*
 
-	Area(const std::string &id, const std::string &title, const Doors& connectedAreas, const std::string &description);
+	Area(const std::string &id, const std::string &title, const Doors& connectedAreas, const std::string &description, const std::vector<std::string>& extendedDescriptions);
 	Area(const std::string &id, const std::string &title); //For testing
 
 	//*---------------
@@ -33,6 +33,7 @@ public:
 	std::string getDescription() const;
 	Doors* getConnectedAreas() const;
     std::vector<Object> getObjectList() const;
+    std::vector<std::string> getExtendedDescriptions() const;
 
     /*
      *  TODO: Analyze and reconstruct these functions
@@ -48,7 +49,9 @@ private:
 	Doors connectedAreas;
 
     std::string description;
-	std::vector<Object> objectList;
+    std::vector<std::string> extendedDescriptions;
+
+	std::vector<Object> objectList; //The Mother Goose YAML file does not contain an object list for every "ROOM".
 
 	//TO-DO: Add more detail to an area
 };

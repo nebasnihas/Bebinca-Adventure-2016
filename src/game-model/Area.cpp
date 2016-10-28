@@ -4,11 +4,16 @@
 // Constructors
 //---------------*
 
-Area::Area(const std::string &id, const std::string &title, const Doors& connectedAreas, const std::string &description)
+Area::Area( const std::string &id, 
+            const std::string &title, 
+            const Doors& connectedAreas, 
+            const std::string &description,
+            const std::vector<std::string>& extendedDescriptions)
     : id(id)
     , title(title)
     , connectedAreas(connectedAreas)
     , description(description)
+    , extendedDescriptions(extendedDescriptions)
     {
         try
         {
@@ -70,6 +75,10 @@ Area::Doors* Area::getConnectedAreas() const{
 
 std::vector<Object> Area::getObjectList() const {
     return objectList;
+}
+
+std::vector<std::string> Area::getExtendedDescriptions() const {
+    return extendedDescriptions;
 }
 
 

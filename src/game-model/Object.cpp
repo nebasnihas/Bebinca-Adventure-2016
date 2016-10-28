@@ -33,7 +33,7 @@ Object::Object(	const std::vector<std::string>& attributes,
 			                type == "" ||
 			                description == "" ||
 			                name == "" ||
-			                weight < 0	
+			                weight <= 0	
 			                )
 			            {
 			                throw InvalidObjectException();
