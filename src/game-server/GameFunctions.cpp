@@ -71,7 +71,7 @@ std::unique_ptr<MessageBuilder> GameFunctions::listExits(const std::vector<std::
 }
 
 std::unique_ptr<MessageBuilder> GameFunctions::say(const std::vector<std::string>& targets, const PlayerInfo& player) {
-    std::string message;
+    std::string message = "[All] ";
     for (const auto& target : targets) {
         message += target + " ";
     }
@@ -82,7 +82,7 @@ std::unique_ptr<MessageBuilder> GameFunctions::say(const std::vector<std::string
 }
 
 std::unique_ptr<MessageBuilder> GameFunctions::shout(const std::vector<std::string> &targets, const PlayerInfo &player) {
-    std::string message;
+    std::string message = "[Area] ";
     for (const auto& target : targets) {
         message += target + " ";
     }
@@ -99,27 +99,37 @@ std::unique_ptr<MessageBuilder> GameFunctions::shout(const std::vector<std::stri
 }
 
 std::unique_ptr<MessageBuilder> GameFunctions::whisper(const std::vector<std::string> &targets, const PlayerInfo &player) {
-    auto targetPlayerID = *targets.begin();
     std::string message;
-    auto targetClient = controller.getClientID(targetPlayerID);
 
-    if (!targetClient) {
+    if (targets.empty()) {
         //TODO: extract into string resources
-        message = "Player Not Found";
+        message = "Player not specified for whisper";
         return DisplayMessageBuilder::createMessage(message)
                 .addClient(player.clientID)
                 .setSender(DisplayMessageBuilder::SENDER_SERVER);
     }
-    else {
-        auto targetsIterator = targets.begin();
-        std::advance(targetsIterator, 1);
-        for (targetsIterator; targetsIterator != targets.end(); targetsIterator++ ) {
-            message += *targetsIterator + " ";
-        }
+
+    auto targetPlayerID = *targets.begin();
+    auto targetClient = controller.getClientID(targetPlayerID);
+
+    if (!targetClient) {
+        //TODO: extract into string resources
+        message = targetPlayerID + " " + "is not here";
         return DisplayMessageBuilder::createMessage(message)
-                .addClient(targetClient.get())
-                .setSender(player.playerID);
+                .addClient(player.clientID)
+                .setSender(DisplayMessageBuilder::SENDER_SERVER);
     }
+
+    auto targetsIterator = targets.begin();
+    std::advance(targetsIterator, 1);
+    message += "[Whisper] ";
+    for (targetsIterator; targetsIterator != targets.end(); targetsIterator++ ) {
+        message += *targetsIterator + " ";
+    }
+    return DisplayMessageBuilder::createMessage(message)
+            .addClient(targetClient.get())
+            .setSender(player.playerID);
+
 }
 
 

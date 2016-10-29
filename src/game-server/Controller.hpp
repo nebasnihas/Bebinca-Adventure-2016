@@ -30,7 +30,7 @@ public:
     void disconnectPlayer(const std::string& playerID);
 
     const boost::optional<networking::Connection> getClientID(const std::string& playerID) const;
-    const boost::optional<std::string> getPlayerID(const networking::Connection& clientID) const;
+    const std::string getPlayerID(const networking::Connection &clientID) const;
     const std::vector<networking::Connection>& getAllClients() const;
     GameModel& getGameModel() const;
 
