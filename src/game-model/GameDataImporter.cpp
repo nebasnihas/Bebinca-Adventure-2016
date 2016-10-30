@@ -1,5 +1,6 @@
 #include "game/GameDataImporter.hpp"
 #include "Area.hpp"
+#include "Character.hpp"
 #include "yaml-cpp/yaml.h"
 #include <fstream>
 #include <iostream>
@@ -43,22 +44,34 @@ void GameDataImporter::loadyamlFile(GameModel& gameModel, std::string fileName) 
 //The following five methods take a root node and parse it one level deeper (to get an individual description)
 
 void GameDataImporter::loadNPCS(GameModel& gameModel, YAML::Node NPCS){
+
+    vector<NPC> npcs = {};
+
     //Sequence Iterator
     for(YAML::Node NPC : NPCS){
 
-        string armor = NPC["armor"].as<string>();
+        int armor = NPC["armor"].as<int>();
         string damage = NPC["damage"].as<string>();
-        vector<string> description = NPC["description"].as<vector<string>>();
-        int exp =  NPC["exp"].as<int>();
-        int gold = NPC["gold"].as<int>();
-        string hit = NPC["hit"].as<std::string>();
-        string npcID = NPC["id"].as<string>();
-        vector<string> keywords = NPC["keywords"].as<vector<string>>();
-        int level = NPC["level"].as<int>();
-        vector<string> longdesc = NPC["longdesc"].as<vector<string>>();
         string shortdesc = NPC["shortdesc"].as<string>();
         int thac0 = NPC["thac0"].as<int>();
+        int exp =  NPC["exp"].as<int>();
+        int gold = NPC["gold"].as<int>();
+        string hit = NPC["hit"].as<string>();
+        string npcID = NPC["id"].as<string>();
+        int level = NPC["level"].as<int>();
 
+        vector<string> description = NPC["description"].as<vector<string>>();
+        string sDescription = boost::algorithm::join(description, " ");
+
+        vector<string> keywords = NPC["keywords"].as<vector<string>>();
+        string sKeywords = boost::algorithm::join(keywords, " ");
+
+        vector<string> longdesc = NPC["longdesc"].as<vector<string>>();
+        string sLongDescription = boost::algorithm::join(longdesc, " ");
+
+        //Create NPC
+        NPC newNPC = NPC::NPC(npcID, shortdesc, hit, damage, level, exp, armor, thac0, gold, sDescription, sKeywords, sLongDescription);
+        npcs.push_back(newNPC);
     }
 }
 
