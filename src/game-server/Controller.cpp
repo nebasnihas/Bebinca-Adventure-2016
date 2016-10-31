@@ -7,15 +7,15 @@
 #include "Authenticator.hpp"
 #include "StringUtils.hpp"
 #include "DisplayMessageBuilder.hpp"
+#include "CommandCreator.hpp"
 #include <functional>
 #include <unordered_set>
 
 using namespace networking;
 using namespace std::placeholders;
 
-Controller::Controller(GameModel& gameModel, networking::Server& server, const YAML::Node& commandBindingsNode)
-        : gameModel{gameModel}, server{server}, cmdConfig{commandBindingsNode} {
-    CHECK(cmdConfig) << "No configuration for commands";
+Controller::Controller(GameModel& gameModel, Server& server, CommandCreator& commandCreator)
+        : gameModel{gameModel}, server{server}, commandCreator{commandCreator} {
     registerCommand(Command{"help", std::bind(&Controller::help, this, std::placeholders::_1, std::placeholders::_2)});
 }
 
@@ -37,55 +37,8 @@ std::unique_ptr<MessageBuilder> Controller::processCommand(const protocols::Play
 }
 
 void Controller::registerCommand(const Command& command) {
-    auto cmd = std::make_shared<Command>(command);
-
-    //read configuration and setup bindings
-    const std::string DESC_KEY = "desc";
-    const std::string USAGE_KEY = "usage";
-    const std::string BINDINGS_KEY = "bindings";
-    const std::string key = "command-" + command.getKeyword();
-
-    //Get the yaml node for the binding configuration for this command
-    const auto& configNode = cmdConfig[key];
-    CHECK(configNode) << "Command configuration doesn't exist for: " << cmd->getKeyword();
-    LOG(INFO) << "Configuring options for command: " << cmd->getKeyword();
-
-    //Get the description of this command
-    const auto& descNode = configNode[DESC_KEY];
-    if (descNode) {
-        LOG(INFO) << "Found description for command: " << cmd->getKeyword();
-        cmd->setDesc(descNode.as<std::string>());
-    } else {
-        LOG(WARNING) << "No description for command: " << cmd->getKeyword();
-    }
-
-    //Get the usage for this command
-    const auto& usageNode = configNode[USAGE_KEY];
-    if (usageNode) {
-        LOG(INFO) << "Found usage for command: " << cmd->getKeyword();
-        cmd->setUsage(usageNode.as<std::string>());
-    } else {
-        LOG(WARNING) << "No usage found for command: " << cmd->getKeyword();
-    }
-
-    //Add each binding to command map
-    const auto& bindingsNode = configNode[BINDINGS_KEY];
-    CHECK(bindingsNode) << "No bindings configuration found for command: " << cmd->getKeyword();
-
-    auto bindings = bindingsNode.as<std::vector<std::string>>();
-    CHECK(!bindings.empty()) << "No bindings for command: " << cmd->getKeyword();
-
-    LOG(INFO) << "Found bindings for command:" << cmd->getKeyword();
-    for (const auto& binding : bindings) {
-        if (playerCommandMap.count(binding) == 1) {
-            LOG(WARNING) << "Command binding: " << binding << " already exists.";
-            break;
-        }
-
-        LOG(INFO) << "Adding binding " << binding << " to command: " << cmd->getKeyword();
-        cmd->addBinding(binding);
-        playerCommandMap.emplace(binding, cmd);
-    }
+    auto bindings = commandCreator.createBindingsFromCommand(command);
+    playerCommandMap.insert(bindings.begin(), bindings.end());
 }
 
 void Controller::addNewPlayer(const PlayerInfo& player) {

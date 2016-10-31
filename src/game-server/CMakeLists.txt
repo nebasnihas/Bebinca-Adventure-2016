@@ -5,7 +5,12 @@ add_executable(game-server
         Command.cpp
         Controller.cpp
         DisplayMessageBuilder.cpp DisplayMessageBuilder.hpp
-        GameFunctions.cpp GameFunctions.hpp Looper.cpp Looper.hpp ServerLoop.cpp ServerLoop.hpp MessageBuilder.hpp)
+        GameFunctions.cpp GameFunctions.hpp
+        Looper.cpp Looper.hpp
+        ServerLoop.cpp ServerLoop.hpp
+        MessageBuilder.hpp
+        ServerConfig.cpp ServerConfig.hpp
+        CommandCreator.cpp CommandCreator.hpp)
 
 target_link_libraries(game-server
         networking

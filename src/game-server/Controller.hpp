@@ -14,12 +14,13 @@
 #include "MessageBuilder.hpp"
 #include "boost/bimap/unordered_set_of.hpp"
 #include "boost/bimap.hpp"
+#include "CommandCreator.hpp"
 
 class GameFunctions;
 
 class Controller {
 public:
-    Controller(GameModel& gameModel, networking::Server& server, const YAML::Node& commandBindingsNode);
+    Controller(GameModel& gameModel, networking::Server& server, CommandCreator& commandCreator);
 
     void registerCommand(const Command& command);
     std::unique_ptr<MessageBuilder> processCommand(const protocols::PlayerCommand& command,
@@ -50,8 +51,7 @@ private:
 
     GameModel& gameModel;
     networking::Server& server;
-
-    YAML::Node cmdConfig;
+    CommandCreator commandCreator;
 
     //help command
     std::unique_ptr<MessageBuilder> help(const std::vector<std::string>& targets, const PlayerInfo& player);
