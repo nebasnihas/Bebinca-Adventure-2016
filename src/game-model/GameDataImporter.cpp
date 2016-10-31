@@ -1,6 +1,7 @@
 #include "game/GameDataImporter.hpp"
 #include "Area.hpp"
 #include "Character.hpp"
+#include "Inventory.hpp"
 #include "yaml-cpp/yaml.h"
 #include <fstream>
 #include <iostream>
@@ -8,6 +9,7 @@
 #include <unordered_map>
 #include <typeinfo>
 #include <boost/algorithm/string/join.hpp>
+#include <string>
 
 using namespace std;
 
@@ -15,7 +17,7 @@ using std::vector;
 using std::string;
 using std::unordered_map;
 
-#include <string>
+
 
 
 //NOTE: If compiling in command line, must include -lyaml-cpp flag at the end of g++ sequence
@@ -69,8 +71,11 @@ void GameDataImporter::loadNPCS(GameModel& gameModel, YAML::Node NPCS){
         vector<string> longdesc = NPC["longdesc"].as<vector<string>>();
         string sLongDescription = boost::algorithm::join(longdesc, " ");
 
+        Inventory inventory;
+
         //Create NPC
-        NPC newNPC = NPC::NPC(npcID, shortdesc, hit, damage, level, exp, armor, thac0, gold, sDescription, sKeywords, sLongDescription);
+        NPC newNPC = NPC::NPC(npcID, shortdesc, hit, damage, level, exp, armor, thac0, gold, sDescription, sKeywords,
+                              sLongDescription, inventory);
         npcs.push_back(newNPC);
     }
 }

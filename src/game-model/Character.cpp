@@ -3,15 +3,17 @@
 Character::Character(const std::string& id,
                      const std::string& name, //Shortdesc is a name
                      const std::string& hit,
-                     const std::string damage,
+                     const std::string& damage,
                      int level,
                      int exp,
                      int armor,
-                     int gold
-                     //Inventory inventory
+                     int gold,
+                     Inventory inventory
+                     //,std::string areaID
                     )
 
-                    : id(id)
+                    :
+                     id(id)
                     , name(name)
                     , hit(hit)
                     , damage(damage)
@@ -19,9 +21,10 @@ Character::Character(const std::string& id,
                     , exp(exp)
                     , armor(armor)
                     , gold(gold)
-                    //, Inventory(inventory)
+                    //,areaID(areaID)
 
                     {
+                       inventory = Inventory(inventory); //Unsure if this works/keeps consistency
                     }
 
 //Getters
@@ -58,8 +61,12 @@ int Character::getGold() const{
     return gold;
 }
 
-//Inventory& Character::getInventory() {
-//    return inventory;
+Inventory& Character::getInventory() {
+    return inventory;
+}
+
+//std::string Character::getAreaID(){
+//    return areaID;
 //}
 
 //Setters
@@ -88,9 +95,10 @@ void Character::setLevel(int newLevel) {
     this->level = newLevel;
 }
 
-//void Character::setInventory(const std::string& objectID) {
-//    this->inventory = inventory.pushback(objectID);
-//}
+void Character::setInventory(const std::string& objectID) {
+    Inventory inventoryNew = this->inventory;
+    inventoryNew.addItem(objectID);
+}
 
 void Character::increaseLevel() {
     this->level++;
@@ -100,6 +108,10 @@ void Character::increaseExp(int expToAdd) {
     this->exp += expToAdd;
 }
 
+//void Character::setAreaID(const std::string newAreaID){
+//    this->areaID = newAreaID;
+//}
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////                                     NPC Subclass                                               ///////
@@ -108,7 +120,7 @@ void Character::increaseExp(int expToAdd) {
 NPC::NPC(const std::string& id,
                    const std::string& name,
                    const std::string& hit,
-                   const std::string damage,
+                   const std::string& damage,
                    int level,
                    int exp,
                    int armor,
@@ -116,8 +128,9 @@ NPC::NPC(const std::string& id,
                    const int gold,
                    const std::string& description,
                    const std::string& keywords,
-                   const std::string& longdesc
-                   //Inventory inventory
+                   const std::string& longdesc,
+                   Inventory inventory
+                    //,areaID
                     )
 
                     : Character(id,
@@ -127,8 +140,9 @@ NPC::NPC(const std::string& id,
                         level,
                         exp,
                         armor,
-                        gold
-                        //inventory
+                        gold,
+                        inventory
+                        //,areaID
                         )
 
                     , thac0(thac0)

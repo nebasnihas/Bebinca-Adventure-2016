@@ -11,12 +11,13 @@ public:
     Character(      const std::string& id,
                     const std::string& name, //Shortdesc is a name
                     const std::string& hit,
-                    const std::string damage,
+                    const std::string& damage,
                     int level,
                     int exp,
                     int armor,
-                    int gold
-                    //Inventory inventory
+                    int gold,
+                    Inventory inventory
+                    //,std::string areaID
                     );
 
     std::string getName() const;
@@ -27,14 +28,16 @@ public:
     int getExp() const;
     int getArmor() const;
     int getGold() const;
-    //Inventory& getInventory();
+    Inventory& getInventory();
+    //std::string getAreaID();
 
     void setID(const std::string& id);
     void setName(const std::string& name);
     void setDamage(const std::string& damage);
     void setArmor(int armor);
     void setGold(int gold);
-    //void setInventory& setInventory();
+    void setInventory(const std::string& objectID);
+    void setAreaID(const std::string& areaID);
 
     void setLevel(int newLevel);
     void increaseLevel();
@@ -51,7 +54,8 @@ private:
     int armor;
     int gold;
 
-    //Inventory inventory;
+    //std::string areaID;
+    Inventory inventory;
 };
 
 
@@ -61,7 +65,7 @@ public:
     NPC(        const std::string& id,
                 const std::string& name,
                 const std::string& hit,
-                const std::string damage,
+                const std::string& damage,
                 int level,
                 int exp,
                 int armor,
@@ -69,8 +73,9 @@ public:
                 const int gold,
                 const std::string& description,
                 const std::string& keywords,
-                const std::string& longDesc
-                //Inventory inventory
+                const std::string& longDesc,
+                Inventory inventory
+                //,std::string areaID
                 );
 
     std::string getDescription() const;
