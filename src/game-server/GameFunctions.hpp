@@ -6,6 +6,7 @@
 
 #include <game/GameModel.hpp>
 #include <memory>
+#include <boost/optional.hpp>
 #include "Command.hpp"
 #include "Controller.hpp"
 #include "DisplayMessageBuilder.hpp"
@@ -20,6 +21,8 @@ public:
     std::unique_ptr<MessageBuilder> listPlayers(const std::vector<std::string>& targets, const PlayerInfo& player);
     std::unique_ptr<MessageBuilder> listExits(const std::vector<std::string>& targets, const PlayerInfo& player);
     std::unique_ptr<MessageBuilder> say(const std::vector<std::string>& targets, const PlayerInfo& player);
+    std::unique_ptr<MessageBuilder> whisper(const std::vector<std::string> &targets, const PlayerInfo &player);
+    std::unique_ptr<MessageBuilder> shout(const std::vector<std::string> &targets, const PlayerInfo &player);
 
 private:
     std::string getPlayerAreaID(const PlayerInfo &player);
