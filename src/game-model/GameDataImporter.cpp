@@ -123,7 +123,7 @@ vector<NPC> GameDataImporter::returnNPCS(GameModel& gameModel, YAML::Node NPCS){
         std::string areaID;
 
         //Create NPC instance
-        NPC newNPC = NPC::NPC(npcID, shortdesc, hit, damage, level, exp, armor, gold, inventory, areaID, thac0,
+        ::NPC newNPC = ::NPC(npcID, shortdesc, hit, damage, level, exp, armor, gold, inventory, areaID, thac0,
                               sDescription, sKeywords, sLongDescription);
         npcs.push_back(newNPC);
     }

@@ -69,10 +69,10 @@ public:
                 int level,
                 int exp,
                 int armor,
-                const int gold,
+                int gold,
                 Inventory inventory,
                 std::string& areaID,
-                const int thac0,
+                int thac0,
                 const std::string& description,
                 const std::string& keywords,
                 const std::string& longDesc

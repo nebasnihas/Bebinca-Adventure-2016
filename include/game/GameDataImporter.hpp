@@ -7,7 +7,7 @@
 #include "yaml-cpp/yaml.h"
 #include "game/GameModel.hpp"
 #include "../../src/game-model/Character.hpp"
-#include "Resets.h"
+#include "../../src/game-model/Resets.h"
 
 class GameDataImporter {
 
