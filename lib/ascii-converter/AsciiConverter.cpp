@@ -1,6 +1,6 @@
-//AsciiPrinter
+//AsciiConverter
 
-#include "AsciiPrinter.hpp"
+#include "AsciiConverter.hpp"
 
 #define MAX_SHADES 10
 #define MAX_WORD_COUNT 10
@@ -11,7 +11,7 @@ typedef unsigned int uint32;
 
 using namespace std;
 
-uint16 AsciiPrinter::extractShort (ifstream &f)
+uint16 AsciiConverter::extractShort (ifstream &f)
 {
     char buf[2];
     f.read (buf, 2);
@@ -19,7 +19,7 @@ uint16 AsciiPrinter::extractShort (ifstream &f)
     return value;
 }
 
-uint32 AsciiPrinter::extractInt (ifstream &f)
+uint32 AsciiConverter::extractInt (ifstream &f)
 {
     char buf[4];
     f.read (buf, 4);
@@ -27,34 +27,34 @@ uint32 AsciiPrinter::extractInt (ifstream &f)
     return value;
 }
 
-void AsciiPrinter::to_lower(string& word){
+void AsciiConverter::to_lower(string& word){
     
     transform(word.begin(), word.end(), word.begin(), ::tolower);
 }
 
-string AsciiPrinter::get_loc(const string &font_type){
+string AsciiConverter::get_loc(const string &font_type){
     
     string type = font_type;
     to_lower(type);
-    
+
     const string find_loc = "./assets/fontsets/" + type + "/";
     return find_loc;
 }
 
-void AsciiPrinter::process_letter_location(const char &c, string &word_file){
+void AsciiConverter::process_letter_location(const char &c, string &word_file){
     
     word_file += c;
     word_file += ".txt";
     
 }
 
-int AsciiPrinter::get_word_size(string &word){
+int AsciiConverter::get_word_size(string &word){
     long long_word = word.size();
     const int word_size = int(long_word);
     return word_size;
 }
 
-string AsciiPrinter::process_font_type(const string &font_type){
+string AsciiConverter::process_font_type(const string &font_type){
     
     string type = font_type;
     to_lower(type);
@@ -68,7 +68,7 @@ string AsciiPrinter::process_font_type(const string &font_type){
     return "default";
 }
 
-void AsciiPrinter::readHeader(ifstream &f, BMPFileHeader &header){
+void AsciiConverter::readHeader(ifstream &f, BMPFileHeader &header){
     
     header.filetype = extractShort (f);
     header.filesize = extractInt (f);
@@ -85,45 +85,45 @@ void AsciiPrinter::readHeader(ifstream &f, BMPFileHeader &header){
     header.vertRes = extractInt (f);
     header.indicesUsed = extractInt (f);
     header.indicesImportant = extractInt (f);
-    
-    /* DEBUG FLAGS------
-     #ifdef DEBUG
-     cout << "filetype " << header.filetype << endl;
-     cout << "filesize " << header.filesize << endl;
-     cout << "reserved " << header.reserved << endl;
-     cout << "offset " << header.offset << endl;
-     cout << "bytesInHeader " << header.bytesInHeader << endl;
-     cout << "width " << int(header.width) << endl;
-     cout << "height " << int(header.height) << endl;
-     cout << "planes " << header.planes << endl;
-     cout << "bitsPerPixel " << header.bitsPerPixel << endl;
-     cout << "compression " << header.compression << endl;
-     cout << "size " << header.size << endl;
-     cout << "horizRes " << header.horizRes << endl;
-     cout << "vertRes " << header.vertRes << endl;
-     cout << "indicesUsed " << header.indicesUsed << endl;
-     cout << "indicesImportant " << header.indicesImportant << endl;
-     #endif
-     */
+ 
+/* DEBUG FLAGS------
+#ifdef DEBUG
+    cout << "filetype " << header.filetype << endl;
+    cout << "filesize " << header.filesize << endl;
+    cout << "reserved " << header.reserved << endl;
+    cout << "offset " << header.offset << endl;
+    cout << "bytesInHeader " << header.bytesInHeader << endl;
+    cout << "width " << int(header.width) << endl;
+    cout << "height " << int(header.height) << endl;
+    cout << "planes " << header.planes << endl;
+    cout << "bitsPerPixel " << header.bitsPerPixel << endl;
+    cout << "compression " << header.compression << endl;
+    cout << "size " << header.size << endl;
+    cout << "horizRes " << header.horizRes << endl;
+    cout << "vertRes " << header.vertRes << endl;
+    cout << "indicesUsed " << header.indicesUsed << endl;
+    cout << "indicesImportant " << header.indicesImportant << endl;
+#endif
+*/
     
 }
 
-string AsciiPrinter::printObject1(const string style, const string objname){
-    return printObject0(style,objname);
+string AsciiConverter::convertObject1(const string style, const string objname){
+    return convertObject0(style,objname);
 }
 
-string AsciiPrinter::printObject0(const string style, const string &objname){
+string AsciiConverter::convertObject0(const string style, const string &objname){
     
     int width, height;
     unsigned char *image;
     char def_shades[MAX_SHADES] = {'#','$','O','=','+','|','-','^','.',' '};
     char num_shades[MAX_SHADES] = {'0','1','2','3','4','5','6','7','8','.'};
-    
+
     // = {'#','$','O','=','+','|','-','^','.',' '};
     // = {'0','1','2','3','4','5','6','7','8','9'};
     int average_color = 0;
     
-    
+
     string ret_string;
     ifstream bmpfile;
     BMPFileHeader header;
@@ -192,7 +192,7 @@ string AsciiPrinter::printObject0(const string style, const string &objname){
 }
 
 
-string AsciiPrinter::word1(const string font_type, const string& word){
+string AsciiConverter::word1(const string font_type, const string& word){
     
     string ret_string;
     string sf_1 = get_loc(font_type);
@@ -202,26 +202,26 @@ string AsciiPrinter::word1(const string font_type, const string& word){
     process_letter_location(w_1[0], sf_1);
     
     /* DEBUG Flag
-     #ifdef DEBUG
-     cout << "The full location is " << sf_1 << endl;
-     #endif
-     */
-    
+    #ifdef DEBUG
+    cout << "The full location is " << sf_1 << endl;
+    #endif
+    */
+
     ifstream pf_1(sf_1);
     string pc_1;
     
     if(pf_1.is_open()){
         while (getline(pf_1, pc_1)){
             ret_string += pc_1;
-            
+
             ret_string += "\n";
             
-            /* DEBUG FLAGS
-             #ifdef DEBUG
-             cout << pc_1
-             << "\n";
-             #endif
-             */
+        /* DEBUG FLAGS
+        #ifdef DEBUG
+            cout << pc_1
+                 << "\n";
+        #endif
+        */
             
         }
         pf_1.close();
@@ -230,7 +230,8 @@ string AsciiPrinter::word1(const string font_type, const string& word){
     return ret_string;
 }
 
-string AsciiPrinter::word2(const string font_type, const string& word){
+
+string AsciiConverter::word2(const string font_type, const string& word){
     
     string ret_string;
     
@@ -242,15 +243,17 @@ string AsciiPrinter::word2(const string font_type, const string& word){
         sf.push_back(get_loc(font_type));
         process_letter_location(w_1[i], sf[i]);
     }
-    
+  
     
     /*DEBUG flag
-     #ifdef DEBUG
-     for(string s:sf){
-     cout << "The element: " << s << endl;
-     }
-     #endif
-     */
+    #ifdef DEBUG
+    for(string s:sf){
+        cout << "The element: " << s << endl;
+    }
+    #endif
+    */
+    
+    
     
     ifstream pf[2];
     for(int i=0; i < get_word_size(w_1); i++){
@@ -261,10 +264,11 @@ string AsciiPrinter::word2(const string font_type, const string& word){
     
     if(pf[0].is_open()){
         while (getline(pf[0],pc[0])){
-            getline(pf[1],pc[1]);
+               getline(pf[1],pc[1]);
             
-            ret_string += pc[0];
-            ret_string += pc[1];
+            for(int i=0; i < get_word_size(w_1); i++){
+                ret_string += pc[i];
+            }
             
             ret_string += "\n";
         }
@@ -278,7 +282,7 @@ string AsciiPrinter::word2(const string font_type, const string& word){
 }
 
 
-string AsciiPrinter::word3(const string font_type, const string& word){
+string AsciiConverter::word3(const string font_type, const string& word){
     
     string ret_string;
     
@@ -301,12 +305,12 @@ string AsciiPrinter::word3(const string font_type, const string& word){
     
     if(pf[0].is_open()){
         while (getline(pf[0],pc[0])){
-            getline(pf[1],pc[1]);
-            getline(pf[2],pc[2]);
+               getline(pf[1],pc[1]);
+               getline(pf[2],pc[2]);
             
-            ret_string += pc[0];
-            ret_string += pc[1];
-            ret_string += pc[2];
+            for(int i=0; i < get_word_size(w_1); i++){
+                ret_string += pc[i];
+            }
             
             ret_string += "\n";
         }
@@ -319,7 +323,7 @@ string AsciiPrinter::word3(const string font_type, const string& word){
     return ret_string;
 }
 
-string AsciiPrinter::word4(const string font_type, const string& word){
+string AsciiConverter::word4(const string font_type, const string& word){
     
     string ret_string;
     
@@ -346,10 +350,9 @@ string AsciiPrinter::word4(const string font_type, const string& word){
             getline(pf[2],pc[2]);
             getline(pf[3],pc[3]);
             
-            ret_string += pc[0];
-            ret_string += pc[1];
-            ret_string += pc[2];
-            ret_string += pc[3];
+            for(int i=0; i < get_word_size(w_1); i++){
+                ret_string += pc[i];
+            }
             
             ret_string += "\n";
         }
@@ -362,7 +365,7 @@ string AsciiPrinter::word4(const string font_type, const string& word){
     return ret_string;
 }
 
-string AsciiPrinter::word5(const string font_type, const string& word){
+string AsciiConverter::word5(const string font_type, const string& word){
     
     string ret_string;
     
@@ -390,11 +393,9 @@ string AsciiPrinter::word5(const string font_type, const string& word){
             getline(pf[3],pc[3]);
             getline(pf[4],pc[4]);
             
-            ret_string += pc[0];
-            ret_string += pc[1];
-            ret_string += pc[2];
-            ret_string += pc[3];
-            ret_string += pc[4];
+            for(int i=0; i < get_word_size(w_1); i++){
+                ret_string += pc[i];
+            }
             
             ret_string += "\n";
         }
@@ -407,7 +408,7 @@ string AsciiPrinter::word5(const string font_type, const string& word){
     return ret_string;
 }
 
-string AsciiPrinter::word6(const string font_type, const string& word){
+string AsciiConverter::word6(const string font_type, const string& word){
     
     string ret_string;
     
@@ -436,13 +437,10 @@ string AsciiPrinter::word6(const string font_type, const string& word){
             getline(pf[4],pc[4]);
             getline(pf[5],pc[5]);
             
-            ret_string += pc[0];
-            ret_string += pc[1];
-            ret_string += pc[2];
-            ret_string += pc[3];
-            ret_string += pc[4];
-            ret_string += pc[5];
-            
+            for(int i=0; i < get_word_size(w_1); i++){
+                ret_string += pc[i];
+            }
+    
             
             ret_string += "\n";
         }
@@ -456,7 +454,7 @@ string AsciiPrinter::word6(const string font_type, const string& word){
 }
 
 
-string AsciiPrinter::word7(const string font_type, const string& word){
+string AsciiConverter::word7(const string font_type, const string& word){
     
     string ret_string;
     
@@ -486,13 +484,9 @@ string AsciiPrinter::word7(const string font_type, const string& word){
             getline(pf[5],pc[5]);
             getline(pf[6],pc[6]);
             
-            ret_string += pc[0];
-            ret_string += pc[1];
-            ret_string += pc[2];
-            ret_string += pc[3];
-            ret_string += pc[4];
-            ret_string += pc[5];
-            ret_string += pc[6];
+            for(int i=0; i < get_word_size(w_1); i++){
+                ret_string += pc[i];
+            }
             
             
             ret_string += "\n";
@@ -506,7 +500,7 @@ string AsciiPrinter::word7(const string font_type, const string& word){
     return ret_string;
 }
 
-string AsciiPrinter::word8(const string font_type, const string& word){
+string AsciiConverter::word8(const string font_type, const string& word){
     
     string ret_string;
     
@@ -537,14 +531,9 @@ string AsciiPrinter::word8(const string font_type, const string& word){
             getline(pf[6],pc[6]);
             getline(pf[7],pc[7]);
             
-            ret_string += pc[0];
-            ret_string += pc[1];
-            ret_string += pc[2];
-            ret_string += pc[3];
-            ret_string += pc[4];
-            ret_string += pc[5];
-            ret_string += pc[6];
-            ret_string += pc[7];
+            for(int i=0; i < get_word_size(w_1); i++){
+                ret_string += pc[i];
+            }
             
             
             ret_string += "\n";
@@ -558,8 +547,8 @@ string AsciiPrinter::word8(const string font_type, const string& word){
     return ret_string;
 }
 
-string AsciiPrinter::word9(const string font_type, const string& word){
-    
+string AsciiConverter::word9(const string font_type, const string& word){
+
     string ret_string;
     
     string w_1 = word;
@@ -590,15 +579,9 @@ string AsciiPrinter::word9(const string font_type, const string& word){
             getline(pf[7],pc[7]);
             getline(pf[8],pc[8]);
             
-            ret_string += pc[0];
-            ret_string += pc[1];
-            ret_string += pc[2];
-            ret_string += pc[3];
-            ret_string += pc[4];
-            ret_string += pc[5];
-            ret_string += pc[6];
-            ret_string += pc[7];
-            ret_string += pc[8];
+            for(int i=0; i < get_word_size(w_1); i++){
+                ret_string += pc[i];
+            }
             
             
             ret_string += "\n";
@@ -612,8 +595,8 @@ string AsciiPrinter::word9(const string font_type, const string& word){
     return ret_string;
 }
 
-string AsciiPrinter::word10(const string font_type, const string& word){
-    
+string AsciiConverter::word10(const string font_type, const string& word){
+
     string ret_string;
     
     string w_1 = word;
@@ -645,16 +628,9 @@ string AsciiPrinter::word10(const string font_type, const string& word){
             getline(pf[8],pc[8]);
             getline(pf[9],pc[9]);
             
-            ret_string += pc[0];
-            ret_string += pc[1];
-            ret_string += pc[2];
-            ret_string += pc[3];
-            ret_string += pc[4];
-            ret_string += pc[5];
-            ret_string += pc[6];
-            ret_string += pc[7];
-            ret_string += pc[8];
-            ret_string += pc[9];
+            for(int i=0; i < get_word_size(w_1); i++){
+            ret_string += pc[i];
+            }
             
             
             ret_string += "\n";
@@ -671,11 +647,11 @@ string AsciiPrinter::word10(const string font_type, const string& word){
 
 
 
-string AsciiPrinter::printWord0(const string font_type, const string &word){
+string AsciiConverter::convertWord0(const string font_type, const string &word){
     
     string type = process_font_type(font_type);
-    string this_word = word;
-    string processed_word;
+    string processed_word = word;
+    
     bool flag = false;
     
     for(char c:word){
@@ -684,76 +660,77 @@ string AsciiPrinter::printWord0(const string font_type, const string &word){
         }
     }
     
+    
     if(flag){
-        return "words cant be sentences";
+      return "words cant be sentences";
     }
     
-    const int count = get_word_size(this_word);
+    const int count = get_word_size(processed_word);
     
     if(count > MAX_WORD_COUNT){
-        return "Word size is too long";
+       return "Word size is too long";
     }
     
-    
+   
     switch (count) {
         case 0:
             processed_word = "Blank word";
             break;
             
         case 1:
-            processed_word = word1(type, this_word);
+            processed_word = word1(type, processed_word);
             break;
             
         case 2:
-            processed_word = word2(type, this_word);
+            processed_word = word2(type, processed_word);
             break;
             
         case 3:
-            processed_word = word3(type, this_word);
+            processed_word = word3(type, processed_word);
             break;
             
         case 4:
-            processed_word = word4(type, this_word);
+            processed_word = word4(type, processed_word);
             break;
             
         case 5:
-            processed_word = word5(type, this_word);
+            processed_word = word5(type, processed_word);
             break;
             
         case 6:
-            processed_word = word6(type, this_word);
+            processed_word = word6(type, processed_word);
             break;
             
         case 7:
-            processed_word = word7(type, this_word);
+            processed_word = word7(type, processed_word);
             break;
             
         case 8:
-            processed_word = word8(type, this_word);
+            processed_word = word8(type, processed_word);
             break;
             
         case 9:
-            processed_word = word9(type, this_word);
+            processed_word = word9(type, processed_word);
             break;
             
         case 10:
-            processed_word = word10(type, this_word);
+            processed_word = word10(type, processed_word);
             break;
             
         default:
             processed_word = "Error";
             break;
     }
-    
+   
     return processed_word;
 }
 
 
-string AsciiPrinter::printWord1(const string font_type, const string word){
+string AsciiConverter::convertWord1(const string font_type, const string word){
     
     string type = process_font_type(font_type);
-    return printWord0(font_type, word);
+    return convertWord0(font_type, word);
 }
 
-
+ 
 

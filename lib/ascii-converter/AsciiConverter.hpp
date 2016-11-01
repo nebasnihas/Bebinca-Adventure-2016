@@ -1,14 +1,14 @@
 /*
- - Image Art generator library from www.mcs.csueastbay.edu/~tebo/classes/1160/ascii-art/
- - Modified a bit tailored to Bebinca's Adventure game
- - Class generates two things: an ascii art of Bmp img and ascii art of text
- - Find/Place source images in assets/bmpimgs
- - Find/Place font txt files in assets/fontsets/<fontname>/<letter>.txt
- - Object list,Image specifications and Font Usage on WIKI [link:https://csil-git1.cs.surrey.sfu.ca/373-16-3-bebinca/adventure2016/wikis/AsciiPrinter-Class ]
- */
+- Image Art generator library from www.mcs.csueastbay.edu/~tebo/classes/1160/ascii-art/
+- Modified a bit tailored to Bebinca's Adventure game
+- Class generates two things: an ascii art of Bmp img and ascii art of text
+- Find/Place source images in assets/bmpimgs
+- Find/Place font txt files in assets/fontsets/<fontname>/<letter>.txt
+- Object list,Image specifications and Font Usage on WIKI [link:https://csil-git1.cs.surrey.sfu.ca/373-16-3-bebinca/adventure2016/wikis/AsciiConverter-Class ]
+*/
 
-#ifndef AsciiPrinter_hpp
-#define AsciiPrinter_hpp
+#ifndef AsciiConverter_hpp
+#define AsciiConverter_hpp
 
 #include <stdio.h>
 #include <iostream>
@@ -21,7 +21,7 @@
 
 using namespace std;
 
-class AsciiPrinter {
+class AsciiConverter {
     
 private:
     
@@ -58,7 +58,7 @@ private:
     static uint32 extractInt(ifstream &f);
     
     static void readHeader(ifstream& f, BMPFileHeader& header);
-    
+
     
     static string get_loc(const string &font_type);
     static void to_lower(string& word);
@@ -91,18 +91,18 @@ public:
     //Print Object: Returns a Multitext string of ASCII art of an object in the assets/bmpimgs folder
     //Styles: default, numbers
     //printObject0: Call this method if object argument being passed is a variable (type:string)
-    static string printObject0(const string style,const string &objname);
+    static string convertObject0(const string style,const string &objname);
     //printObject1: Call this method if the object string is directly typed in function call
-    static string printObject1(const string style,const string objname);
+    static string convertObject1(const string style,const string objname);
     
     
     //Print Word: Returns a Multitext string of ASCII art of the word
     //Font Types: (...to be upadted)
-    static string printWord0(const string font_type, const string &word);
-    static string printWord1(const string font_type, const string word);
+    static string convertWord0(const string font_type, const string &word);
+    static string convertWord1(const string font_type, const string word);
     
     //-------------For Debug purpose----------------
-    
+    static string wordn(const string font_type, const string& word);
     //-----------------------------------------------
     
     
@@ -111,4 +111,4 @@ public:
     // static string printSentence(const string font_type, const string sentence);
 };
 
-#endif /* AsciiPrinter_hpp */
+#endif /* AsciiConverter_hpp */
