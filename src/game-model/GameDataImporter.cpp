@@ -1,5 +1,6 @@
-#include "game/GameDataImporter.hpp"
+#include "../../include/game/GameDataImporter.hpp"
 #include "Area.hpp"
+#include "../../include/game/Spell.hpp"
 #include "yaml-cpp/yaml.h"
 #include <fstream>
 #include <iostream>
@@ -15,34 +16,40 @@ using std::string;
 using std::unordered_map;
 
 #include <string>
+#include "../../include/game/GameModel.hpp"
 
 
 //NOTE: If compiling in command line, must include -lyaml-cpp flag at the end of g++ sequence
 
-void GameDataImporter::loadyamlFile(GameModel& gameModel, std::string fileName) {
+void GameDataImporter::loadyamlFile(/*GameModel& gameModel,*/ std::string fileName) {
 	//Loading source .yaml file,split at initial nodes (NPCS, ROOM, OBJECTS, RESETS, SHOPS)
 
     YAML::Node dataFile = YAML::LoadFile(fileName);
 	const YAML::Node NPCS = dataFile["NPCS"];
-    loadNPCS(gameModel, NPCS);
+    loadNPCS(/*gameModel,*/ NPCS);
 
     const YAML::Node ROOMS = dataFile["ROOMS"];
-    loadRooms(gameModel, ROOMS);
+    loadRooms(/*gameModel,*/ ROOMS);
 
     const YAML::Node OBJECTS = dataFile["OBJECTS"];
-    loadObjects(gameModel, OBJECTS);
+    loadObjects(/*gameModel,*/ OBJECTS);
 
     const YAML::Node RESETS = dataFile["RESETS"];
-    loadResets(gameModel, RESETS);
+    loadResets(/*gameModel,*/ RESETS);
 
     const YAML::Node SHOPS = dataFile["SHOPS"];
-    loadShops(gameModel, SHOPS);
+    loadShops(/*gameModel,*/ SHOPS);
+
+
+    //SPELLS
+    const YAML::Node SPELLS = dataFile["defense"];
+    loadSpells(/*gameModel,*/ SPELLS);
 
 }
 
 //The following five methods take a root node and parse it one level deeper (to get an individual description)
 
-void GameDataImporter::loadNPCS(GameModel& gameModel, YAML::Node NPCS){
+void GameDataImporter::loadNPCS(/*GameModel& gameModel,*/ YAML::Node NPCS){
     //Sequence Iterator
     for(YAML::Node NPC : NPCS){
 
@@ -62,7 +69,7 @@ void GameDataImporter::loadNPCS(GameModel& gameModel, YAML::Node NPCS){
     }
 }
 
-void GameDataImporter::loadRooms(GameModel& gameModel, YAML::Node ROOMS){
+void GameDataImporter::loadRooms(/*GameModel& gameModel,*/ YAML::Node ROOMS){
 
     //Create vector to hold instances of ROOM
     vector<Area> rooms;
@@ -130,15 +137,15 @@ void GameDataImporter::loadRooms(GameModel& gameModel, YAML::Node ROOMS){
     }
 
     //Might want to return the vector of Area objects
-    gameModel.setDefaultLocationID(rooms[0].getID());
-    for (const auto& room : rooms) {
-        gameModel.addArea(room);
-    }
-    cout << rooms.size();
+    //gameModel.setDefaultLocationID(rooms[0].getID());
+    //for (const auto& room : rooms) {
+//        gameModel.addArea(room);
+//    }
+//   cout << rooms.size();
 
 }
 
-void GameDataImporter::loadObjects(GameModel& gameModel, YAML::Node OBJECTS){
+void GameDataImporter::loadObjects(/*GameModel& gameModel,*/ YAML::Node OBJECTS){
 
     for(YAML::Node OBJECT : OBJECTS){
 
@@ -156,7 +163,7 @@ void GameDataImporter::loadObjects(GameModel& gameModel, YAML::Node OBJECTS){
 }
 
 //The workflow for RESETS ends here, not sure how to utilize yet
-void GameDataImporter::loadResets(GameModel& gameModel, YAML::Node RESETS){
+void GameDataImporter::loadResets(/*GameModel& gameModel,*/ YAML::Node RESETS){
 
     for(YAML::Node RESET : RESETS){
 
@@ -173,8 +180,36 @@ void GameDataImporter::loadResets(GameModel& gameModel, YAML::Node RESETS){
     }
 }
 
+
+//Spells
+
+void GameDataImporter::loadSpells(/*GameModel &gameModel,*/ YAML::Node DEFENSES) {
+
+    for (YAML::Node DEFENSE : DEFENSES) {
+
+        string name = DEFENSE["name"].as<string>();
+
+        cout << "Name: " << name;
+        
+
+
+
+
+
+
+
+
+
+
+    }
+
+
+}
+
+
+
 //The workflow for SHOPS ends here, not sure how to utilize yet
-void GameDataImporter::loadShops(GameModel& gameModel, YAML::Node SHOPS){
+void GameDataImporter::loadShops(/*GameModel& gameModel,*/ YAML::Node SHOPS){
 
     for(YAML::Node SHOP : SHOPS){
         //no data on shops in mgoose file
@@ -186,12 +221,12 @@ void GameDataImporter::loadShops(GameModel& gameModel, YAML::Node SHOPS){
 
 
 //use main for testing
-/*int main() {
+int main() {
 
 
-	GameDataImporter::loadyamlFile("../../data/mgoose.yml");
+	GameDataImporter::loadyamlFile("../../data/spells.yml");
 
 
 
 	return 0;
-}*/
+}
