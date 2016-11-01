@@ -2,14 +2,14 @@
 
 Character::Character(const std::string& id,
                      const std::string& name, //Shortdesc is a name
-                     const std::string& hit,
-                     const std::string& damage,
+                     std::string& hit,
+                     std::string& damage,
                      int level,
                      int exp,
                      int armor,
                      int gold,
-                     Inventory inventory
-                     //,std::string areaID
+                     Inventory inventory,
+                     std::string& areaID
                     )
 
                     :
@@ -21,7 +21,7 @@ Character::Character(const std::string& id,
                     , exp(exp)
                     , armor(armor)
                     , gold(gold)
-                    //,areaID(areaID)
+                    , areaID(areaID)
 
                     {
                        inventory = Inventory(inventory); //Unsure if this works/keeps consistency
@@ -65,9 +65,9 @@ Inventory& Character::getInventory() {
     return inventory;
 }
 
-//std::string Character::getAreaID(){
-//    return areaID;
-//}
+std::string Character::getAreaID(){
+    return areaID;
+}
 
 //Setters
 
@@ -108,9 +108,9 @@ void Character::increaseExp(int expToAdd) {
     this->exp += expToAdd;
 }
 
-//void Character::setAreaID(const std::string newAreaID){
-//    this->areaID = newAreaID;
-//}
+void Character::setAreaID(const std::string& newAreaID){
+    this->areaID = newAreaID;
+}
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -119,18 +119,18 @@ void Character::increaseExp(int expToAdd) {
 
 NPC::NPC(const std::string& id,
                    const std::string& name,
-                   const std::string& hit,
-                   const std::string& damage,
+                   std::string& hit,
+                   std::string& damage,
                    int level,
                    int exp,
                    int armor,
-                   const int thac0,
                    const int gold,
+                   Inventory inventory,
+                   std::string& areaID,
+                   const int thac0,
                    const std::string& description,
                    const std::string& keywords,
-                   const std::string& longdesc,
-                   Inventory inventory
-                    //,areaID
+                   const std::string& longdesc
                     )
 
                     : Character(id,
@@ -141,8 +141,8 @@ NPC::NPC(const std::string& id,
                         exp,
                         armor,
                         gold,
-                        inventory
-                        //,areaID
+                        inventory,
+                        areaID
                         )
 
                     , thac0(thac0)

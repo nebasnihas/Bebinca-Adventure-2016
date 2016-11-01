@@ -1,9 +1,28 @@
 #include "game/GameModel.hpp"
 
+//Character Defaults
+std::string hit = "2d+7";
+std::string damage = "1d+9";
+int level = 0;
+int experience = 0;
+int armor = 0;
+int gold = 0;
+Inventory inventory;
+
 bool GameModel::createCharacter(const std::string& characterID, const std::string& characterName) {
     // TO-DO: Placeholder for an initial loading area
 	std::string areaID = this->getDefaultLocationID();
-	Character character(characterID, characterName, areaID);
+	Character character(      characterID,
+							  characterName, //Shortdesc is a name
+							  hit,
+							  damage,
+							  level,
+							  experience,
+							  armor,
+							  gold,
+							  inventory,
+							  areaID
+	);
 	characters.insert(std::pair<std::string, Character>(characterID, character));
 
 	// No failure case yet...

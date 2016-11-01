@@ -10,14 +10,14 @@ public:
 
     Character(      const std::string& id,
                     const std::string& name, //Shortdesc is a name
-                    const std::string& hit,
-                    const std::string& damage,
+                    std::string& hit,
+                    std::string& damage,
                     int level,
                     int exp,
                     int armor,
                     int gold,
-                    Inventory inventory
-                    //,std::string areaID
+                    Inventory inventory,
+                    std::string& areaID
                     );
 
     std::string getName() const;
@@ -29,7 +29,7 @@ public:
     int getArmor() const;
     int getGold() const;
     Inventory& getInventory();
-    //std::string getAreaID();
+    std::string getAreaID();
 
     void setID(const std::string& id);
     void setName(const std::string& name);
@@ -54,7 +54,7 @@ private:
     int armor;
     int gold;
 
-    //std::string areaID;
+    std::string areaID;
     Inventory inventory;
 };
 
@@ -63,19 +63,19 @@ private:
 class NPC : public Character{
 public:
     NPC(        const std::string& id,
-                const std::string& name,
-                const std::string& hit,
-                const std::string& damage,
+                const std::string& name, //Name is the short desc
+                std::string& hit,
+                std::string& damage,
                 int level,
                 int exp,
                 int armor,
-                const int thac0,
                 const int gold,
+                Inventory inventory,
+                std::string& areaID,
+                const int thac0,
                 const std::string& description,
                 const std::string& keywords,
-                const std::string& longDesc,
-                Inventory inventory
-                //,std::string areaID
+                const std::string& longDesc
                 );
 
     std::string getDescription() const;
