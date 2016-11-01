@@ -21,7 +21,7 @@ void GameDataImporter::loadyamlFile(GameModel& gameModel, const std::string& fil
     //loadRooms(gameModel, ROOMS);
 
     const YAML::Node OBJECTS = dataFile["OBJECTS"];
-    loadObjects(/*gameModel,*/ OBJECTS);
+    loadObjects(gameModel, OBJECTS);
 
     //const YAML::Node RESETS = dataFile["RESETS"];
     //loadResets(gameModel, RESETS);
@@ -143,7 +143,7 @@ void GameDataImporter::loadRooms(GameModel& gameModel, YAML::Node ROOMS){
 
 }
 
-void GameDataImporter::loadObjects(/*GameModel& gameModel,*/ YAML::Node OBJECTS){
+void GameDataImporter::loadObjects(GameModel& gameModel, YAML::Node OBJECTS){
 
     vector<Object> objects = {};
 
