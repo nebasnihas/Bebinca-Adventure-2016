@@ -5,6 +5,7 @@
 #include <map>
 #include <functional>
 #include <vector>
+#include <boost/optional.hpp>
 #include <memory>
 
 #include "Command.hpp"
@@ -30,8 +31,8 @@ public:
     void removePlayer(const networking::Connection& clientID);
     void disconnectPlayer(const std::string& playerID);
 
-    const networking::Connection& getClientID(const std::string& playerID) const;
-    const std::string& getPlayerID(const networking::Connection& clientID) const;
+    const boost::optional<networking::Connection> getClientID(const std::string& playerID) const;
+    const std::string getPlayerID(const networking::Connection &clientID) const;
     const std::vector<networking::Connection>& getAllClients() const;
     GameModel& getGameModel() const;
 
