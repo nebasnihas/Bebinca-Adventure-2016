@@ -1,14 +1,14 @@
 #include "Resets.h"
 
 Resets::Resets(std::string &action,
-               std::string &itemID,
+               std::string &actionID,
                std::string &areaID,
                std::string &stateOfDoor,
                int slot,
                int limit)
 
                 : action(action)
-                , itemID(itemID)
+                , actionID(actionID)
                 , areaID(areaID)
                 , stateOfDoor(stateOfDoor)
                 , slot(slot)
@@ -21,8 +21,8 @@ std::string Resets::getAction() const {
     return action;
 }
 
-std::string Resets::getItemID() const{
-    return itemID;
+std::string Resets::getID() const{
+    return actionID;
 }
 
 std::string Resets::getAreaID() const{

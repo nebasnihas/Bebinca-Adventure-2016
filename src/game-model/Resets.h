@@ -7,7 +7,7 @@ class Resets {
 public:
 
     Resets(  std::string& action,
-             std::string& itemID,
+             std::string& actionID,
              std::string& areaID,
              std::string& stateOfDoor,
              int slot,
@@ -16,7 +16,7 @@ public:
     );
 
     std::string getAction() const;
-    std::string getItemID() const;
+    std::string getActionID() const;
     std::string getAreaID() const;
     std::string getStateOfDoor() const;
     int getLimit() const;
@@ -27,7 +27,7 @@ public:
 
 private:
     std::string action;
-    std::string itemID;
+    std::string actionID;
     std::string areaID;
     std::string stateOfDoor;
     int slot;
