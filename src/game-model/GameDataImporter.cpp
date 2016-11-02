@@ -190,7 +190,7 @@ void GameDataImporter::loadSpells(/*GameModel &gameModel,*/ YAML::Node DEFENSES)
         string name = DEFENSE["name"].as<string>();
 
         cout << "Name: " << name;
-        
+
 
 
 
