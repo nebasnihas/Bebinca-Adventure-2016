@@ -6,6 +6,7 @@
 #include <functional>
 #include <vector>
 #include <boost/optional.hpp>
+#include <memory>
 
 #include "Command.hpp"
 #include "game/GameModel.hpp"
@@ -14,12 +15,13 @@
 #include "MessageBuilder.hpp"
 #include "boost/bimap/unordered_set_of.hpp"
 #include "boost/bimap.hpp"
+#include "CommandCreator.hpp"
 
 class GameFunctions;
 
 class Controller {
 public:
-    Controller(GameModel& gameModel, networking::Server& server) : gameModel{gameModel}, server{server}{};
+    Controller(GameModel& gameModel, networking::Server& server, const CommandCreator& commandCreator);
 
     void registerCommand(const Command& command);
     std::unique_ptr<MessageBuilder> processCommand(const protocols::PlayerCommand& command,
@@ -46,10 +48,16 @@ private:
     //keep a list of all connected clients, since its useful when sending messages
     std::vector<networking::Connection> allClients;
 
-    std::unordered_map<std::string, Command>  playerCommandMap;
+    std::unordered_map<std::string, std::shared_ptr<Command>>  playerCommandMap;
 
     GameModel& gameModel;
     networking::Server& server;
+    CommandCreator commandCreator;
+
+    //help command
+    std::unique_ptr<MessageBuilder> help(const std::vector<std::string>& targets, const PlayerInfo& player);
+    std::unique_ptr<MessageBuilder> allCommandsHelp(const networking::Connection& clientID);
+    std::string getCommandBindingsHelpMessage(const std::string command);
 };
 
 

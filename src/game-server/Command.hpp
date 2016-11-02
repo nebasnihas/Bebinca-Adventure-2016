@@ -27,13 +27,23 @@ public:
      * @param method
      * @return
      */
-    Command(const std::string& keyword, const functionRef& method) : text{keyword}, method{method} {};
+    Command(const std::string& keyword, const functionRef& method) : keyword{keyword}, method{method} {};
     const std::string& getKeyword() const;
     const functionRef& getMethod() const;
+    const std::string& getDesc() const;
+    const std::string& getUsage() const;
+    const std::vector<std::string> getBindings() const;
 
+    void setDesc(const std::string& desc);
+    void setUsage(const std::string& usage);
+    void addBinding(const std::string& binding);
 private:
-    std::string text;
+    std::string keyword;
     functionRef method;
+    std::string desc = "No Description";
+    //just a usage message, maybe do actual parsing based on this later
+    std::string usage;
+    std::vector<std::string> bindings;
 };
 
 

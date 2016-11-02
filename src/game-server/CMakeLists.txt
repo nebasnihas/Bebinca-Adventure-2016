@@ -5,7 +5,12 @@ add_executable(game-server
         Command.cpp
         Controller.cpp
         DisplayMessageBuilder.cpp DisplayMessageBuilder.hpp
-        GameFunctions.cpp GameFunctions.hpp Looper.cpp Looper.hpp ServerLoop.cpp ServerLoop.hpp MessageBuilder.hpp)
+        GameFunctions.cpp GameFunctions.hpp
+        Looper.cpp Looper.hpp
+        ServerLoop.cpp ServerLoop.hpp
+        MessageBuilder.hpp
+        ServerConfig.cpp ServerConfig.hpp
+        CommandCreator.cpp CommandCreator.hpp)
 
 target_link_libraries(game-server
         networking
@@ -29,3 +34,6 @@ target_link_libraries(game-server ${Boost_LIBRARIES})
 install(TARGETS game-server
         RUNTIME DESTINATION bin
         )
+
+file(COPY ${CMAKE_SOURCE_DIR}/data DESTINATION ${PROJECT_BINARY_DIR}/bin)
+file(COPY config.yml DESTINATION ${PROJECT_BINARY_DIR}/bin)
