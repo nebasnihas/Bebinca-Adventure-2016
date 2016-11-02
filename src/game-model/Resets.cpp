@@ -21,7 +21,7 @@ std::string Resets::getAction() const {
     return action;
 }
 
-std::string Resets::getID() const{
+std::string Resets::getActionID() const{
     return actionID;
 }
 

@@ -19,7 +19,7 @@ public:
 	//Inputs .YAML file for parsing
     static void loadyamlFile(GameModel& gameModel, std::string file);
 
-    static std::vector<NPC> returnNPCS(GameModel& gameModel, YAML::Node);
+	static std::map<std::string, NPC> returnNPCS(GameModel& gameModel, YAML::Node);
     static void loadRooms(GameModel& gameModel, YAML::Node);
 	static void loadObjects(GameModel& gameModel, YAML::Node);
 	static std::vector<Resets> returnResets(GameModel& gameModel, YAML::Node);

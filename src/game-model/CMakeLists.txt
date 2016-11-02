@@ -3,7 +3,7 @@ add_library(game Area.cpp
             Entity.cpp
             GameModel.cpp
             Inventory.cpp
-            Resets.cpp
+        Resets.cpp
             GameDataImporter.cpp
             Attributes.cpp
         )

@@ -17,7 +17,7 @@ public:
                     int armor,
                     int gold,
                     Inventory inventory,
-                    std::string& areaID
+                    const std::string& areaID
                     );
 
     std::string getName() const;
@@ -71,7 +71,7 @@ public:
                 int armor,
                 int gold,
                 Inventory inventory,
-                std::string& areaID,
+                const std::string& areaID,
                 int thac0,
                 const std::string& description,
                 const std::string& keywords,

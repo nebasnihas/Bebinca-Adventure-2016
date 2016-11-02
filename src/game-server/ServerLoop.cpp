@@ -8,6 +8,7 @@ ServerLoop::ServerLoop(unsigned short serverPort, const std::string& mapFilePath
           controller{gameModel, server},
           gameFunctions{controller} {
     GameDataImporter::loadyamlFile(gameModel, mapFilePath);
+//    GameModel::setNPCs(GameDataImporter.returnNPCS);
 }
 
 void ServerLoop::processInputs(bool& quit) {

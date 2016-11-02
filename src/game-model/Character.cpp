@@ -9,7 +9,7 @@ Character::Character(const std::string& id,
                      int armor,
                      int gold,
                      Inventory inventory,
-                     std::string& areaID
+                     const std::string& areaID
                     )
 
                     :
@@ -126,7 +126,7 @@ NPC::NPC(const std::string& id,
                    int armor,
                    int gold,
                    Inventory inventory,
-                   std::string& areaID,
+                   const std::string& areaID,
                    int thac0,
                    const std::string& description,
                    const std::string& keywords,

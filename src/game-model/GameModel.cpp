@@ -1,5 +1,7 @@
 #include "game/GameModel.hpp"
 
+const std::string ACTION_NPC = "npc";
+
 //Character Defaults
 std::string hit = "2d+7";
 std::string damage = "1d+9";
@@ -7,6 +9,10 @@ int level = 0;
 int experience = 0;
 int armor = 0;
 int gold = 0;
+int thac0 = 0;
+std::string description = "description";
+std::string keywords = "keywords";
+std::string longdesc = "longdesc";
 Inventory inventory;
 
 bool GameModel::createCharacter(const std::string& characterID, const std::string& characterName) {
@@ -142,4 +148,42 @@ Character* GameModel::getCharacterByID(const std::string& characterID) const {
     }
 
 	return nullptr;
+}
+
+void GameModel::createNPC(const std::string& npcID, const std::string& areaID) {
+    std::string npcName = "npc name";
+
+    NPC npc(
+        npcID,
+        npcName,
+        hit,
+        damage,
+        level,
+        experience,
+        armor,
+        gold,
+        inventory,
+        areaID,
+        thac0,
+        description,
+        keywords,
+        longdesc
+    );
+
+    npcs.insert(std::pair<std::string, NPC>(npcID, npc));
+}
+
+void GameModel::setNPCs(const std::map<std::string, NPC> npcs) {
+    this->npcs = npcs;
+}
+
+void GameModel::addNPCsToAreas() {
+    for (const auto& reset : resets) {
+        if (reset.getAction() == ACTION_NPC) {
+
+            for (int i = 0; i < reset.getLimit(); i++) {
+                createNPC(reset.getActionID(), reset.getAreaID());
+            }
+        }
+    }
 }

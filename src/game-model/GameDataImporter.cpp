@@ -46,9 +46,9 @@ void GameDataImporter::loadyamlFile(GameModel& gameModel, std::string fileName) 
 
 //The following five methods take a root node and parse it one level deeper (to get an individual description)
 
-vector<NPC> GameDataImporter::returnNPCS(GameModel& gameModel, YAML::Node NPCS){
+std::map<std::string, NPC> GameDataImporter::returnNPCS(GameModel& gameModel, YAML::Node NPCS){
 
-    vector<NPC> npcs = {};
+    std::map<std::string, NPC> npcs;
 
     //Sequence Iterator
     for(YAML::Node NPC : NPCS){
@@ -125,7 +125,7 @@ vector<NPC> GameDataImporter::returnNPCS(GameModel& gameModel, YAML::Node NPCS){
         //Create NPC instance
         ::NPC newNPC = ::NPC(npcID, shortdesc, hit, damage, level, exp, armor, gold, inventory, areaID, thac0,
                               sDescription, sKeywords, sLongDescription);
-        npcs.push_back(newNPC);
+        npcs.insert(std::pair<std::string, ::NPC>(npcID, newNPC));
     }
 
     return npcs;
