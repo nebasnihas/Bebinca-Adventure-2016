@@ -1,4 +1,5 @@
 #include "game/GameModel.hpp"
+#include "combat/CombatManager.hpp"
 
 bool GameModel::createCharacter(const std::string& characterID, const std::string& characterName) {
     // TO-DO: Placeholder for an initial loading area
@@ -123,4 +124,48 @@ Character* GameModel::getCharacterByID(const std::string& characterID) const {
     }
 
 	return nullptr;
+}
+
+bool GameModel::engageCharacterInCombat(const std::string& characterID, const std::string& target) {
+    auto c1 = getCharacterByID(characterID);
+    auto c2 = getCharacterByID(target);
+
+    if (c1 == nullptr || c2 == nullptr) {
+        return false;
+    }
+
+    auto battleInstance = combatManager.getNewCombatInstance();
+    battleInstance.addCharacterToNewTeam(*c1);
+    battleInstance.addCharacterToNewTeam(*c2);
+    combatManager.loadCombatInstance(battleInstance);
+
+    return true;
+}
+
+bool GameModel::setCombatAction(const std::string& characterID, const std::string& actionName) {
+    auto characterInstance = combatManager.getCharacterInstanceByCharacterID(characterID);
+    if (characterInstance == nullptr) {
+        return false;
+    }
+    characterInstance->setCombatActionID(actionName);
+    return true;
+}
+
+bool GameModel::setCombatTarget(const std::string& characterID, const std::string& targetID) {
+    auto combatInstance = combatManager.getCombatInstanceByCharacterID(characterID);
+
+    if (combatInstance == nullptr) {
+        return false;
+    }
+
+    auto characterInstance = combatInstance->getCharacterInstance(characterID);
+    auto targetInstance = combatInstance->getCharacterInstance(targetID);
+
+    if (targetInstance == nullptr) {
+        return false;
+    }
+
+    characterInstance->setTarget(*targetInstance);
+    return true;
+
 }

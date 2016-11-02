@@ -32,12 +32,24 @@ int Character::getArmor() const {
     return armor;
 }
 
+int Character::getMaxHealth() const {
+    return maxHealth;
+}
+
+int Character::getCurrentHealth() const {
+    return currentHealth;
+}
+
 Attributes& Character::getAttributes() {
     return attributes;
 }
 
 Inventory& Character::getInventory() {
     return inventory;
+}
+
+CharacterState Character::getState() const {
+    return state;
 }
 
 void Character::setID(const std::string& id) {
@@ -64,10 +76,22 @@ void Character::setLevel(int newLevel) {
     this->level = newLevel;
 }
 
+void Character::setMaxHealth(int maxHealth) {
+    this->maxHealth = maxHealth;
+}
+
+void Character::setCurrentHealth(int currentHealth) {
+    this->currentHealth = currentHealth;
+}
+
 void Character::increaseLevel() {
     this->level++;
 }
 
 void Character::increaseExp(int expToAdd) {
     this->exp += expToAdd;
+}
+
+void Character::setState(CharacterState state) {
+    this->state = state;
 }

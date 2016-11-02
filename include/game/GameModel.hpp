@@ -7,6 +7,7 @@
 
 #include "../../src/game-model/Area.hpp"
 #include "../../src/game-model/Character.hpp"
+#include "../../src/game-model/combat/CombatManager.hpp"
 
 class GameModel {
 
@@ -27,8 +28,13 @@ public:
 
 	std::string getEntityDescription(const std::string& areaID, const std::string& entityID) const;
 
+	bool engageCharacterInCombat(const std::string& characterID, const std::string& target);
+	bool setCombatAction(const std::string& characterID, const std::string& actionName);
+	bool setCombatTarget(const std::string& characterID, const std::string& targetID);
+
 private:
 
+	CombatManager combatManager;
 	std::map<std::string, Character> characters;
 	std::map<std::string, Area> locations;
 	std::string defaultLocation;

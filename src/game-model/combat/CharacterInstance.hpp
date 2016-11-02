@@ -8,7 +8,10 @@ class CharacterInstance {
 
 public:
 
-    CharacterInstance(Character& character, const std::string& initialAction, CharacterInstance& target);
+    CharacterInstance(Character& character, const std::string& initialActionID, CharacterInstance& target, int teamID);
+
+    static CharacterInstance nullTarget;
+    static Character nullCharacter;
 
     std::string getCombatActionID() const;
     void setCombatActionID(const std::string& combatActionID);
@@ -18,6 +21,8 @@ public:
 
     CharacterInstance& getTarget();
     void setTarget(CharacterInstance& target);
+
+    Character& getCharacterRef() const;
 
     bool isAlive() const;
 
@@ -30,6 +35,5 @@ private:
     std::string selectedActionID;
     CharacterInstance* target;
 };
-
 
 #endif

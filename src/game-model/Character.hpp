@@ -4,6 +4,11 @@
 #include "Attributes.hpp"
 #include "Inventory.hpp"
 
+enum CharacterState {
+    IDLE,
+    BATTLE
+};
+
 class Character {
 protected:
     std::string id;
@@ -13,8 +18,11 @@ protected:
     int exp;
     int damage;
     int armor;
+    int maxHealth;
+    int currentHealth;
     Attributes attributes;
     Inventory inventory;
+    CharacterState state;
 
 public:
     const int STARTING_LEVEL = 1;
@@ -28,16 +36,21 @@ public:
     int getExp() const;
     int getDamage() const;
     int getArmor() const;
+    int getMaxHealth() const;
+    int getCurrentHealth() const;
     Attributes& getAttributes();
     Inventory& getInventory();
+    CharacterState getState() const;
 
     void setID(const std::string& id);
     void setName(const std::string& name);
     void setAreaID(const std::string& areaID);
     void setDamage(int damage);
     void setArmor(int armor);
-
+    void setState(CharacterState state);
     void setLevel(int newLevel);
+    void setMaxHealth(int maxHealth);
+    void setCurrentHealth(int currentHealth);
     void increaseLevel();
     void increaseExp(int expToAdd);
 };

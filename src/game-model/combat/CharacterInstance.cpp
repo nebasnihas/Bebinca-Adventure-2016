@@ -1,7 +1,10 @@
 #include "CharacterInstance.hpp"
 
-CharacterInstance::CharacterInstance(Character& character, const std::string& initialAction, CharacterInstance& target)
-        : character(character), selectedActionID(initialAction), target(&target)
+Character CharacterInstance::nullCharacter = Character("", "", "");
+CharacterInstance CharacterInstance::nullTarget = CharacterInstance(nullCharacter, "", nullTarget, 0);
+
+CharacterInstance::CharacterInstance(Character& character, const std::string& initialActionID, CharacterInstance& target, int teamID)
+        : character(character), selectedActionID(initialActionID), target(&target), teamID(teamID)
 {
 
 };
@@ -23,8 +26,7 @@ void CharacterInstance::setTarget(CharacterInstance &target) {
 }
 
 bool CharacterInstance::isAlive() const {
-    //TODO return current health != 0
-    return true;
+    return getCharacterRef().getCurrentHealth() <= 0;
 }
 
 int CharacterInstance::getTeamID() const {
@@ -33,4 +35,8 @@ int CharacterInstance::getTeamID() const {
 
 void CharacterInstance::setTeamID(const int teamID) {
     this->teamID = teamID;
+}
+
+Character& CharacterInstance::getCharacterRef() const {
+    return this->character;
 }
