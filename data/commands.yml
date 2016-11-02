@@ -37,4 +37,15 @@ commands:
     usage: "[command]"
     bindings:
       - "help"
-      - "h"
+      - "/h"
+  command-shout:
+    desc: "Shout to everyone in the current area"
+    usage: "<text>"
+    bindings:
+      - "shout"
+  command-whisper:
+    desc: "Whisper to a player"
+    usage: "<player-name> <text>"
+    bindings:
+      - "whisper"
+      - "/w"
