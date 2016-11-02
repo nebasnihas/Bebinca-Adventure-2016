@@ -10,7 +10,8 @@ add_executable(game-server
         ServerLoop.cpp ServerLoop.hpp
         MessageBuilder.hpp
         ServerConfig.cpp ServerConfig.hpp
-        CommandCreator.cpp CommandCreator.hpp)
+        CommandCreator.cpp CommandCreator.hpp
+        StringResourceImporter.cpp StringResourceImporter.hpp)
 
 target_link_libraries(game-server
         networking
