@@ -14,7 +14,7 @@
 using namespace networking;
 using namespace std::placeholders;
 
-Controller::Controller(GameModel& gameModel, Server& server, CommandCreator& commandCreator)
+Controller::Controller(GameModel& gameModel, Server& server, const CommandCreator& commandCreator)
         : gameModel{gameModel}, server{server}, commandCreator{commandCreator} {
     registerCommand(Command{"help", std::bind(&Controller::help, this, std::placeholders::_1, std::placeholders::_2)});
 }
@@ -37,7 +37,7 @@ std::unique_ptr<MessageBuilder> Controller::processCommand(const protocols::Play
 }
 
 void Controller::registerCommand(const Command& command) {
-    auto bindings = commandCreator.createBindingsFromCommand(command);
+    auto bindings = commandCreator.createInputBindingsForCommand(command);
     playerCommandMap.insert(bindings.begin(), bindings.end());
 }
 

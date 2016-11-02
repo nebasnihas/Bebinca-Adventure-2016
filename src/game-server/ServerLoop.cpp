@@ -4,10 +4,10 @@
 
 using namespace networking;
 
-ServerLoop::ServerLoop(ServerConfig& serverConfig)
+ServerLoop::ServerLoop(const ServerConfig& serverConfig)
         : serverConfig{serverConfig},
           server{serverConfig.getPort(), [this](Connection c){this->onConnect(c);}, [this](Connection c){this->onDisconnect(c);}},
-          controller{gameModel, server, serverConfig.getCommandCreator()},
+          controller{gameModel, server, CommandCreator{serverConfig.getCommandConfigFile()}},
           gameFunctions{controller} {
     GameDataImporter::loadyamlFile(gameModel, serverConfig.getMapFilePath());
     std::cout << "Server ready. Listening on port: " << serverConfig.getPort() << std::endl;

@@ -12,7 +12,7 @@ public:
     CommandCreator(const std::string& commandConfigFileName);
 
     //TODO commands will be refactored, for now we reuse the command class
-    std::vector<std::pair<std::string, std::shared_ptr<Command>>> createBindingsFromCommand(const Command& command) const;
+    std::vector<std::pair<std::string, std::shared_ptr<Command>>> createInputBindingsForCommand(const Command& command) const;
 
 private:
     void loadFile();

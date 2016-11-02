@@ -20,7 +20,7 @@ class GameFunctions;
 
 class Controller {
 public:
-    Controller(GameModel& gameModel, networking::Server& server, CommandCreator& commandCreator);
+    Controller(GameModel& gameModel, networking::Server& server, const CommandCreator& commandCreator);
 
     void registerCommand(const Command& command);
     std::unique_ptr<MessageBuilder> processCommand(const protocols::PlayerCommand& command,

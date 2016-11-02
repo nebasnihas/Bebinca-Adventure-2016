@@ -13,7 +13,7 @@ public:
     unsigned int getTicksPerSecond() const;
     const std::string& getMapFilePath() const; //only one file for now
     const std::string& getLogDirectory() const;
-    CommandCreator& getCommandCreator();
+    const std::string& getCommandConfigFile() const;
 private:
     void loadConfigFile();
 
@@ -23,7 +23,7 @@ private:
     unsigned int ticks;
     std::string mapFilePath;
     std::string logDir;
-    boost::optional<CommandCreator> commandCreator;
+    std::string commandConfigFile;
 };
 
 

@@ -14,7 +14,7 @@
 
 class ServerLoop : public Loop {
 public:
-    ServerLoop(ServerConfig& serverConfig);
+    ServerLoop(const ServerConfig& serverConfig);
 
     virtual void processInputs(bool& quit) override;
     virtual void update() override;

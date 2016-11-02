@@ -44,16 +44,15 @@ void ServerConfig::loadConfigFile() {
     ticks = getConfigValueAs<unsigned int>(TICKS_KEY, root);
     mapFilePath = getConfigValueAs<std::string>(MAPFILE_KEY, root);
     logDir = getConfigValueAs<std::string>(GLOG_DIR_KEY, root);
-    auto commandsPath = getConfigValueAs<std::string>(COMMANDS_KEY, root);
-    commandCreator = boost::optional<CommandCreator>{commandsPath};
+    commandConfigFile = getConfigValueAs<std::string>(COMMANDS_KEY, root);
 }
 
 ServerConfig::ServerConfig(const std::string& configFileName) : configFileName{configFileName} {
     loadConfigFile();
 }
 
-CommandCreator& ServerConfig::getCommandCreator() {
-    return commandCreator.get();
+const std::string& ServerConfig::getCommandConfigFile() const {
+    return commandConfigFile;
 }
 
 
