@@ -26,8 +26,8 @@ public:
     static void loadyamlFile(GameModel& gameModel, const std::string& fileName);
 
     static void loadNPCS(GameModel& gameModel, YAML::Node NPCS);
-    static void loadRooms(GameModel& gameModel, YAML::Node ROOMS);
-	static void loadObjects(GameModel& gameModel, YAML::Node OBJECTS);
+    static std::vector<Area> getRooms(YAML::Node ROOMS);
+	static std::vector<Object> getObjects(YAML::Node OBJECTS);
 	static void loadResets(GameModel& gameModel, YAML::Node RESETS);
 	static void loadShops(GameModel& gameModel, YAML::Node SHOPS);
 

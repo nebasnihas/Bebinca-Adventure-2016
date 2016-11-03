@@ -14,20 +14,20 @@ void GameDataImporter::loadyamlFile(GameModel& gameModel, const std::string& fil
 	//Loading source .yaml file,split at initial nodes (NPCS, ROOM, OBJECTS, RESETS, SHOPS)
 
     YAML::Node dataFile = YAML::LoadFile(fileName);
-	//const YAML::Node NPCS = dataFile["NPCS"];
-    //loadNPCS(gameModel, NPCS);
+	const YAML::Node NPCS = dataFile["NPCS"];
+    loadNPCS(gameModel, NPCS);
 
-    //const YAML::Node ROOMS = dataFile["ROOMS"];
-    //loadRooms(gameModel, ROOMS);
+    const YAML::Node ROOMS = dataFile["ROOMS"];
+    getRooms(ROOMS);
 
     const YAML::Node OBJECTS = dataFile["OBJECTS"];
-    loadObjects(gameModel, OBJECTS);
+    getObjects(OBJECTS);
 
-    //const YAML::Node RESETS = dataFile["RESETS"];
-    //loadResets(gameModel, RESETS);
+    const YAML::Node RESETS = dataFile["RESETS"];
+    loadResets(gameModel, RESETS);
 
-    //const YAML::Node SHOPS = dataFile["SHOPS"];
-    //loadShops(gameModel, SHOPS);
+    const YAML::Node SHOPS = dataFile["SHOPS"];
+    loadShops(gameModel, SHOPS);
 
 }
 
@@ -55,7 +55,7 @@ void GameDataImporter::loadNPCS(GameModel& gameModel, YAML::Node NPCS){
     }
 }
 
-void GameDataImporter::loadRooms(GameModel& gameModel, YAML::Node ROOMS){
+std::vector<Area> GameDataImporter::getRooms(YAML::Node ROOMS){
 
     //Create vector to hold instances of ROOM
     vector<Area> rooms;
@@ -141,9 +141,11 @@ void GameDataImporter::loadRooms(GameModel& gameModel, YAML::Node ROOMS){
     // }
     cout << rooms.size();
 
+    return rooms;
+
 }
 
-void GameDataImporter::loadObjects(GameModel& gameModel, YAML::Node OBJECTS){
+std::vector<Object> GameDataImporter::getObjects(YAML::Node OBJECTS){
 
     vector<Object> objects = {};
 
@@ -189,6 +191,9 @@ void GameDataImporter::loadObjects(GameModel& gameModel, YAML::Node OBJECTS){
         cout << "Type: " << object.getType() << endl;
         cout << "ID: " << object.getID() << endl;
     }
+
+
+    return objects;
 
 }
 
