@@ -1,4 +1,4 @@
-#include "Character.hpp"
+#include <game/Character.hpp>
 
 Character::Character(const std::string& id,
                      const std::string& name, //Shortdesc is a name

@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Inventory.hpp"
+#include "../../include/game/Inventory.hpp"
 
 Inventory::Inventory() {
     inventory.reserve(MAX_ITEMS);

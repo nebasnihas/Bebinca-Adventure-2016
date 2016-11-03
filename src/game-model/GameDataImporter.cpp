@@ -1,6 +1,4 @@
 #include "game/GameDataImporter.hpp"
-#include "Area.hpp"
-#include "Character.hpp"
 #include "Inventory.hpp"
 #include "Resets.h"
 #include "yaml-cpp/yaml.h"
@@ -11,6 +9,7 @@
 #include <typeinfo>
 #include <boost/algorithm/string/join.hpp>
 #include <string>
+#include "../../include/game/GameDataImporter.hpp"
 
 using std::cout;
 using std::endl;
@@ -20,10 +19,9 @@ using std::unordered_map;
 
 
 
-
 //NOTE: If compiling in command line, must include -lyaml-cpp flag at the end of g++ sequence
 
-void GameDataImporter::loadyamlFile(GameModel& gameModel, std::string fileName) {
+void GameDataImporter::loadyamlFile(GameModel& gameModel, const std::string& fileName) {
 	//Loading source .yaml file,split at initial nodes (NPCS, ROOM, OBJECTS, RESETS, SHOPS)
 
     YAML::Node dataFile = YAML::LoadFile(fileName);
@@ -31,10 +29,10 @@ void GameDataImporter::loadyamlFile(GameModel& gameModel, std::string fileName) 
     returnNPCS(gameModel, NPCS);
 
     const YAML::Node ROOMS = dataFile["ROOMS"];
-    loadRooms(gameModel, ROOMS);
+    getRooms(ROOMS);
 
     const YAML::Node OBJECTS = dataFile["OBJECTS"];
-    loadObjects(gameModel, OBJECTS);
+    getObjects(OBJECTS);
 
     const YAML::Node RESETS = dataFile["RESETS"];
     returnResets(gameModel, RESETS);
@@ -131,7 +129,7 @@ std::map<std::string, NPC> GameDataImporter::returnNPCS(GameModel& gameModel, YA
     return npcs;
 }
 
-void GameDataImporter::loadRooms(GameModel& gameModel, YAML::Node ROOMS){
+std::vector<Area> GameDataImporter::getRooms(YAML::Node ROOMS){
 
     //Create vector to hold instances of ROOM
     vector<Area> rooms;
@@ -152,6 +150,9 @@ void GameDataImporter::loadRooms(GameModel& gameModel, YAML::Node ROOMS){
         //Store room descriptions
         vector<string> desc = ROOM["desc"].as<vector<string>>();
         string description = boost::algorithm::join(desc, " ");
+
+        //Store extended room descriptions
+        vector<string> extended_descriptions = ROOM["extended_descriptions"].as<vector<string>>();
 
         //Store ID and name of room
         string id = ROOM["id"].as<string>();
@@ -181,7 +182,7 @@ void GameDataImporter::loadRooms(GameModel& gameModel, YAML::Node ROOMS){
         }
 
         //Create an Area objects with ID, title, connected areas, and descriptions
-        Area newArea = Area(id, name, doorsMap, description);
+        Area newArea = Area(id, name, doorsMap, description, extended_descriptions);
         rooms.push_back(newArea);
 
         cout << "ID: " << newArea.getID() << endl << "Name: " << newArea.getTitle() << endl;
@@ -196,32 +197,72 @@ void GameDataImporter::loadRooms(GameModel& gameModel, YAML::Node ROOMS){
 		//Print out description of each Area
 		cout << newArea.getDescription() << endl;
 
+        for (const auto &ext_desc : newArea.getExtendedDescriptions())
+        {
+            cout << "Extended Description: " <<  ext_desc << "\n";
+        }
+
     }
 
     //Might want to return the vector of Area objects
-    gameModel.setDefaultLocationID(rooms[0].getID());
-    for (const auto& room : rooms) {
-        gameModel.addArea(room);
-    }
+    //gameModel.setDefaultLocationID(rooms[0].getID());
+    // for (const auto& room : rooms) {
+    //     gameModel.addArea(room);
+    // }
     cout << rooms.size();
+
+    return rooms;
 
 }
 
-void GameDataImporter::loadObjects(GameModel& gameModel, YAML::Node OBJECTS){
+std::vector<Object> GameDataImporter::getObjects(YAML::Node OBJECTS){
+
+    vector<Object> objects = {};
+
+    /*
+    Split up objects in YML file and store them in the objects class
+    */
 
     for(YAML::Node OBJECT : OBJECTS){
 
         vector<string> attributes = OBJECT["attributes"].as<vector<string>>();
+
+
+        //COST
         int cost = OBJECT["cost"].as<int>();
+
         vector<string> extra = OBJECT["extra"].as<vector<string>>();
         string objectId = OBJECT["id"].as<string>();
         string item_type = OBJECT["item_type"].as<string>();
+        vector<string> keywords = OBJECT["keywords"].as<vector<string>>();
+
         vector<string> longdesc = OBJECT["longdesc"].as<vector<string>>();
+        string description = boost::algorithm::join(longdesc, " ");
+
+        //cout << description << endl;
+
         string shortdesc = OBJECT["shortdesc"].as<string>();
         vector<string> wear_flags = OBJECT["wear_flags"].as<vector<string>>();
         int weight = OBJECT["weight"].as<int>();
 
+        //Create objects of type Object and store in vector ob Objects
+        Object newObject = Object(attributes, cost, extra, objectId, item_type, keywords, description, shortdesc, wear_flags, weight);
+        objects.push_back(newObject);
     }
+
+    cout << "Number of objects in Mother goose area: " << objects.size() << endl;
+
+    for (auto object : objects)
+    {
+        cout << "Cost of Mother Goose objects: " << object.getCost() << endl;
+        cout << "Description: " << object.getDescription() << endl;
+        cout << "Type: " << object.getType() << endl;
+        cout << "ID: " << object.getID() << endl;
+    }
+
+
+    return objects;
+
 }
 
 //The workflow for RESETS ends here, not sure how to utilize yet
@@ -283,13 +324,11 @@ void GameDataImporter::loadShops(GameModel& gameModel, YAML::Node SHOPS){
 }
 
 
+
 //use main for testing
-/*int main() {
-
-
-	GameDataImporter::loadyamlFile("../../data/mgoose.yml");
-
-
-
-	return 0;
-}*/
+//int main() {
+//
+//    GameModel gameModel = GameModel();
+//	GameDataImporter::loadyamlFile(gameModel, "../../data/mgoose.yml");
+//	return 0;
+//}

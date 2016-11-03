@@ -1,4 +1,8 @@
-#include "game/GameModel.hpp"
+#include <game/GameModel.hpp>
+
+/*
+ *	CHARACTER FUNCTIONS
+ */
 
 const std::string ACTION_NPC = "npc";
 
@@ -16,7 +20,8 @@ std::string longdesc = "longdesc";
 Inventory inventory;
 
 bool GameModel::createCharacter(const std::string& characterID, const std::string& characterName) {
-    // TO-DO: Placeholder for an initial loading area
+
+    // Placeholder for an initial loading area
 	std::string areaID = this->getDefaultLocationID();
 	Character character(      characterID,
 							  characterName, //Shortdesc is a name
@@ -31,11 +36,85 @@ bool GameModel::createCharacter(const std::string& characterID, const std::strin
 	);
 	characters.insert(std::pair<std::string, Character>(characterID, character));
 
-	// No failure case yet...
+	// Possible failure cases
+	// - Invalid character; taken care of by the Character class
+
 	return true;
 }
 
-bool GameModel::addArea(const Area area) {
+bool GameModel::moveCharacter(const std::string& characterID, const std::string& areaTag) {
+
+	try
+    {
+        // PART A - Find and validate the character inside the character map.
+		auto cPtr = characters.find(characterID);
+		if ( ! ( cPtr != characters.end() ) ) {
+			throw InvalidMoveException();
+			return false;
+		}
+
+		// PART B - Find and validate the character's current location
+		// inside the location map.
+		Character* currentCharacter = &cPtr->second;
+		auto aPtr = locations.find ( currentCharacter -> getAreaID() );
+		if ( ! ( aPtr != locations.end() ) ) {
+			throw InvalidMoveException();
+			return false;
+		}
+
+		// PART C - Check and validate that the character's target destination
+		// is connected to his/her current location.
+		Area currentArea = aPtr->second;
+		auto connectedAreas = currentArea.getConnectedAreas();
+		auto targetArea = connectedAreas->find ( areaTag ) ;
+	    if ( ! ( targetArea != connectedAreas->end() ) ) {
+	    	throw InvalidMoveException();
+	    	return false;
+	    }
+
+	    // PART D - Move the character by changing its area ID.
+		currentCharacter->setAreaID(targetArea->first);
+		return true;
+    }
+    catch(InvalidMoveException& e)
+    {
+        std::cout << e.what() << std::endl;
+    }
+}
+
+Character* GameModel::getCharacterByID(const std::string& characterID) const {
+
+	if (characters.count(characterID) != 1) {
+		return nullptr;
+	}
+
+	return (Character*)&(characters.at(characterID));
+}
+
+/*
+ *	OBJECT FUNCTIONS
+ */
+
+std::string GameModel::getObjectDescription(const std::string& areaID, const std::string& objectName) const {
+
+	auto area = getAreaByID(areaID);
+	auto objectList = area->getObjectList();
+    auto objectIter = std::find_if(objectList.begin(), objectList.end(),
+                          [&objectName](const Object& object) { return object.getName() == objectName; });
+
+    // Error message when entity doesn't exist in area
+    if ( ! (objectIter != objectList.end() ) ) {
+    	return "Object does not exist.";
+    }
+
+    return objectIter->getDescription();
+}
+
+/*
+ *	AREA FUNCTIONS
+ */
+
+bool GameModel::addArea(const Area& area) {
 
 	locations.insert(std::pair<std::string, Area>(area.getID(), std::move(area)));
 
@@ -43,90 +122,38 @@ bool GameModel::addArea(const Area area) {
 	return true;
 }
 
-std::string GameModel::getDefaultLocationID() const {
-	return this->defaultLocation;
-}
-
-void GameModel::setDefaultLocationID(const std::string& locationID) {
-	this->defaultLocation = locationID;
-}
-
 Area* GameModel::getAreaByID(const std::string& areaID) const {
 
-    if (locations.count(areaID) == 1) {
+    if ( locations.count(areaID) != 1 ) {
+		return nullptr;
+	}
 
-        return (Area*)&(locations.at(areaID));
-    }
-
-	return nullptr;
+	return (Area*)&(locations.at(areaID));
 }
 
 std::string GameModel::getAreaDescription(const std::string& areaID) const {
 
-	std::string description = "";
-
 	auto area = getAreaByID(areaID);
 
-	if (area != nullptr) {
-
-		description = area->getDescription();
+	if (area == nullptr) {
+		return "Area does not exist.\n";
 	}
 
-	return description;
+	return area->getDescription();
+
 }
 
-std::string GameModel::getEntityDescription(const std::string& areaID, const std::string& entityDisplayName) const {
-
-	auto area = getAreaByID(areaID);
-
-	auto entityList = area->getEntityList();
-    auto iter = std::find_if(entityList.begin(), entityList.end(),
-                          [&entityDisplayName](const Entity& entity) { return entity.getDisplayName() == entityDisplayName; });
-    if (iter != entityList.end()) {
-        return iter->getDescription();
-    }
-
-    // Error message when entity doesn't exist in area
-    return "Entity does not exist.";
-}
-
-bool GameModel::moveCharacter(const std::string& characterID, const std::string& areaTag) {
-
-	auto cPtr = characters.find(characterID);
-	
-	if (cPtr != characters.end()) {
-		
-		Character* character = &cPtr->second;
-		auto aPtr = locations.find(character->getAreaID());
-		
-		if (aPtr != locations.end()) {
-
-			Area area = aPtr->second;
-
-			auto connectedAreas = area.getConnectedAreas();
-			
-			// Check if the current area is connected to the target destination
-			auto connectedArea = connectedAreas->find(areaTag);
-
-            if (connectedArea != connectedAreas->end()) {
-
-				character->setAreaID(connectedArea->second);
-				return true;
-			}	
-		}
-
-	}
-
-	return false;
+std::unordered_map<std::string, std::string>* GameModel::getConnectedAreas(const std::string& areaID) const {
+    auto area = getAreaByID(areaID);
+    return area->getConnectedAreas();
 }
 
 std::vector<std::string> GameModel::getCharacterIDsInArea(const std::string& areaID) const {
 	Area* area = getAreaByID(areaID);
-
 	std::vector<std::string> charactersInArea;
+
 	//TODO consider keep track of character inside area class
 	for (const auto& pair : characters) {
-
 		auto character = pair.second;
 		if (character.getAreaID() == areaID) {
 			charactersInArea.push_back(character.getID());
@@ -136,18 +163,16 @@ std::vector<std::string> GameModel::getCharacterIDsInArea(const std::string& are
 	return charactersInArea;
 }
 
-std::unordered_map<std::string, std::string>* GameModel::getConnectedAreas(const std::string& areaID) const {
-    auto area = getAreaByID(areaID);
-    return area->getConnectedAreas();
+/*
+ *	LOCATION FUNCTIONS
+ */
+
+std::string GameModel::getDefaultLocationID() const {
+	return this->defaultLocation;
 }
 
-Character* GameModel::getCharacterByID(const std::string& characterID) const {
-
-	if (characters.count(characterID) == 1) {
-        return (Character*)&(characters.at(characterID));
-    }
-
-	return nullptr;
+void GameModel::setDefaultLocationID(const std::string& locationID) {
+	this->defaultLocation = locationID;
 }
 
 void GameModel::createNPC(const std::string& npcID, const std::string& areaID) {
@@ -178,12 +203,12 @@ void GameModel::setNPCs(const std::map<std::string, NPC> npcs) {
 }
 
 void GameModel::addNPCsToAreas() {
-    for (const auto& reset : resets) {
-        if (reset.getAction() == ACTION_NPC) {
-
-            for (int i = 0; i < reset.getLimit(); i++) {
-                createNPC(reset.getActionID(), reset.getAreaID());
-            }
-        }
-    }
+//    for (const auto& reset : resets) {
+//        if (reset.getAction() == ACTION_NPC) {
+//
+//            for (int i = 0; i < reset.getLimit(); i++) {
+//                createNPC(reset.getActionID(), reset.getAreaID());
+//            }
+//        }
+//    }
 }
