@@ -2,7 +2,7 @@
 #define ADVENTURE2016_SERVERCONFIG_HPP
 
 #include <string>
-#include "CommandCreator.hpp"
+#include "CommandConfig.hpp"
 #include <boost/optional.hpp>
 
 class ServerConfig {
