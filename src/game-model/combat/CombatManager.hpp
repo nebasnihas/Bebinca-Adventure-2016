@@ -17,6 +17,7 @@ public:
     bool loadCombatInstance(CombatInstance& combatInstance);
     CombatInstance* getCombatInstanceByCharacterID(const std::string& characterID);
     CharacterInstance* getCharacterInstanceByCharacterID(const std::string& characterID);
+    std::vector<std::string> getPossibleTargets(const std::string& characterID);
 
 private:
 

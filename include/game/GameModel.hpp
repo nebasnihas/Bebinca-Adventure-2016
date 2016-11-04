@@ -20,6 +20,7 @@ public:
     bool addArea(const Area area);
 	std::string getDefaultLocationID() const;
 	void setDefaultLocationID(const std::string& locationID);
+    bool characterCanMove(const Character& character);
 
 	Area* getAreaByID(const std::string& areaID) const;
 	std::vector<std::string> getCharacterIDsInArea(const std::string& areaID) const;
@@ -31,8 +32,13 @@ public:
 	bool engageCharacterInCombat(const std::string& characterID, const std::string& target);
 	bool setCombatAction(const std::string& characterID, const std::string& actionName);
 	bool setCombatTarget(const std::string& characterID, const std::string& targetID);
+    std::vector<std::string> getPossibleTargets(const std::string& characterID);
+    std::vector<std::string> getAvailableActions(const std::string& characterID);
 
+    void update();
 private:
+
+    void manageDeadCharacters();
 
 	CombatManager combatManager;
 	std::map<std::string, Character> characters;

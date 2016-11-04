@@ -23,6 +23,7 @@ public:
     int addCharacterToNewTeam(Character& character);
     int addCharacterToTeam(Character& character, int teamID);
     bool setupInstance();
+    std::vector<std::string> getPossibleTargets(const std::string& characterID);
 
     static bool isAvailable(const CharacterInstance& character);
 

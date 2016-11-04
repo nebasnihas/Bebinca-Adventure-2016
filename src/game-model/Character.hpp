@@ -6,7 +6,8 @@
 
 enum CharacterState {
     IDLE,
-    BATTLE
+    BATTLE,
+    DEAD
 };
 
 class Character {
@@ -20,6 +21,8 @@ protected:
     int armor;
     int maxHealth;
     int currentHealth;
+    int maxMana;
+    int currentMana;
     Attributes attributes;
     Inventory inventory;
     CharacterState state;
@@ -38,6 +41,8 @@ public:
     int getArmor() const;
     int getMaxHealth() const;
     int getCurrentHealth() const;
+    int getMaxMana() const;
+    int getCurrentMana() const;
     Attributes& getAttributes();
     Inventory& getInventory();
     CharacterState getState() const;
@@ -51,6 +56,8 @@ public:
     void setLevel(int newLevel);
     void setMaxHealth(int maxHealth);
     void setCurrentHealth(int currentHealth);
+    void setMaxMana(int maxMana);
+    void setCurrentMana(int currentMana);
     void increaseLevel();
     void increaseExp(int expToAdd);
 };

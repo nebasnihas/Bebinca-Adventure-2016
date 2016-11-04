@@ -57,3 +57,7 @@ CharacterInstance* CombatManager::getCharacterInstanceByCharacterID(const std::s
     }
     return nullptr;
 }
+
+std::vector<std::string> CombatManager::getPossibleTargets(const std::string& characterID) {
+    auto combatInstance = getCombatInstanceByCharacterID(characterID);
+}

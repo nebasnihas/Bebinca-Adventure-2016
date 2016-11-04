@@ -40,6 +40,14 @@ int Character::getCurrentHealth() const {
     return currentHealth;
 }
 
+int Character::getMaxMana() const {
+    return this->maxMana;
+}
+
+int Character::getCurrentMana() const {
+    return this->currentMana;
+}
+
 Attributes& Character::getAttributes() {
     return attributes;
 }
@@ -82,6 +90,14 @@ void Character::setMaxHealth(int maxHealth) {
 
 void Character::setCurrentHealth(int currentHealth) {
     this->currentHealth = currentHealth;
+}
+
+void Character::setMaxMana(int maxMana) {
+    this->maxMana = maxMana;
+}
+
+void Character::setCurrentMana(int currentMana) {
+    this->currentMana = currentMana;
 }
 
 void Character::increaseLevel() {

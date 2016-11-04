@@ -8,7 +8,7 @@ add_library(game Area.cpp
             combat/CombatManager.cpp
             combat/CombatInstance.cpp
             combat/CharacterInstance.cpp
-            combat/CombatAction.cpp)
+            combat/CombatAction.cpp Spell.hpp Spell.cpp)
 
 set_property(TARGET game PROPERTY CXX_STANDARD 14)
 

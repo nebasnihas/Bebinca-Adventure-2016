@@ -53,6 +53,19 @@ bool CombatInstance::isBattleOver() const {
 
 void CombatInstance::battleCleanup() {
     //TODO: Distribute exp, and respawn dead characters
+    for (const auto& cInstance : characters) {
+
+        auto character = cInstance.getCharacterRef();
+        if (cInstance.isAlive()) {
+            // Character is alive, distribute exp and continue
+            // TODO: Add actual exp tracking
+            character.increaseLevel();
+            character.setState(CharacterState::IDLE);
+        } else {
+            // Character is dead. Set to dead state, GameModel will clean up later.
+            character.setState(CharacterState::DEAD);
+        }
+    }
 }
 
 // TODO: Makes assumptions that teamIDs are added incrementally
@@ -133,4 +146,25 @@ CharacterInstance* CombatInstance::getCharacterInstance(const std::string& chara
         }
     }
     return nullptr;
+}
+
+std::vector<std::string> CombatInstance::getPossibleTargets(const std::string& characterID) {
+    std::vector<std::string> possibleTargets;
+    auto character = getCharacterInstance(characterID);
+
+    if (character == nullptr) {
+        return possibleTargets;
+    }
+
+    auto teamID = character->getTeamID();
+    for (const auto& ci : characters) {
+        if (ci.getTeamID() == teamID) {
+            continue;
+        }
+        auto ciID = ci.getCharacterRef().getID();
+        if (ciID != characterID) {
+            possibleTargets.push_back(ciID);
+        }
+    }
+    return possibleTargets;
 }

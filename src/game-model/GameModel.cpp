@@ -68,32 +68,34 @@ std::string GameModel::getEntityDescription(const std::string& areaID, const std
 
 bool GameModel::moveCharacter(const std::string& characterID, const std::string& areaTag) {
 
-	auto cPtr = characters.find(characterID);
-	
-	if (cPtr != characters.end()) {
-		
-		Character* character = &cPtr->second;
-		auto aPtr = locations.find(character->getAreaID());
-		
-		if (aPtr != locations.end()) {
+    auto character = getCharacterByID(characterID);
+	if (character == nullptr) {
+        return false;
+    }
 
-			Area area = aPtr->second;
+    if (!characterCanMove(*character)) {
+        return false;
+    }
 
-			auto connectedAreas = area.getConnectedAreas();
-			
-			// Check if the current area is connected to the target destination
-			auto connectedArea = connectedAreas->find(areaTag);
+    auto area = getAreaByID(character->getAreaID());
+    if (area == nullptr) {
+        return false;
+    }
 
-            if (connectedArea != connectedAreas->end()) {
+    auto connectedAreas = area->getConnectedAreas();
+    // Check if the current area is connected to the target destination
+    auto connectedArea = connectedAreas->find(areaTag);
 
-				character->setAreaID(connectedArea->second);
-				return true;
-			}	
-		}
+    if (connectedArea == connectedAreas->end()) {
+        return false;
+    }
 
-	}
+    character->setAreaID(connectedArea->second);
+    return true;
+}
 
-	return false;
+bool GameModel::characterCanMove(const Character& character) {
+    return character.getState() == CharacterState::IDLE;
 }
 
 std::vector<std::string> GameModel::getCharacterIDsInArea(const std::string& areaID) const {
@@ -168,4 +170,27 @@ bool GameModel::setCombatTarget(const std::string& characterID, const std::strin
     characterInstance->setTarget(*targetInstance);
     return true;
 
+}
+
+std::vector<std::string> GameModel::getPossibleTargets(const std::string& characterID) {
+    auto combatInstance = combatManager.getCombatInstanceByCharacterID(characterID);
+    return combatInstance->getPossibleTargets(characterID);
+}
+
+void GameModel::update() {
+    // Update all the combat instances
+    combatManager.update();
+    // Manage dead characters
+    manageDeadCharacters();
+}
+
+void GameModel::manageDeadCharacters() {
+    for (auto& pair : characters) {
+        auto character = pair.second;
+        if (character.getState() == CharacterState::DEAD) {
+            // TODO: Add NPC Clause
+            character.setAreaID(getDefaultLocationID());
+            character.setState(CharacterState::IDLE);
+        }
+    }
 }
