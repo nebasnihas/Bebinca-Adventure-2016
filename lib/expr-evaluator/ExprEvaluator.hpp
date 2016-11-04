@@ -24,17 +24,11 @@ enum class T_Type: char {
     MULTIPLY = '*',
     DIVIDE = '/'
     
-};
-
-
-class ExprEvaluator {
-   
-private:
+    };
     
-
     struct Token {
         T_Type type;
-        int val;
+        int val; //For T_Type number
     };
     
     typedef std::vector<Token> Expr_Token;
@@ -43,22 +37,41 @@ private:
         Expr_Token value;
         std::string error;
         bool is_okay() {
-            return error.empty(); //For testing
+            return error.empty(); //use for testing as well
         }
     };
     
-    //Helper Functions
-    
-    static bool is_operator(T_Type t);
-    static int operator_weight(T_Type t);
-    static bool is_space(char c);
-    static bool is_digit(char c);
-    static void fix_negation(Expr_Token& exp);
-    
-    static Tokenizer_output tokenizer(const std::string& s);
-    
+    struct Postfix_output {
+        int value;
+        std::string error;
+        bool is_okay() {
+            return error.empty(); //use for testing as well
+        }
+        
+    };
     
     
-};
-
+    class ExprEvaluator {
+        
+    private:
+        
+        //Helper Functions
+        
+        static bool is_operator(T_Type t);
+        static int operator_weight(T_Type t);
+        static bool is_space(char c);
+        static bool is_digit(char c);
+        static void fix_negation(Expr_Token& exp);
+        static std::string fill_variables(const std::string& expr, int level);
+        
+        template<class T>
+        static T pop(std::vector<T>& stack);
+        
+        static Tokenizer_output tokenizer(const std::string& s);
+        static Postfix_output evaluate_postfix(const Expr_Token& exp);
+        
+        
+        
+    };
+    
 #endif /* ExprEvaluator_hpp */
