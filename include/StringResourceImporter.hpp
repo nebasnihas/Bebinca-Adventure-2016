@@ -2,6 +2,8 @@
 #define ADVENTURE2016_STRINGRESOURCEIMPORTER_H
 
 #include <string>
+#include <yaml-cpp/node/node.h>
+#include <yaml-cpp/yaml.h>
 
 enum class GameLang {
     ENGLISH,

@@ -1,15 +1,11 @@
 #include <iostream>
-#include <yaml-cpp/node/node.h>
-#include <yaml-cpp/yaml.h>
 #include "StringResourceImporter.hpp"
 
 
 
-std::string StringResourceImporter::getString(const std::string& key) {
-//    std::cout << stringNode["lookCommand"].as<std::string>();
-//    return stringNode[key].as<std::string>();
+std::string StringResourceImporter::getString(const std::string& key){
     if (!stringNode[key]) {
-        std::cerr << "ERROR: Corresponding String not Found for " << key << std::endl;
+        std::cerr << "ERROR: Corresponding string not Found for " << key << std::endl;
         exit(-1);
     }
     return stringNode[key].as<std::string>();
