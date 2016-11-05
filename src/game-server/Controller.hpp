@@ -3,36 +3,34 @@
 
 #include <string>
 #include <map>
-#include <functional>
 #include <vector>
 #include <boost/optional.hpp>
 #include <memory>
+#include <commands/CommandHandle.hpp>
 
-#include "Command.hpp"
+#include "commands/Command.hpp"
 #include "game/GameModel.hpp"
 #include "networking/server.h"
 #include "game/protocols/PlayerCommand.hpp"
-#include "MessageBuilder.hpp"
+#include "commands/MessageBuilder.hpp"
 #include "boost/bimap/unordered_set_of.hpp"
 #include "boost/bimap.hpp"
-#include "CommandCreator.hpp"
-
-class GameFunctions;
+#include "commands/CommandConfig.hpp"
 
 class Controller {
 public:
-    Controller(GameModel& gameModel, networking::Server& server, const CommandCreator& commandCreator);
+    Controller(GameModel& gameModel, networking::Server& server, const CommandConfig& commandCreator);
 
-    void registerCommand(const Command& command);
-    std::unique_ptr<MessageBuilder> processCommand(const protocols::PlayerCommand& command,
-                                                   const networking::Connection& client);
+    void registerCommand(const std::string& commandId, Command& command);
+    void processCommand(const protocols::PlayerCommand& command,
+                        const networking::Connection& client);
 
     void addNewPlayer(const PlayerInfo& player);
     void removePlayer(const networking::Connection& clientID);
     void disconnectPlayer(const std::string& playerID);
 
-    const boost::optional<networking::Connection> getClientID(const std::string& playerID) const;
-    const std::string getPlayerID(const networking::Connection &clientID) const;
+    boost::optional<networking::Connection> getClientID(const std::string& playerID) const;
+    std::string getPlayerID(const networking::Connection& clientID) const;
     const std::vector<networking::Connection>& getAllClients() const;
     GameModel& getGameModel() const;
 
@@ -48,16 +46,15 @@ private:
     //keep a list of all connected clients, since its useful when sending messages
     std::vector<networking::Connection> allClients;
 
-    std::unordered_map<std::string, std::shared_ptr<Command>>  playerCommandMap;
+    std::unordered_map<std::string, std::shared_ptr<CommandHandle>>  inputToCommandMap;
 
     GameModel& gameModel;
     networking::Server& server;
-    CommandCreator commandCreator;
+    CommandConfig commandConfig;
 
     //help command
-    std::unique_ptr<MessageBuilder> help(const std::vector<std::string>& targets, const PlayerInfo& player);
-    std::unique_ptr<MessageBuilder> allCommandsHelp(const networking::Connection& clientID);
-    std::string getCommandBindingsHelpMessage(const std::string command);
+    class HelpCommand;
+    std::shared_ptr<HelpCommand> helpCommand;
 };
 
 

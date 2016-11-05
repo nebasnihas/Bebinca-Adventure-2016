@@ -10,7 +10,7 @@ commands:
     usage: "[object]"
     bindings:
       - "look"
-  command-go:
+  command-move:
     desc: "Move to a connected area."
     usage: "<direction>"
     bindings:
