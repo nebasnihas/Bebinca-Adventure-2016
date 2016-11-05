@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 #include <memory>
-
+#include <sstream>
 
 enum class T_Type: char {
     
@@ -62,13 +62,23 @@ enum class T_Type: char {
         static bool is_space(char c);
         static bool is_digit(char c);
         static void fix_negation(Expr_Token& exp);
+        static bool is_variable(char c);
         static std::string fill_variables(const std::string& expr, int level);
         
         template<class T>
         static T pop(std::vector<T>& stack);
         
         static Tokenizer_output tokenizer(const std::string& s);
+        
+        //Token evaluator
         static Postfix_output evaluate_postfix(const Expr_Token& exp);
+        
+    public:
+        
+        static Postfix_output evaluate_postfix(const std::string& expr);
+        
+        //--------------------------------Test Functions -----------
+        static void test_postfix_eval();
         
         
         

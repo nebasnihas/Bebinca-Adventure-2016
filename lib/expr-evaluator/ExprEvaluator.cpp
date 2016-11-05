@@ -69,6 +69,17 @@ bool ExprEvaluator::is_digit(char c){
     return '0' <= c && c <= '9';
 }
 
+bool ExprEvaluator::is_variable(char c){
+    return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z');
+}
+
+template<class T>
+T ExprEvaluator::pop(std::vector<T> &stack){
+    T pop_val = stack.back();
+    stack.pop_back();
+    return pop_val;
+}
+
 Tokenizer_output ExprEvaluator::tokenizer(const std::string &s){
     Expr_Token exp;
     
@@ -114,4 +125,105 @@ Tokenizer_output ExprEvaluator::tokenizer(const std::string &s){
     return Tokenizer_output{exp, ""};
 }
 
+std::string ExprEvaluator::fill_variables(const std::string &expr, int level){
+    std::string one_var_exp = expr;
+    
+    std::string str_level;
+    std::ostringstream sstream;
+    sstream << level;
+    str_level = sstream.str();
+    
+    for(int i=0; i< one_var_exp.size(); i++){
+        if(is_variable(one_var_exp[i])){
+            one_var_exp.replace(i,str_level.size()-1,str_level);
+        }
+    }
+    
+    return one_var_exp;
+}
 
+Postfix_output ExprEvaluator::evaluate_postfix(const Expr_Token &exp){
+    std::vector<int> stack;
+    bool ok = true;
+    
+    
+    for (Token tok : exp) {
+        if (tok.type == T_Type::NUMBER) {
+            stack.push_back(tok.val);
+        } else if (tok.type == T_Type::U_MINUS) {
+            
+            if (stack.size() < 1) {
+                ok = false;
+                break;
+            }
+            int a = pop(stack);
+            stack.push_back(-a); //The number on top of stack must be negated
+        } else {
+            
+            //Binary operations must have two inputs
+            if (stack.size() < 2) {
+                ok = false;
+                break;
+            }
+            int a = pop(stack);
+            int b = pop(stack);
+            switch (tok.type) {
+                case T_Type::PLUS:
+                    stack.push_back(a + b);
+                    break;
+                case T_Type::MINUS:
+                    stack.push_back(b - a);
+                    break;
+                case T_Type::MULTIPLY:
+                    stack.push_back(a * b);
+                    break;
+                case T_Type::DIVIDE:
+                    if (a == 0.0) {
+                        return Postfix_output{0, "Division Err: Dividing by 0"};
+                    }
+                    stack.push_back(b / a);
+                    break;
+                default:
+                    //Program desined to handle basic operations as seen in
+                    //spells.yaml file
+                    std::cout << "Evaluation Err: unknown token type '"
+                    + std::string(1, char(tok.type)) + "\n";
+                    break;
+                    
+                    
+            }
+        }
+    }
+    if (ok && stack.size() > 0) {
+        return Postfix_output{stack[0], ""};
+    } else {
+        return Postfix_output{0, "Err: Stack is empty"};
+    }
+}
+
+Postfix_output ExprEvaluator::evaluate_postfix(const std::string &expr){
+    Tokenizer_output tok = tokenizer(expr);
+    if(tok.is_okay()) {
+        return evaluate_postfix(tok.value);
+    }else {
+        return Postfix_output{-1, tok.error};
+    }
+}
+
+
+void ExprEvaluator::test_postfix_eval(){
+    for(;;){
+        std::cout << "Input Eqn : ";
+        std::string inp;
+        std::getline(std::cin,inp);
+        std::cout << "\n The input was: " << inp << "\n";
+        Postfix_output res = evaluate_postfix(inp);
+        if (res.is_okay()) {
+            std::cout << " The result is : " << res.value << "\n";
+            
+        } else {
+            std::cout << "Error encountered: " << res.error << "\n";
+        }
+        
+    }
+}
