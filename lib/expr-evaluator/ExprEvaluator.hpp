@@ -41,7 +41,7 @@ enum class T_Type: char {
         }
     };
     
-    struct Postfix_output {
+    struct Calculation_output {
         int value;
         std::string error;
         bool is_okay() {
@@ -65,21 +65,37 @@ enum class T_Type: char {
         static bool is_variable(char c);
         static std::string fill_variables(const std::string& expr, int level);
         
+        //Pop function for vector
         template<class T>
         static T pop(std::vector<T>& stack);
         
-        static Tokenizer_output tokenizer(const std::string& s);
+        //---------------------Converters---------------------------------//
         
-        //Token evaluator
-        static Postfix_output evaluate_postfix(const Expr_Token& exp);
+        //Tokenizer: Converts string expr to tokens
+        static Tokenizer_output tokenizer(const std::string& s);
+        //Infix expr to Postfix expr (easier calculation)
+        static Tokenizer_output infix_to_postfix(const Expr_Token& expr);
+        
+        //PostFix Token evaluator
+        static Calculation_output evaluate_postfix(const Expr_Token& exp);
+        
+        //Infix Token evaluator
+        //exp isnt const as this function will have to modify it
+        static Calculation_output evaluate_infix(Expr_Token exp);
+        
         
     public:
         
-        static Postfix_output evaluate_postfix(const std::string& expr);
+        //PostFix String evaluator
+        static Calculation_output evaluate_postfix(const std::string& expr);
         
-        //--------------------------------Test Functions -----------
-        static void test_postfix_eval();
+        //Infix String evaluator
+        static Calculation_output evaluate_infix(const std::string& expr);
         
+        
+        //--------------------------------Debug Functions -----------
+        static void debug_postfix_eval();
+        static void debug_infix_eval();
         
         
     };
