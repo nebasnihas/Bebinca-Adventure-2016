@@ -16,7 +16,10 @@ using std::string;
 using std::unordered_map;
 
 #include <string>
-#include "../../include/game/GameModel.hpp"
+
+//Helper functions
+//string getStringData(const YAML::Node node, string keyword);
+
 
 
 //NOTE: If compiling in command line, must include -lyaml-cpp flag at the end of g++ sequence
@@ -26,30 +29,31 @@ void GameDataImporter::loadyamlFile(/*GameModel& gameModel,*/ std::string fileNa
 
     YAML::Node dataFile = YAML::LoadFile(fileName);
 	const YAML::Node NPCS = dataFile["NPCS"];
-    loadNPCS(/*gameModel,*/ NPCS);
+    //loadNPCS(gameModel, NPCS);
 
     const YAML::Node ROOMS = dataFile["ROOMS"];
-    loadRooms(/*gameModel,*/ ROOMS);
+    //getRooms(ROOMS);
 
     const YAML::Node OBJECTS = dataFile["OBJECTS"];
-    loadObjects(/*gameModel,*/ OBJECTS);
+    //getObjects(OBJECTS);
 
     const YAML::Node RESETS = dataFile["RESETS"];
-    loadResets(/*gameModel,*/ RESETS);
+    //loadResets(/*gameModel,*/ RESETS);
 
     const YAML::Node SHOPS = dataFile["SHOPS"];
-    loadShops(/*gameModel,*/ SHOPS);
+    //loadShops(/*gameModel,*/ SHOPS);
 
 
     //SPELLS
-    const YAML::Node SPELLS = dataFile["defense"];
-    loadSpells(/*gameModel,*/ SPELLS);
+    const YAML::Node DEFENSE_SPELLS = dataFile["defense"];
+    const YAML::Node OFFENSE_SPELLS = dataFile["offense"];
+    loadSpells(/*gameModel,*/ DEFENSE_SPELLS);
 
 }
 
 //The following five methods take a root node and parse it one level deeper (to get an individual description)
 
-void GameDataImporter::loadNPCS(/*GameModel& gameModel,*/ YAML::Node NPCS){
+void GameDataImporter::loadNPCS(GameModel& gameModel, YAML::Node NPCS){
     //Sequence Iterator
     for(YAML::Node NPC : NPCS){
 
@@ -69,7 +73,7 @@ void GameDataImporter::loadNPCS(/*GameModel& gameModel,*/ YAML::Node NPCS){
     }
 }
 
-void GameDataImporter::loadRooms(/*GameModel& gameModel,*/ YAML::Node ROOMS){
+std::vector<Area> GameDataImporter::getRooms(YAML::Node ROOMS){
 
     //Create vector to hold instances of ROOM
     vector<Area> rooms;
@@ -142,10 +146,11 @@ void GameDataImporter::loadRooms(/*GameModel& gameModel,*/ YAML::Node ROOMS){
 //        gameModel.addArea(room);
 //    }
 //   cout << rooms.size();
+    return rooms;
 
 }
 
-void GameDataImporter::loadObjects(/*GameModel& gameModel,*/ YAML::Node OBJECTS){
+std::vector<Entity> GameDataImporter::getObjects(YAML::Node OBJECTS){
 
     for(YAML::Node OBJECT : OBJECTS){
 
@@ -163,7 +168,7 @@ void GameDataImporter::loadObjects(/*GameModel& gameModel,*/ YAML::Node OBJECTS)
 }
 
 //The workflow for RESETS ends here, not sure how to utilize yet
-void GameDataImporter::loadResets(/*GameModel& gameModel,*/ YAML::Node RESETS){
+void GameDataImporter::loadResets(GameModel& gameModel, YAML::Node RESETS){
 
     for(YAML::Node RESET : RESETS){
 
@@ -183,33 +188,114 @@ void GameDataImporter::loadResets(/*GameModel& gameModel,*/ YAML::Node RESETS){
 
 //Spells
 
-void GameDataImporter::loadSpells(/*GameModel &gameModel,*/ YAML::Node DEFENSES) {
+void GameDataImporter::loadSpells(YAML::Node DEFENSE_SPELLS) {
 
-    for (YAML::Node DEFENSE : DEFENSES) {
+    //Defense top level node
+    for (YAML::Node DEFENSE : DEFENSE_SPELLS) {
 
-        string name = DEFENSE["name"].as<string>();
+        int duration = 0;
+        string effect;
+        string wearoff;
+        string hitchar;
+        string hitroom;
+        string hitvict;
+        string dammsg;
+        //vector<string> wearoffVector;
 
-        cout << "Name: " << name;
+        if (DEFENSE["Wearoff"]) {
+            wearoff = DEFENSE["Wearoff"].as<string>();
+        }
+
+        if (DEFENSE["Dammsg"]) {
+            dammsg = DEFENSE["Wearoff"].as<string>();
+        }
+
+        //wearoff = getStringData(DEFENSE, "wearoff");
+
+        if (DEFENSE["Hitchar"]) {
+            hitchar = DEFENSE["Hitchar"].as<string>();
+        }
+
+        if (DEFENSE["Hitroom"]) {
+            hitroom = DEFENSE["Hitroom"].as<string>();
+        }
+
+        if (DEFENSE["Hitvict"]) {
+            hitvict = DEFENSE["Hitvict"].as<string>();
+        }
 
 
 
 
+        if (DEFENSE["Effect"]) {
+            //vector<string> EffectsVector = DEFENSE["Effect"].as<vector<string>>();
+            //effects = boost::algorithm::join(EffectsVector, " ");
+            effect = DEFENSE["Effect"].as<string>();
+        }
+
+        if (DEFENSE["Duration"]) {
+            duration = DEFENSE["Duration"].as<int>();
+        }
+
+        int mana = DEFENSE["Mana"].as<int>();
+        string name = DEFENSE["Name"].as<string>();
+        int minLevel = DEFENSE["Minlevel"].as<int>();
 
 
 
 
+        cout << "Name: " << name << endl;
+        cout << "Effect: " << effect << endl;
+        cout << "Mana: " << mana << endl;
+        cout << "Duration: " << duration << endl;
+        cout << "Min Level: " << minLevel << endl;
+        cout << "Wearoff: " << wearoff << endl;
+        cout << "Hitchar: " << hitchar << endl;
+        cout << "Hitroom: " << hitroom << endl;
+        cout << "Hitvict: " << hitvict << endl;
+        //cout << "Dammsg: " << dammsg << endl;
 
+        cout << "*************" << endl;
 
 
     }
 
+//    for (YAML::Node DEFENSE : DEFENSES) {
+//
+//
+//        //string effects = DEFENSE["Effect"].as<string>();
+//        int mana = DEFENSE["Mana"].as<int>();
+//        string name = DEFENSE["Name"].as<string>();
+//        int minLevel = DEFENSE["Minlevel"].as<int>();
+//        //double duration = DEFENSE["Duration"].as<double>();
+//
+//        cout << "Name: " << name << endl;
+//        //cout << "Effect: " << effects << endl;
+//        cout << "Mana: " << mana << endl;
+//        //cout << "Duration: " << duration << endl;
+//        cout << "Min Level: " << minLevel << endl;
+//
+//        cout << "*************" << endl;
+//
+//
+//    }
 
+
+}
+
+//Spell helper functions
+string getStringData(const YAML::Node node, string keyword) {
+    if (node[keyword]) {
+        //vector<string> EffectsVector = DEFENSE["Effect"].as<vector<string>>();
+        //effects = boost::algorithm::join(EffectsVector, " ");
+        return node[keyword].as<string>();
+    }
 }
 
 
 
 //The workflow for SHOPS ends here, not sure how to utilize yet
-void GameDataImporter::loadShops(/*GameModel& gameModel,*/ YAML::Node SHOPS){
+void GameDataImporter::loadShops(GameModel& gameModel, YAML::Node SHOPS){
 
     for(YAML::Node SHOP : SHOPS){
         //no data on shops in mgoose file
