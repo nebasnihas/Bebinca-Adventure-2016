@@ -44,8 +44,8 @@ std::unique_ptr<MessageBuilder> Controller::HelpCommand::execute(const gsl::span
         message = "Command <" + command + "> not found.";
     } else {
         message = "Help for command <" + command + ">\n";
-        message += "\tDescription: " + it->second->getDescription() + "\n";
-        message += "\tUsage: " + command + " " + it->second->getUsage() + "\n";
+        message += "\tDescription: " + it->second.getDescription() + "\n";
+        message += "\tUsage: " + command + " " + it->second.getUsage() + "\n";
         message += "\t" + getCommandBindingsHelpMessage(command);
     }
 
@@ -57,7 +57,7 @@ std::unique_ptr<MessageBuilder> Controller::HelpCommand::allCommandsHelp(const n
     //Get all unique commands
     std::unordered_set<std::string> commands;
     for (const auto& it : controller.inputToCommandMap) {
-        commands.insert(it.second->getId());
+        commands.insert(it.second.getId());
     }
 
     std::string message = "List of available commands. Type help <command> for more information\n";
@@ -74,7 +74,7 @@ std::unique_ptr<MessageBuilder> Controller::HelpCommand::allCommandsHelp(const n
 std::string Controller::HelpCommand::getCommandBindingsHelpMessage(const std::string& command) {
     std::string message;
     message += "Command:[";
-    message += boost::algorithm::join(controller.inputToCommandMap[command]->getInputBindings(), ",");
+    message += boost::algorithm::join(controller.inputToCommandMap.at(command).getInputBindings(), ",");
     message += "]";
 
     return message;
@@ -104,15 +104,17 @@ void Controller::processCommand(const protocols::PlayerCommand& command,
         return;
     }
 
-    Command& handler = it->second->getCommand();
+    auto& handler = it->second.getCommand();
     auto playerID = getPlayerID(client);
     auto output = handler.execute(cmdArgs, PlayerInfo{playerID, client})->buildMessages();
     server.send(output);
 }
 
 void Controller::registerCommand(const std::string& commandId, Command& command) {
-    auto bindings = commandConfig.createInputBindingsForCommand(commandId, command);
-    inputToCommandMap.insert(bindings.begin(), bindings.end());
+    auto commandHandle = commandConfig.createInputBindingsForCommand(commandId, command);
+    for (const auto& inputBinding : commandHandle.getInputBindings()) {
+        inputToCommandMap.insert({inputBinding, commandHandle});
+    }
 }
 
 void Controller::addNewPlayer(const PlayerInfo& player) {

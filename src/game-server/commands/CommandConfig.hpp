@@ -3,22 +3,26 @@
 
 #include <string>
 #include <vector>
-#include "commands/Command.hpp"
-#include "yaml-cpp/yaml.h"
+#include <unordered_set>
+#include <Command.hpp>
+#include <yaml-cpp/yaml.h>
 #include "CommandHandle.hpp"
 
 //TODO better name
 class CommandConfig {
 public:
     CommandConfig(const std::string& commandConfigFileName);
+    CommandConfig(const YAML::Node& commandConfigNode);
 
-    std::vector<std::pair<std::string, std::shared_ptr<CommandHandle>>> createInputBindingsForCommand(
-            const std::string& commandId, Command& command) const;
+    void addFileSource(const std::string &fileName);
+    void addNodeSource(const YAML::Node& node);
+    void reloadFromSources();
+
+    CommandHandle createInputBindingsForCommand(const std::string& commandId,
+                                                Command& command) const;
 
 private:
-    void loadFile();
-
-    std::string fileName;
+    std::unordered_set<std::string> fileSources;
     YAML::Node root;
 };
 

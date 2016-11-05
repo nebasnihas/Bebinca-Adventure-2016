@@ -50,33 +50,52 @@ std::vector<std::string> getInputBindings(const std::string& commandId, const YA
 }
 }
 
-CommandConfig::CommandConfig(const std::string& commandConfigFileName) : fileName{commandConfigFileName} {
-    loadFile();
+CommandConfig::CommandConfig(const std::string& commandConfigFileName) {
+    addFileSource(commandConfigFileName);
 }
 
-void CommandConfig::loadFile() {
-    auto contents = YAML::LoadFile(fileName);
-    root = contents[COMMAND_CONFIGURATION_KEY];
-    CHECK(root) << "Inavlid configuration file for commands: " << fileName;
+CommandConfig::CommandConfig(const YAML::Node& commandConfigNode) {
+    addNodeSource(commandConfigNode);
 }
 
-using retVector = std::vector<std::pair<std::string, std::shared_ptr<CommandHandle>>>;
-std::vector<std::pair<std::string, std::shared_ptr<CommandHandle>>> CommandConfig::createInputBindingsForCommand(
-        const std::string& commandId, Command& command) const {
-    auto cmd = std::make_shared<CommandHandle>(commandId, command);
+
+CommandHandle CommandConfig::createInputBindingsForCommand(const std::string& commandId,
+                                                           Command& command) const {
+    CommandHandle cmd{commandId, command};
 
     auto node = getConfigNodeForCommand(commandId, root);
-    addDesc(*cmd, node);
-    addUsage(*cmd, node);
+    addDesc(cmd, node);
+    addUsage(cmd, node);
 
     auto inputBindings = getInputBindings(commandId, node);
-    retVector returnVal;
-    returnVal.reserve(inputBindings.size());
-    std::transform(inputBindings.begin(), inputBindings.end(), std::back_inserter(returnVal), [&cmd, &commandId](auto binding) {
+    for (const auto& binding : inputBindings) {
         LOG(INFO) << "Adding binding " << binding << " to command: " << commandId;
-        cmd->addInputBinding(binding);
-        return std::make_pair(binding, cmd);
-    });
+        cmd.addInputBinding(binding);
+    }
 
-    return returnVal;
+    return cmd;
+}
+
+void CommandConfig::addFileSource(const std::string& fileName) {
+    auto contents = YAML::LoadFile(fileName);
+    CHECK(contents) << "Inavalid configuration file for commands from file: " << fileName;
+    addNodeSource(contents);
+
+    fileSources.insert(fileName);
+}
+
+void CommandConfig::addNodeSource(const YAML::Node& node) {
+    auto newNode = node[COMMAND_CONFIGURATION_KEY];
+    CHECK(newNode) << "Invalid configuration file for commands, cannot find the key " << COMMAND_CONFIGURATION_KEY;
+
+    for (const auto& it : newNode) {
+        auto key = it.first.as<std::string>();
+        LOG_IF(WARNING, root[key]) << "Duplicate when reading inserting configuration options for commands: " << key;
+        root[key] = it.second;
+    }
+}
+
+void CommandConfig::reloadFromSources() {
+    root.reset();
+    //TODO reload from files and nodes?
 }
