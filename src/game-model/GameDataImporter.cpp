@@ -1,5 +1,6 @@
-#include "game/GameDataImporter.hpp"
+#include "../../include/game/GameDataImporter.hpp"
 #include "Area.hpp"
+#include "../../include/game/Spell.hpp"
 #include "yaml-cpp/yaml.h"
 #include <fstream>
 #include <iostream>
@@ -16,27 +17,37 @@ using std::unordered_map;
 
 #include <string>
 
+//Helper functions
+//string getStringData(const YAML::Node node, string keyword);
+
+
 
 //NOTE: If compiling in command line, must include -lyaml-cpp flag at the end of g++ sequence
 
-void GameDataImporter::loadyamlFile(GameModel& gameModel, std::string fileName) {
+void GameDataImporter::loadyamlFile(/*GameModel& gameModel,*/ std::string fileName) {
 	//Loading source .yaml file,split at initial nodes (NPCS, ROOM, OBJECTS, RESETS, SHOPS)
 
     YAML::Node dataFile = YAML::LoadFile(fileName);
 	const YAML::Node NPCS = dataFile["NPCS"];
-    loadNPCS(gameModel, NPCS);
+    //loadNPCS(gameModel, NPCS);
 
     const YAML::Node ROOMS = dataFile["ROOMS"];
-    loadRooms(gameModel, ROOMS);
+    //getRooms(ROOMS);
 
     const YAML::Node OBJECTS = dataFile["OBJECTS"];
-    loadObjects(gameModel, OBJECTS);
+    //getObjects(OBJECTS);
 
     const YAML::Node RESETS = dataFile["RESETS"];
-    loadResets(gameModel, RESETS);
+    //loadResets(/*gameModel,*/ RESETS);
 
     const YAML::Node SHOPS = dataFile["SHOPS"];
-    loadShops(gameModel, SHOPS);
+    //loadShops(/*gameModel,*/ SHOPS);
+
+
+    //SPELLS
+    const YAML::Node DEFENSE_SPELLS = dataFile["defense"];
+    const YAML::Node OFFENSE_SPELLS = dataFile["offense"];
+    loadSpells(/*gameModel,*/ DEFENSE_SPELLS);
 
 }
 
@@ -62,7 +73,7 @@ void GameDataImporter::loadNPCS(GameModel& gameModel, YAML::Node NPCS){
     }
 }
 
-void GameDataImporter::loadRooms(GameModel& gameModel, YAML::Node ROOMS){
+std::vector<Area> GameDataImporter::getRooms(YAML::Node ROOMS){
 
     //Create vector to hold instances of ROOM
     vector<Area> rooms;
@@ -130,15 +141,16 @@ void GameDataImporter::loadRooms(GameModel& gameModel, YAML::Node ROOMS){
     }
 
     //Might want to return the vector of Area objects
-    gameModel.setDefaultLocationID(rooms[0].getID());
-    for (const auto& room : rooms) {
-        gameModel.addArea(room);
-    }
-    cout << rooms.size();
+    //gameModel.setDefaultLocationID(rooms[0].getID());
+    //for (const auto& room : rooms) {
+//        gameModel.addArea(room);
+//    }
+//   cout << rooms.size();
+    return rooms;
 
 }
 
-void GameDataImporter::loadObjects(GameModel& gameModel, YAML::Node OBJECTS){
+std::vector<Entity> GameDataImporter::getObjects(YAML::Node OBJECTS){
 
     for(YAML::Node OBJECT : OBJECTS){
 
@@ -173,6 +185,115 @@ void GameDataImporter::loadResets(GameModel& gameModel, YAML::Node RESETS){
     }
 }
 
+
+//Spells
+
+void GameDataImporter::loadSpells(YAML::Node DEFENSE_SPELLS) {
+
+    //Defense top level node
+    for (YAML::Node DEFENSE : DEFENSE_SPELLS) {
+
+        int duration = 0;
+        string effect;
+        string wearoff;
+        string hitchar;
+        string hitroom;
+        string hitvict;
+        string dammsg;
+        //vector<string> wearoffVector;
+
+        if (DEFENSE["Wearoff"]) {
+            wearoff = DEFENSE["Wearoff"].as<string>();
+        }
+
+        if (DEFENSE["Dammsg"]) {
+            dammsg = DEFENSE["Wearoff"].as<string>();
+        }
+
+        //wearoff = getStringData(DEFENSE, "wearoff");
+
+        if (DEFENSE["Hitchar"]) {
+            hitchar = DEFENSE["Hitchar"].as<string>();
+        }
+
+        if (DEFENSE["Hitroom"]) {
+            hitroom = DEFENSE["Hitroom"].as<string>();
+        }
+
+        if (DEFENSE["Hitvict"]) {
+            hitvict = DEFENSE["Hitvict"].as<string>();
+        }
+
+
+
+
+        if (DEFENSE["Effect"]) {
+            //vector<string> EffectsVector = DEFENSE["Effect"].as<vector<string>>();
+            //effects = boost::algorithm::join(EffectsVector, " ");
+            effect = DEFENSE["Effect"].as<string>();
+        }
+
+        if (DEFENSE["Duration"]) {
+            duration = DEFENSE["Duration"].as<int>();
+        }
+
+        int mana = DEFENSE["Mana"].as<int>();
+        string name = DEFENSE["Name"].as<string>();
+        int minLevel = DEFENSE["Minlevel"].as<int>();
+
+
+
+
+        cout << "Name: " << name << endl;
+        cout << "Effect: " << effect << endl;
+        cout << "Mana: " << mana << endl;
+        cout << "Duration: " << duration << endl;
+        cout << "Min Level: " << minLevel << endl;
+        cout << "Wearoff: " << wearoff << endl;
+        cout << "Hitchar: " << hitchar << endl;
+        cout << "Hitroom: " << hitroom << endl;
+        cout << "Hitvict: " << hitvict << endl;
+        //cout << "Dammsg: " << dammsg << endl;
+
+        cout << "*************" << endl;
+
+
+    }
+
+//    for (YAML::Node DEFENSE : DEFENSES) {
+//
+//
+//        //string effects = DEFENSE["Effect"].as<string>();
+//        int mana = DEFENSE["Mana"].as<int>();
+//        string name = DEFENSE["Name"].as<string>();
+//        int minLevel = DEFENSE["Minlevel"].as<int>();
+//        //double duration = DEFENSE["Duration"].as<double>();
+//
+//        cout << "Name: " << name << endl;
+//        //cout << "Effect: " << effects << endl;
+//        cout << "Mana: " << mana << endl;
+//        //cout << "Duration: " << duration << endl;
+//        cout << "Min Level: " << minLevel << endl;
+//
+//        cout << "*************" << endl;
+//
+//
+//    }
+
+
+}
+
+//Spell helper functions
+string getStringData(const YAML::Node node, string keyword) {
+    if (node[keyword]) {
+        //vector<string> EffectsVector = DEFENSE["Effect"].as<vector<string>>();
+        //effects = boost::algorithm::join(EffectsVector, " ");
+        return node[keyword].as<string>();
+    }
+}
+
+
+
 //The workflow for SHOPS ends here, not sure how to utilize yet
 void GameDataImporter::loadShops(GameModel& gameModel, YAML::Node SHOPS){
 
@@ -186,12 +307,12 @@ void GameDataImporter::loadShops(GameModel& gameModel, YAML::Node SHOPS){
 
 
 //use main for testing
-/*int main() {
+int main() {
 
 
-	GameDataImporter::loadyamlFile("../../data/mgoose.yml");
+	GameDataImporter::loadyamlFile("../../data/spells.yml");
 
 
 
 	return 0;
-}*/
+}
