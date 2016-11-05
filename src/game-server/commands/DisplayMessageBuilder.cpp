@@ -9,15 +9,7 @@ DisplayMessageBuilder& DisplayMessageBuilder::addClient(const networking::Connec
     return *this;
 }
 
-DisplayMessageBuilder& DisplayMessageBuilder::addClients(const std::vector<networking::Connection>& clients)
-{
-    clientList.reserve(clientList.size() + clients.size());
-    clientList.insert(clientList.end(), clients.begin(), clients.end());
-
-    return *this;
-}
-
-DisplayMessageBuilder& DisplayMessageBuilder::addClients(const std::initializer_list<networking::Connection>& clients)
+DisplayMessageBuilder& DisplayMessageBuilder::addClients(const gsl::span<networking::Connection, -1> clients)
 {
     clientList.reserve(clientList.size() + clients.size());
     clientList.insert(clientList.end(), clients.begin(), clients.end());
@@ -29,11 +21,6 @@ DisplayMessageBuilder& DisplayMessageBuilder::setSender(const std::string& sende
 {
     this->sender.emplace(sender);
     return *this;
-}
-
-DisplayMessageBuilder DisplayMessageBuilder::createMessage(const std::string& message)
-{
-    return DisplayMessageBuilder(message);
 }
 
 std::vector<networking::Message> DisplayMessageBuilder::buildMessages() const

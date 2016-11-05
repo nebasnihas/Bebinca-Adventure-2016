@@ -3,6 +3,7 @@
 
 #include <boost/optional.hpp>
 #include <memory>
+#include <gsl/gsl>
 #include "networking/server.h"
 #include "game/protocols/DisplayMessage.hpp"
 #include "MessageBuilder.hpp"
@@ -13,14 +14,12 @@
 class DisplayMessageBuilder : public MessageBuilder {
 public:
     static const std::string SENDER_SERVER;
-    static DisplayMessageBuilder createMessage(const std::string& message);
-    DisplayMessageBuilder(const std::string& message) : message{message} {};
+    DisplayMessageBuilder(std::string message) : message{std::move(message)} {};
 
     operator std::unique_ptr<MessageBuilder>();
 
     DisplayMessageBuilder& addClient(const networking::Connection& client);
-    DisplayMessageBuilder& addClients(const std::vector<networking::Connection>& clients);
-    DisplayMessageBuilder& addClients(const std::initializer_list<networking::Connection>& clients);
+    DisplayMessageBuilder& addClients(const gsl::span<networking::Connection, -1> clients);
     DisplayMessageBuilder& setSender(const std::string& sender);
 
     virtual std::vector<networking::Message> buildMessages() const override ;

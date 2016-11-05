@@ -1,4 +1,4 @@
-#include "CommandCreator.hpp"
+#include "CommandConfig.hpp"
 #include <glog/logging.h>
 
 namespace {
@@ -17,23 +17,23 @@ YAML::Node getConfigNodeForCommand(const std::string& commandId, const YAML::Nod
     return configNode;
 }
 
-void addDesc(Command& cmd, const YAML::Node& node) {
+void addDesc(CommandHandle& cmd, const YAML::Node& node) {
     const auto descNode = node[DESC_KEY];
     if (descNode) {
-        LOG(INFO) << "Found description for command: " << cmd.getKeyword();
-        cmd.setDesc(descNode.as<std::string>());
+        LOG(INFO) << "Found description for command: " << cmd.getId();
+        cmd.setDescription(descNode.as<std::string>());
     } else {
-        LOG(WARNING) << "No description for command: " << cmd.getKeyword();
+        LOG(WARNING) << "No description for command: " << cmd.getId();
     }
 }
 
-void addUsage(Command& cmd, const YAML::Node& node) {
+void addUsage(CommandHandle& cmd, const YAML::Node& node) {
     const auto usageNode = node[USAGE_KEY];
     if (usageNode) {
-        LOG(INFO) << "Found usage for command: " << cmd.getKeyword();
+        LOG(INFO) << "Found usage for command: " << cmd.getId();
         cmd.setUsage(usageNode.as<std::string>());
     } else {
-        LOG(WARNING) << "No usage found for command: " << cmd.getKeyword();
+        LOG(WARNING) << "No usage found for command: " << cmd.getId();
     }
 }
 
@@ -50,21 +50,20 @@ std::vector<std::string> getInputBindings(const std::string& commandId, const YA
 }
 }
 
-
-CommandCreator::CommandCreator(const std::string& commandConfigFileName) : fileName{commandConfigFileName} {
+CommandConfig::CommandConfig(const std::string& commandConfigFileName) : fileName{commandConfigFileName} {
     loadFile();
 }
 
-void CommandCreator::loadFile() {
+void CommandConfig::loadFile() {
     auto contents = YAML::LoadFile(fileName);
     root = contents[COMMAND_CONFIGURATION_KEY];
     CHECK(root) << "Inavlid configuration file for commands: " << fileName;
 }
 
-using retVector = std::vector<std::pair<std::string, std::shared_ptr<Command>>>;
-retVector CommandCreator::createInputBindingsForCommand(const Command& command) const {
-    auto cmd = std::make_shared<Command>(command);
-    auto commandId = cmd->getKeyword(); //TODO keyword -> id when refactoring commands
+using retVector = std::vector<std::pair<std::string, std::shared_ptr<CommandHandle>>>;
+std::vector<std::pair<std::string, std::shared_ptr<CommandHandle>>> CommandConfig::createInputBindingsForCommand(
+        const std::string& commandId, Command& command) const {
+    auto cmd = std::make_shared<CommandHandle>(commandId, command);
 
     auto node = getConfigNodeForCommand(commandId, root);
     addDesc(*cmd, node);
@@ -73,9 +72,9 @@ retVector CommandCreator::createInputBindingsForCommand(const Command& command) 
     auto inputBindings = getInputBindings(commandId, node);
     retVector returnVal;
     returnVal.reserve(inputBindings.size());
-    std::transform(inputBindings.begin(), inputBindings.end(), std::back_inserter(returnVal), [&cmd](auto binding) {
-        LOG(INFO) << "Adding binding " << binding << " to command: " << cmd->getKeyword();
-        cmd->addBinding(binding);
+    std::transform(inputBindings.begin(), inputBindings.end(), std::back_inserter(returnVal), [&cmd, &commandId](auto binding) {
+        LOG(INFO) << "Adding binding " << binding << " to command: " << commandId;
+        cmd->addInputBinding(binding);
         return std::make_pair(binding, cmd);
     });
 
