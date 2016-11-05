@@ -4,7 +4,7 @@ void CombatManager::setAction(std::string actionID, std::string characterID) {
 
 }
 
-void CombatManager::setActionLookup(const std::unordered_map<std::string, CombatAction> actionLookup) {
+void CombatManager::setActionLookup(const std::unordered_map<std::string, std::shared_ptr<CombatAction>> actionLookup) {
     this->actionLookup = std::move(actionLookup);
 }
 
@@ -18,15 +18,15 @@ void CombatManager::update() {
     }
 
     auto eraseIter = std::remove_if(combatInstances.begin(), combatInstances.end(),
-                   [] (const CombatInstance& ci) {
+                   [] (const auto& ci) {
                        return ci.isBattleOver();
                    }
     );
     combatInstances.erase(eraseIter, combatInstances.end());
 }
 
-CombatInstance& CombatManager::getNewCombatInstance() {
-    CombatInstance cInstance(&actionLookup, defaultActionID);
+CombatInstance CombatManager::getNewCombatInstance() {
+    return CombatInstance(&actionLookup, defaultActionID);
 }
 
 bool CombatManager::loadCombatInstance(CombatInstance& combatInstance) {
@@ -60,4 +60,8 @@ CharacterInstance* CombatManager::getCharacterInstanceByCharacterID(const std::s
 
 std::vector<std::string> CombatManager::getPossibleTargets(const std::string& characterID) {
     auto combatInstance = getCombatInstanceByCharacterID(characterID);
+}
+
+void CombatManager::addSpellAction(const Spell& spell) {
+    actionLookup.insert({ spell.getName(), std::make_shared<CombatCast>(spell) });
 }

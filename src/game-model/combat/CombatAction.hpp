@@ -26,8 +26,8 @@ class CombatAttack : public CombatAction {
 
 public:
 
-    void execute(CharacterInstance& source, CharacterInstance& target);
-    std::string getID();
+    virtual void execute(CharacterInstance& source, CharacterInstance& target);
+    virtual std::string getID();
 
 private:
 
@@ -38,8 +38,8 @@ class CombatCast : public CombatAction {
 public:
 
     CombatCast(const Spell& spell);
-    void execute(CharacterInstance& source, CharacterInstance& target);
-    std::string getID();
+    virtual void execute(CharacterInstance& source, CharacterInstance& target);
+    virtual std::string getID();
     const Spell& getSpellRef() const;
 
 private:

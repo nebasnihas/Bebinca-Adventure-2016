@@ -26,7 +26,7 @@ void CharacterInstance::setTarget(CharacterInstance &target) {
 }
 
 bool CharacterInstance::isAlive() const {
-    return getCharacterRef().getCurrentHealth() <= 0;
+    return getCharacterRef().getCurrentHealth() > 0;
 }
 
 int CharacterInstance::getTeamID() const {
@@ -37,6 +37,10 @@ void CharacterInstance::setTeamID(const int teamID) {
     this->teamID = teamID;
 }
 
-Character& CharacterInstance::getCharacterRef() const {
+Character& CharacterInstance::getCharacterRef() {
+    return this->character;
+}
+
+const Character& CharacterInstance::getCharacterRef() const {
     return this->character;
 }

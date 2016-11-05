@@ -6,7 +6,7 @@ CombatCast::CombatCast(const Spell &spell) : spell(spell)
 }
 
 void CombatAction::dealDamage(CharacterInstance &target, int amount) {
-    auto character = target.getCharacterRef();
+    Character& character = target.getCharacterRef();
     auto newHealth = character.getCurrentHealth() - amount;
     if (newHealth < 0) {
         newHealth = 0;
@@ -27,7 +27,7 @@ void CombatAction::healDamage(CharacterInstance &target, int amount) {
 void CombatAction::execute(CharacterInstance &source, CharacterInstance &target) {}
 
 std::string CombatAction::getID() {
-    return "";
+    return "NULL";
 }
 
 void CombatAttack::execute(CharacterInstance &source, CharacterInstance &target) {

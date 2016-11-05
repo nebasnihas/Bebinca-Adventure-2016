@@ -1,6 +1,6 @@
 #include "CombatInstance.hpp"
 
-CombatInstance::CombatInstance(std::unordered_map<std::string, CombatAction>* actionLookup, std::string defaultActionID)
+CombatInstance::CombatInstance(std::unordered_map<std::string, std::shared_ptr<CombatAction>>* actionLookup, std::string defaultActionID)
         : actionLookup(actionLookup), defaultActionID(defaultActionID)
 {
 
@@ -15,10 +15,10 @@ void CombatInstance::update() {
             continue;
         }
 
-        auto iter = (*actionLookup).find(characterInstance.getCombatActionID());
-        if (iter != (*actionLookup).end()) {
-            CombatAction& action = iter->second;
-            action.execute(characterInstance, characterInstance.getTarget());
+        auto iter = actionLookup->find(characterInstance.getCombatActionID());
+        if (iter != actionLookup->end()) {
+            auto& action = iter->second;
+            action->execute(characterInstance, characterInstance.getTarget());
         } else {
             //TODO: Add case to use default action
         }
@@ -53,9 +53,9 @@ bool CombatInstance::isBattleOver() const {
 
 void CombatInstance::battleCleanup() {
     //TODO: Distribute exp, and respawn dead characters
-    for (const auto& cInstance : characters) {
+    for (auto& cInstance : characters) {
 
-        auto character = cInstance.getCharacterRef();
+        Character& character = cInstance.getCharacterRef();
         if (cInstance.isAlive()) {
             // Character is alive, distribute exp and continue
             // TODO: Add actual exp tracking
@@ -70,6 +70,10 @@ void CombatInstance::battleCleanup() {
 
 // TODO: Makes assumptions that teamIDs are added incrementally
 int CombatInstance::getOpenTeamID() const {
+    if (characters.size() == 0) {
+        return 0;
+    }
+
     auto maxTeamID = std::max_element(characters.begin(), characters.end(),
         [] (const auto& a, const auto& b) { return a.getTeamID() < b.getTeamID(); })->getTeamID();
     return maxTeamID + 1;
@@ -100,7 +104,7 @@ bool CombatInstance::setupInstance() {
         return false;
     }
 
-    for (const auto& character : characters) {
+    for (auto& character : characters) {
         character.getCharacterRef().setState(CharacterState::BATTLE);
     }
 

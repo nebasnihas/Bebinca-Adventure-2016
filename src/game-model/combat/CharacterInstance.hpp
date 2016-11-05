@@ -22,7 +22,8 @@ public:
     CharacterInstance& getTarget();
     void setTarget(CharacterInstance& target);
 
-    Character& getCharacterRef() const;
+    Character& getCharacterRef();
+    const Character& getCharacterRef() const;
 
     bool isAlive() const;
 

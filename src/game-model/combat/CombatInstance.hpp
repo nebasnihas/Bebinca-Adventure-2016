@@ -4,6 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include <algorithm>
+#include <memory>
 #include "CharacterInstance.hpp"
 #include "CombatAction.hpp"
 
@@ -11,7 +12,7 @@ class CombatInstance {
 
 public:
 
-    CombatInstance(std::unordered_map<std::string, CombatAction>* actionLookup, std::string defaultActionID);
+    CombatInstance(std::unordered_map<std::string, std::shared_ptr<CombatAction>>* actionLookup, std::string defaultActionID);
 
     CharacterInstance* getCharacterInstance(const std::string& characterID);
 
@@ -33,7 +34,7 @@ private:
     std::unordered_map<int, CharacterInstance*> getDefaultTargets();
 
     std::string defaultActionID;
-    std::unordered_map<std::string, CombatAction>* actionLookup;
+    std::unordered_map<std::string, std::shared_ptr<CombatAction>>* actionLookup;
     std::vector<CharacterInstance> characters;
 
 };

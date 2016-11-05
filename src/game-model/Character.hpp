@@ -19,16 +19,17 @@ protected:
     int exp;
     int damage;
     int armor;
-    int maxHealth;
-    int currentHealth;
-    int maxMana;
-    int currentMana;
+    // TODO: Fix this
+    int maxHealth = 100;
+    int currentHealth = 100;
+    int maxMana = 10;
+    int currentMana = 10;
     Attributes attributes;
     Inventory inventory;
-    CharacterState state;
+    CharacterState state = CharacterState::IDLE;
 
 public:
-    const int STARTING_LEVEL = 1;
+    static const int STARTING_LEVEL = 1;
 
     Character(const std::string& id, const std::string& name, const std::string& areaID);
 

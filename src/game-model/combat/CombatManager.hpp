@@ -9,10 +9,10 @@ class CombatManager {
 public:
 
     void update();
-    void setActionLookup(const std::unordered_map<std::string, CombatAction> actionLookup);
-    void beginBattle(const std::vector<Character&>& characters);
+    void addSpellAction(const Spell& spell);
+    void setActionLookup(const std::unordered_map<std::string, std::shared_ptr<CombatAction>> actionLookup);
     void setAction(std::string actionID, std::string characterID);
-    CombatInstance& getNewCombatInstance();
+    CombatInstance getNewCombatInstance();
 
     bool loadCombatInstance(CombatInstance& combatInstance);
     CombatInstance* getCombatInstanceByCharacterID(const std::string& characterID);
@@ -21,8 +21,9 @@ public:
 
 private:
 
-    std::string defaultActionID;
-    std::unordered_map<std::string, CombatAction> actionLookup;
+    // TODO: Make this configurable
+    std::string defaultActionID = "attack";
+    std::unordered_map<std::string, std::shared_ptr<CombatAction>> actionLookup;
     std::vector<CombatInstance> combatInstances;
 
 };

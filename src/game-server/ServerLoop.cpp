@@ -41,6 +41,8 @@ void ServerLoop::update() {
                 break;
         }
     }
+
+    gameModel.update();
 }
 
 void ServerLoop::onConnect(Connection c) {

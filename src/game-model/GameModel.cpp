@@ -98,6 +98,16 @@ bool GameModel::characterCanMove(const Character& character) {
     return character.getState() == CharacterState::IDLE;
 }
 
+bool GameModel::characterIsInCombat(const std::string& characterID) {
+    auto character = getCharacterByID(characterID);
+    return character->getState() == CharacterState::BATTLE;
+}
+
+bool GameModel::characterIsDead(const std::string& characterID) {
+    auto character = getCharacterByID(characterID);
+    return character->getState() == CharacterState::DEAD;
+}
+
 std::vector<std::string> GameModel::getCharacterIDsInArea(const std::string& areaID) const {
 	Area* area = getAreaByID(areaID);
 
@@ -178,10 +188,16 @@ std::vector<std::string> GameModel::getPossibleTargets(const std::string& charac
 }
 
 void GameModel::update() {
-    // Update all the combat instances
-    combatManager.update();
+
     // Manage dead characters
-    manageDeadCharacters();
+    //manageDeadCharacters();
+
+    if (gameTicks % GameModel::GAME_TICKS_PER_COMBAT_TICK == 0) {
+        // Update all the combat instances
+        combatManager.update();
+    }
+
+    gameTicks++;
 }
 
 void GameModel::manageDeadCharacters() {
@@ -193,4 +209,16 @@ void GameModel::manageDeadCharacters() {
             character.setState(CharacterState::IDLE);
         }
     }
+}
+
+// TODO: Move this dependency to different functions
+void GameModel::loadActions(const std::unordered_map<std::string, std::shared_ptr<CombatAction>>& actionLookup) {
+    combatManager.setActionLookup(actionLookup);
+}
+
+void GameModel::addSpell(Spell spell) {
+    auto spellName = spell.getName();
+    spells.insert({ spellName, std::move(spell) });
+    Spell* spellRef = &(spells.at(spellName));
+    combatManager.addSpellAction(*spellRef);
 }
