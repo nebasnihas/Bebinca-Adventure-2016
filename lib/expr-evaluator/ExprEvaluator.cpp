@@ -125,6 +125,18 @@ Tokenizer_output ExprEvaluator::tokenizer(const std::string &s){
     return Tokenizer_output{exp, ""};
 }
 
+bool ExprEvaluator::replace_str(std::string &str, const std::string &from, const std::string &to){
+    
+    //Change later if more than one instance must be replaced
+    size_t start_pos = str.find(from);
+    if(start_pos == std::string::npos){
+        return false;
+    }
+    
+    str.replace (start_pos, from.length(), to);
+    return true;
+}
+
 std::string ExprEvaluator::fill_variables(const std::string &expr, int level){
     std::string one_var_exp = expr;
     
@@ -133,11 +145,7 @@ std::string ExprEvaluator::fill_variables(const std::string &expr, int level){
     sstream << level;
     str_level = sstream.str();
     
-    for(int i=0; i< one_var_exp.size(); i++){
-        if(is_variable(one_var_exp[i])){
-            one_var_exp.replace(i,str_level.size()-1,str_level);
-        }
-    }
+    replace_str(one_var_exp, "l", str_level);
     
     return one_var_exp;
 }
@@ -325,6 +333,7 @@ void ExprEvaluator::debug_infix_eval(){
         std::getline(std::cin,inp);
         std::cout << "\nThe input was: " << inp << "\n";
         Calculation_output res = evaluate_infix(inp);
+        
         if (res.is_okay()) {
             std::cout << "The result is : " << res.value << "\n";
             
@@ -335,3 +344,21 @@ void ExprEvaluator::debug_infix_eval(){
     }
 }
 
+std::string ExprEvaluator::evaluate_infix_1(const std::string &expr, int level){
+    
+    std::string filled_expr = fill_variables(expr, level);
+    Calculation_output output = evaluate_infix(filled_expr);
+    
+    if (output.is_okay()){
+        
+        std::string return_value;
+        std::ostringstream sstream;
+        sstream << output.value;
+        return_value = sstream.str();
+        return return_value;
+        
+    } else {
+        return "Error encountered: " + output.error + "\n";
+    }
+    
+}

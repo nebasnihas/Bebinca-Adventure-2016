@@ -62,6 +62,7 @@ enum class T_Type: char {
         static bool is_digit(char c);
         static void fix_negation(Expr_Token& exp);
         static bool is_variable(char c);
+        static bool replace_str(std::string& str, const std::string& from, const std::string& to);
         static std::string fill_variables(const std::string& expr, int level);
         
         //Pop function for vector
@@ -101,6 +102,8 @@ enum class T_Type: char {
         //--------------------------------Debug Functions --------------------
         static void debug_postfix_eval();
         static void debug_infix_eval();
+        
+        
         
         
     };
