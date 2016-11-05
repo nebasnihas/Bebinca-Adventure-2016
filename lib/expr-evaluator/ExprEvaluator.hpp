@@ -104,8 +104,6 @@ enum class T_Type: char {
         static void debug_infix_eval();
         
         
-        
-        
     };
     
 #endif /* ExprEvaluator_hpp */
