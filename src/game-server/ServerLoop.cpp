@@ -6,7 +6,7 @@ using namespace networking;
 
 ServerLoop::ServerLoop(const ServerConfig& serverConfig)
         : serverConfig{serverConfig},
-          server{serverConfig.getPort(), [this](Connection c){this->onConnect(c);}, [this](Connection c){this->onDisconnect(c);}},
+          server{4017, [this](Connection c){this->onConnect(c);}, [this](Connection c){this->onDisconnect(c);}},
           controller{gameModel, server, CommandConfig{serverConfig.getCommandConfigFile()}},
           gameFunctions{controller} {
     GameDataImporter::loadyamlFile(gameModel, serverConfig.getMapFilePath());

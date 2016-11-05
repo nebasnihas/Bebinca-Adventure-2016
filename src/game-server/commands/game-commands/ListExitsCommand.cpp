@@ -1,4 +1,5 @@
 #include <commands/DisplayMessageBuilder.hpp>
+#include <GameStrings.hpp>
 #include "ListExitsCommand.hpp"
 
 ListExitsCommand::ListExitsCommand(GameModel& gameModel) : gameModel{gameModel} {}
@@ -7,8 +8,7 @@ std::unique_ptr<MessageBuilder> ListExitsCommand::execute(const gsl::span<std::s
                                                           const PlayerInfo& player) {
     auto areaID = gameModel.getCharacterByID(player.playerID)->getAreaID();
     auto connectedAreaMap = *gameModel.getConnectedAreas(areaID);
-    //TODO: extract into string resource file
-    std::string message = "Exits:\n";
+    std::string message = GameStrings::get(GameStringKeys::EXITS_AREA) + "\n";
     for (auto mapEntry: connectedAreaMap) {
         message += mapEntry.first + "\n";
     }
