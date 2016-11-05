@@ -9,6 +9,7 @@ add_executable(game-server
         ServerLoop.cpp ServerLoop.hpp
         ServerConfig.cpp ServerConfig.hpp
         ${commands_src}
+        StringResourceImporter.cpp GameStrings.hpp
         )
 
 target_link_libraries(game-server
