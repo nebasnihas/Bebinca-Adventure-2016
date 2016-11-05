@@ -14,7 +14,7 @@ class GameModel {
 public:
 
     // TODO: Make this configurable
-    static const int GAME_TICKS_PER_COMBAT_TICK = 5;
+    static const int GAME_TICKS_PER_COMBAT_TICK = 20;
 
 	bool createCharacter(const std::string& characterID, const std::string& characterName);
 	bool moveCharacter(const std::string& characterID, const std::string& areaTag);

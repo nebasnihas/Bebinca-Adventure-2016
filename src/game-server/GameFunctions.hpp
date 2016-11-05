@@ -21,6 +21,8 @@ private:
     SayCommand sayCommand;
     ShoutCommand shoutCommand;
     WhisperCommand whisperCommand;
+    AttackCommand attackCommand;
+    CastCommand castCommand;
 
 };
 

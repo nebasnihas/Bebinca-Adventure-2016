@@ -1,5 +1,9 @@
 #include "CombatManager.hpp"
 
+CombatManager::CombatManager() {
+    setActionLookup(getDefaultActionMap());
+}
+
 void CombatManager::setAction(std::string actionID, std::string characterID) {
 
 }
