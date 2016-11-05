@@ -1,0 +1,51 @@
+#Options for commands. each command will always have a base keyword and optional aliases.
+#To configure, add configurations for command-<keyword>
+#desc: description of the command when user types help <command>
+#usage: prints out how to use the command when user types help <command>
+#alias: alternative keywords to trigger the command
+commands:
+#TODO add roles (normal, admin ...)
+  command-look:
+    desc: "Look at the area, or at an entity."
+    usage: "[object]"
+    bindings:
+      - "look"
+  command-move:
+    desc: "Move to a connected area."
+    usage: "<direction>"
+    bindings:
+      - "go"
+      - "move"
+      - "g"
+  command-players:
+    desc: "Get the players in the current area"
+    usage: ""
+    bindings:
+      - "players"
+  command-exits:
+    desc: "Get the list of exits you can move to."
+    usage: ""
+    bindings:
+      - "exits"
+  command-say:
+    desc: "Say something to all the players"
+    usage: "<text>"
+    bindings:
+      - "say"
+  command-help:
+    desc: "Gets help for commands"
+    usage: "[command]"
+    bindings:
+      - "help"
+      - "/h"
+  command-shout:
+    desc: "Shout to everyone in the current area"
+    usage: "<text>"
+    bindings:
+      - "shout"
+  command-whisper:
+    desc: "Whisper to a player"
+    usage: "<player-name> <text>"
+    bindings:
+      - "whisper"
+      - "/w"

@@ -1,13 +1,16 @@
 #include <functional>
+#include <iostream>
 #include "ServerLoop.hpp"
 
 using namespace networking;
 
-ServerLoop::ServerLoop(unsigned short serverPort, const std::string& mapFilePath)
-        : server{serverPort, [this](Connection c){this->onConnect(c);}, [this](Connection c){this->onDisconnect(c);}},
-          controller{gameModel, server},
+ServerLoop::ServerLoop(const ServerConfig& serverConfig)
+        : serverConfig{serverConfig},
+          server{serverConfig.getPort(), [this](Connection c){this->onConnect(c);}, [this](Connection c){this->onDisconnect(c);}},
+          controller{gameModel, server, CommandConfig{serverConfig.getCommandConfigFile()}},
           gameFunctions{controller} {
-    GameDataImporter::loadyamlFile(gameModel, mapFilePath);
+    GameDataImporter::loadyamlFile(gameModel, serverConfig.getMapFilePath());
+    std::cout << "Server ready. Listening on port: " << serverConfig.getPort() << std::endl;
 }
 
 void ServerLoop::processInputs(bool& quit) {
@@ -33,8 +36,7 @@ void ServerLoop::update() {
                 break;
             case protocols::RequestHeader::PLAYER_COMMAND_REQUEST: {
                 auto playerCommand = protocols::readPlayerCommandRequestMessage(requestMessage);
-                auto outgoing = controller.processCommand(playerCommand, clientMessage.connection)->buildMessages();
-                server.send(outgoing);
+                controller.processCommand(playerCommand, clientMessage.connection);
                 break;
             }
             default:

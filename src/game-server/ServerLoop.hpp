@@ -10,11 +10,11 @@
 #include "GameFunctions.hpp"
 #include "glog/logging.h"
 #include "Looper.hpp"
+#include "ServerConfig.hpp"
 
 class ServerLoop : public Loop {
 public:
-    //TODO use config file
-    ServerLoop(unsigned short serverPort, const std::string& mapFilePath);
+    ServerLoop(const ServerConfig& serverConfig);
 
     virtual void processInputs(bool& quit) override;
     virtual void update() override;
@@ -24,6 +24,7 @@ private:
     GameModel gameModel;
     Controller controller;
     GameFunctions gameFunctions;
+    ServerConfig serverConfig;
 
     void onConnect(networking::Connection c);
     void onDisconnect(networking::Connection c);

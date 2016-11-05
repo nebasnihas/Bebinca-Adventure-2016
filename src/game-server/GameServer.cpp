@@ -11,33 +11,25 @@
 #include "glog/logging.h"
 #include "ServerLoop.hpp"
 
-void validateServerArgs(int argc, char* argv[], unsigned short& port, std::string& filename) {
-    if (argc < 3) {
-        std::cout << "Usage:\n" << argv[0] << " <port> <pathToMap>\ne.g. " << argv[0] << "4002 mgoose.yml\n" << std::endl;
-        exit(1);
-    }
-
-    try {
-        port = boost::lexical_cast<ushort>(argv[1]);
-    } catch (const boost::bad_lexical_cast&) {
-        std::cerr << "Invalid port number" << std::endl;
-        exit(1);
-    }
-
-    filename = std::string(argv[2]);
-}
+std::string configFilePath = "config.yml";
 
 int main(int argc, char *argv[]) {
-    //TODO configuration using file
-    FLAGS_log_dir = "./";
-    google::InitGoogleLogging("GameServer");
-    unsigned short port;
-    std::string sourceFile;
-    validateServerArgs(argc, argv, port, sourceFile);
+    const std::string usage = "Searching for config.yml in current path. "
+            "Pass the path of the config file as a command line argument if you want to use that instead.";
 
-    //start server
-    ServerLoop loop{port, sourceFile};
-    Looper looper{5}; //TODO add tick rate to config file
+    if (argc < 2) {
+        std::cout << usage << std::endl;
+    } else {
+        configFilePath = argv[1];
+    }
+
+    ServerConfig config{configFilePath};
+
+    FLAGS_log_dir = config.getLogDirectory();
+    google::InitGoogleLogging("GameSever");
+
+    ServerLoop loop{config};
+    Looper looper{config.getTicksPerSecond()};
     looper.run(loop);
 
     return 0;

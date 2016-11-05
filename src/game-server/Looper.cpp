@@ -1,6 +1,7 @@
 #include "Looper.hpp"
 #include <thread>
 #include <iostream>
+#include <glog/logging.h>
 
 void Looper::run(Loop& loop) {
     //based off http://gameprogrammingpatterns.com/game-loop.html
@@ -27,5 +28,8 @@ void Looper::run(Loop& loop) {
                 std::this_thread::sleep_for(targetUpdateTime - elapsed);
             }
         }
+
+        google::FlushLogFiles(google::INFO);
+        google::FlushLogFiles(google::WARNING);
     }
 }
