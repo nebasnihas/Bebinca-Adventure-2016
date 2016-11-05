@@ -10,7 +10,6 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <memory>
 #include <sstream>
 
 enum class T_Type: char {
@@ -81,7 +80,7 @@ enum class T_Type: char {
         
         //Infix Token evaluator
         //exp isnt const as this function will have to modify it
-        static Calculation_output evaluate_infix(Expr_Token exp);
+        static Calculation_output evaluate_infix(Expr_Token expr);
         
         
     public:
@@ -93,7 +92,13 @@ enum class T_Type: char {
         static Calculation_output evaluate_infix(const std::string& expr);
         
         
-        //--------------------------------Debug Functions -----------
+        //-------------------FUNCTIONS FOR SPELLS-----------------------------
+        //
+        //Infix Expr evaluate with one variable (level)
+        static std::string evaluate_infix_1(const std::string& expr, int level);
+        
+        
+        //--------------------------------Debug Functions --------------------
         static void debug_postfix_eval();
         static void debug_infix_eval();
         
