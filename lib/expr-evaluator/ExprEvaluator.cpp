@@ -59,9 +59,9 @@ void ExprEvaluator::fix_negation(Expr_Token &exp){
 }
 
 bool ExprEvaluator::is_space(char c){
-    return c == ' ' ||
+    return c == ' '  ||
     c == '\n' ||
-    c ==  '\r' ||
+    c == '\r' ||
     c == '\t';
 }
 
@@ -142,7 +142,7 @@ std::string ExprEvaluator::fill_variables(const std::string &expr, int level){
     return one_var_exp;
 }
 
-Postfix_output ExprEvaluator::evaluate_postfix(const Expr_Token &exp){
+Calculation_output ExprEvaluator::evaluate_postfix(const Expr_Token &exp){
     std::vector<int> stack;
     bool ok = true;
     
@@ -179,7 +179,7 @@ Postfix_output ExprEvaluator::evaluate_postfix(const Expr_Token &exp){
                     break;
                 case T_Type::DIVIDE:
                     if (a == 0.0) {
-                        return Postfix_output{0, "Division Err: Dividing by 0"};
+                        return Calculation_output{0, "Division Err: Dividing by 0"};
                     }
                     stack.push_back(b / a);
                     break;
@@ -195,31 +195,31 @@ Postfix_output ExprEvaluator::evaluate_postfix(const Expr_Token &exp){
         }
     }
     if (ok && stack.size() > 0) {
-        return Postfix_output{stack[0], ""};
+        return Calculation_output{stack[0], ""};
     } else {
-        return Postfix_output{0, "Err: Stack is empty"};
+        return Calculation_output{0, "Err: Stack is empty"};
     }
 }
 
-Postfix_output ExprEvaluator::evaluate_postfix(const std::string &expr){
+Calculation_output ExprEvaluator::evaluate_postfix(const std::string &expr){
     Tokenizer_output tok = tokenizer(expr);
     if(tok.is_okay()) {
         return evaluate_postfix(tok.value);
     }else {
-        return Postfix_output{-1, tok.error};
+        return Calculation_output{-1, tok.error};
     }
 }
 
 
-void ExprEvaluator::test_postfix_eval(){
+void ExprEvaluator::debug_postfix_eval(){
     for(;;){
         std::cout << "Input Eqn : ";
         std::string inp;
         std::getline(std::cin,inp);
-        std::cout << "\n The input was: " << inp << "\n";
-        Postfix_output res = evaluate_postfix(inp);
+        std::cout << "\nThe input was: " << inp << "\n";
+        Calculation_output res = evaluate_postfix(inp);
         if (res.is_okay()) {
-            std::cout << " The result is : " << res.value << "\n";
+            std::cout << "The result is : " << res.value << "\n";
             
         } else {
             std::cout << "Error encountered: " << res.error << "\n";
@@ -227,3 +227,111 @@ void ExprEvaluator::test_postfix_eval(){
         
     }
 }
+
+Tokenizer_output ExprEvaluator::infix_to_postfix(const Expr_Token &expr){
+    
+    Expr_Token out;
+    Expr_Token stack;
+    
+    for(const Token& tok : expr) {
+        switch (tok.type) {
+                
+            case T_Type::NUMBER:
+                out.push_back(tok);
+                break;
+                
+            case T_Type::PLUS:
+            case T_Type::U_MINUS:
+            case T_Type::MINUS:
+            case T_Type::MULTIPLY:
+            case T_Type::DIVIDE:
+                
+                while (!stack.empty()
+                       && (is_operator(stack.back().type)
+                           && operator_weight(stack.back().type) >= operator_weight(tok.type)))
+                {
+                    out.push_back(pop(stack));
+                }
+                stack.push_back(tok);
+                break;
+                
+            case T_Type::LEFT_PARENTHESIS:
+                stack.push_back(tok);
+                break;
+                
+            case T_Type::RIGHT_PARENTHESIS:
+                
+                while (!stack.empty()
+                       && (stack.back().type != T_Type::LEFT_PARENTHESIS))
+                {
+                    out.push_back(pop(stack));
+                }
+                if (stack.empty()) {
+                    return Tokenizer_output{Expr_Token{}, "Err: Check expr parenthesis"};
+                } else if (stack.back().type == T_Type::LEFT_PARENTHESIS) {
+                    pop(stack);
+                } else {
+                    //Since Spells yml files have correct equation types
+                    //This else wont be reached
+                    std::cout << "infix_to_postfix error: "
+                    << "Check eqn parenthesis \n";
+                }
+                break;
+            default:
+                std::cout << "tok.type: '" << char(tok.type) << "'\n"
+                << "Error Encountered \n";
+        }
+    }
+    
+    while (!stack.empty()) {
+        Token t = pop(stack);
+        if (t.type == T_Type::LEFT_PARENTHESIS || t.type == T_Type::RIGHT_PARENTHESIS) {
+            return Tokenizer_output{Expr_Token{}, "Err: Check expr parenthesis"};
+        }
+        out.push_back(t);
+    }
+    
+    return Tokenizer_output{out, ""};
+}
+
+Calculation_output ExprEvaluator::evaluate_infix(Expr_Token expr){
+    
+    fix_negation(expr);
+    Tokenizer_output to_postfix = infix_to_postfix(expr);
+    
+    if (to_postfix.is_okay()) {
+        return evaluate_postfix(to_postfix.value);
+    } else {
+        return Calculation_output{-1, to_postfix.error};
+    }
+    
+}
+
+Calculation_output ExprEvaluator::evaluate_infix(const std::string &expr){
+    
+    Tokenizer_output tokens = tokenizer(expr);
+    if (tokens.is_okay()){
+        return evaluate_infix(tokens.value);
+    } else {
+        return Calculation_output{-1, tokens.error};
+    }
+    
+}
+
+void ExprEvaluator::debug_infix_eval(){
+    for(;;){
+        std::cout << "Input Eqn : ";
+        std::string inp;
+        std::getline(std::cin,inp);
+        std::cout << "\nThe input was: " << inp << "\n";
+        Calculation_output res = evaluate_infix(inp);
+        if (res.is_okay()) {
+            std::cout << "The result is : " << res.value << "\n";
+            
+        } else {
+            std::cout << "Error encountered: " << res.error << "\n";
+        }
+        
+    }
+}
+
