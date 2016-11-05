@@ -6,23 +6,19 @@
 
 const std::string ACTION_NPC = "npc";
 
-//Character Defaults
-std::string hit = "2d+7";
-std::string damage = "1d+9";
-int level = 0;
-int experience = 0;
-int armor = 0;
-int gold = 0;
-int thac0 = 0;
-std::string description = "description";
-std::string keywords = "keywords";
-std::string longdesc = "longdesc";
-Inventory inventory;
+bool GameModel::createCharacter(const std::string& characterID,
+                                const std::string& characterName) {
 
-bool GameModel::createCharacter(const std::string& characterID, const std::string& characterName) {
+    // defaults
+    std::string hit = NPC::defaultHit;
+    std::string damage = NPC::defaultDamage;
+    int level = NPC::defaultLevel;
+    int armor = NPC::defaultArmor;
+    int gold = NPC::defaultGold;
+    int experience = NPC::defaultExp;
+    Inventory inventory;
+    std::string areaID = this->getDefaultLocationID();
 
-    // Placeholder for an initial loading area
-	std::string areaID = this->getDefaultLocationID();
 	Character character(      characterID,
 							  characterName, //Shortdesc is a name
 							  hit,
@@ -175,40 +171,32 @@ void GameModel::setDefaultLocationID(const std::string& locationID) {
 	this->defaultLocation = locationID;
 }
 
-void GameModel::createNPC(const std::string& npcID, const std::string& areaID) {
-    std::string npcName = "npc name";
-
-    NPC npc(
-        npcID,
-        npcName,
-        hit,
-        damage,
-        level,
-        experience,
-        armor,
-        gold,
-        inventory,
-        areaID,
-        thac0,
-        description,
-        keywords,
-        longdesc
-    );
-
-    npcs.insert(std::pair<std::string, NPC>(npcID, npc));
-}
-
 void GameModel::setNPCs(const std::map<std::string, NPC> npcs) {
     this->npcs = npcs;
 }
 
 void GameModel::addNPCsToAreas() {
-//    for (const auto& reset : resets) {
-//        if (reset.getAction() == ACTION_NPC) {
-//
-//            for (int i = 0; i < reset.getLimit(); i++) {
-//                createNPC(reset.getActionID(), reset.getAreaID());
-//            }
-//        }
-//    }
+    for (const auto& reset : resets) {
+
+        if (reset.getAction() == ACTION_NPC) {
+            try {
+
+                auto& npc = npcTemplates.at(reset.getActionID());
+
+                for (int i = 0; i < reset.getLimit(); i++) {
+                    std::string newNpcID = npc.getID();
+                    newNpcID = newNpcID.append(std::to_string(npc.getCounter()));
+
+                    auto newNPC = NPC(npc);
+                    npc.setID(newNpcID);
+                    npc.setAreaID(reset.getAreaID());
+                    npcs.insert(std::pair<std::string, NPC>(newNPC.getID(), newNPC));
+                    npc.increaseCounter();
+                }
+
+            } catch (std::out_of_range ex) {
+
+            }
+        }
+    }
 }

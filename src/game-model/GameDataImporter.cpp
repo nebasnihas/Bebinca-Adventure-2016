@@ -1,6 +1,6 @@
 #include "game/GameDataImporter.hpp"
 #include "Inventory.hpp"
-#include "Resets.h"
+#include "Resets.hpp"
 #include "yaml-cpp/yaml.h"
 #include <fstream>
 #include <iostream>
@@ -49,79 +49,67 @@ std::map<std::string, NPC> GameDataImporter::returnNPCS(GameModel& gameModel, YA
     std::map<std::string, NPC> npcs;
 
     //Sequence Iterator
-    for(YAML::Node NPC : NPCS){
+    for(YAML::Node nodeNPC : NPCS){
 
-        int armor = 0;
-        if(NPC["armor"]){
-            armor = NPC["armor"].as<int>();
-        }
+        int armor = nodeNPC["armor"]?
+                    nodeNPC["armor"].as<int>()
+                    :NPC::defaultArmor;
 
-        string damage = "1d7+2";
-        if(NPC["damage"]){
-            damage = NPC["damage"].as<string>();
-        }
 
-        string shortdesc = " ";
-        if(NPC["shortdesc"]){
-            shortdesc = NPC["shortdesc"].as<string>();
-        }
+        string damage = nodeNPC["damage"]?
+                        nodeNPC["damage"].as<string>()
+                        :NPC::defaultDamage;
 
-        int thac0 = 0;
-        if(NPC["thac0"]){
-            thac0 = NPC["thac0"].as<int>();
-        }
+        string shortdesc = nodeNPC["shortdesc"]?
+                            nodeNPC["shortdesc"].as<string>()
+                            :NPC::defaultName;
 
-        int exp =  0;
-        if(NPC["exp"]){
-            exp = NPC["exp"].as<int>();
-        }
+        int thac0 = nodeNPC["thac0"]?
+                    nodeNPC["thac0"].as<int>()
+                    :NPC::defaultThac0;
 
-        int gold = 0;
-        if(NPC["gold"]){
-            gold = NPC["gold"].as<int>();
-        }
+        int exp =  nodeNPC["exp"]?
+                    nodeNPC["exp"].as<int>()
+                    :NPC::defaultExp;
 
-        string hit = "2d7+98";
-        if(NPC["hit"]){
-            hit = NPC["hit"].as<string>();
-        }
+        int gold = nodeNPC["gold"]?
+                    nodeNPC["gold"].as<int>()
+                    :NPC::defaultGold;
 
-        string npcID = 0;
-        if(NPC["id"]){
-            npcID = NPC["id"].as<string>();
-        }
+        string hit = nodeNPC["hit"]?
+                     nodeNPC["hit"].as<string>()
+                     :NPC::defaultHit;
 
-        int level = 0;
-        if(NPC["level"]){
-            level = NPC["level"].as<int>();
-        }
+        string npcID = nodeNPC["id"]?
+                        nodeNPC["id"].as<string>()
+                        :NPC::defaultID;
 
-        vector<string> description = {" ", " "};
-        string sDescription = " ";
-        if(NPC["description"]) {
-            vector<string> description = NPC["description"].as<vector<string>>();
-            string sDescription = boost::algorithm::join(description, " ");
-        }
+        int level = nodeNPC["level"]?
+                    nodeNPC["level"].as<int>()
+                    :NPC::defaultLevel;
 
-        vector<string> keywords = {" ", " "};
-        string sKeywords = " ";
-        if(NPC["keywords"]) {
-            vector<string> keywords = NPC["keywords"].as<vector<string>>();
-            string sKeywords = boost::algorithm::join(keywords, " ");
-        }
+        vector<string> description = nodeNPC["description"]?
+                                     nodeNPC["description"].as<vector<string>>()
+                                     :NPC::defaultDescription;
+                    string sDescription = boost::algorithm::join(description, " ");
 
-        vector<string> longdesc = {" ", " "};
-        string sLongDescription = " ";
-        if(NPC["longdesc"]) {
-            vector<string> longdesc = NPC["longdesc"].as<vector<string>>();
+
+        vector<string> keywords = nodeNPC["keywords"]?
+                                 nodeNPC["keywords"].as<vector<string>>()
+                                 :NPC::defaultKeywords;
+                    string sKeywords = boost::algorithm::join(keywords, " ");
+
+        vector<string> longdesc = nodeNPC["longdesc"]?
+                                    nodeNPC["longdesc"].as<vector<string>>()
+                                            :NPC::defaultLongDescription;
             string sLongDescription = boost::algorithm::join(longdesc, " ");
-        }
+
         Inventory inventory;
 
         std::string areaID;
 
         //Create NPC instance
-        ::NPC newNPC = ::NPC(npcID, shortdesc, hit, damage, level, exp, armor, gold, inventory, areaID, thac0,
+        NPC newNPC = NPC(npcID, shortdesc, hit, damage, level, exp, armor, gold, inventory, areaID, thac0,
                               sDescription, sKeywords, sLongDescription);
         npcs.insert(std::pair<std::string, ::NPC>(npcID, newNPC));
     }

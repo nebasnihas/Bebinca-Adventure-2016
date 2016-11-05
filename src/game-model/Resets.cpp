@@ -1,4 +1,4 @@
-#include "Resets.h"
+#include "Resets.hpp"
 
 Resets::Resets(std::string &action,
                std::string &actionID,

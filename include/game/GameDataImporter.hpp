@@ -12,7 +12,7 @@
 #include "yaml-cpp/yaml.h"
 #include <game/GameModel.hpp>
 #include <game/Character.hpp>
-#include "../../src/game-model/Resets.h"
+#include "../../src/game-model/Resets.hpp"
 
 #include <game/Area.hpp>
 #include <game/Object.hpp>

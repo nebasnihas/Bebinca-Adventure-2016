@@ -3,7 +3,7 @@ add_library(game Area.cpp
             Object.cpp
             GameModel.cpp
             Inventory.cpp
-        Resets.cpp
+            Resets.cpp
             GameDataImporter.cpp
             Attributes.cpp
         )
@@ -35,6 +35,7 @@ add_executable(game-model-test
         Object.cpp
         Inventory.cpp
         Attributes.cpp
+        Resets.cpp
         )
 
 set_target_properties(game-model-test

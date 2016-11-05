@@ -1,5 +1,5 @@
-#ifndef ADVENTURE2016_RESETS_H
-#define ADVENTURE2016_RESETS_H
+#ifndef RESETS_H
+#define RESETS_H
 
 #include <string>
 

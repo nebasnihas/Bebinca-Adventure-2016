@@ -3,6 +3,8 @@
 
 #include "Attributes.hpp"
 #include "Inventory.hpp"
+#include <vector>
+#include <iostream>
 
 class Character {
 public:
@@ -17,7 +19,7 @@ public:
                     int armor,
                     int gold,
                     Inventory inventory,
-                    const std::string& areaID
+                    std::string& areaID
                     );
 
     std::string getName() const;
@@ -43,6 +45,17 @@ public:
     void increaseLevel();
     void increaseExp(int expToAdd);
 
+    //Defaults
+    static const std::string defaultID;
+    static const std::string defaultName;
+    static const std::string defaultHit;
+    static const std::string defaultDamage;
+
+    static const int defaultLevel = 0;
+    static const int defaultExp = 0;
+    static const int defaultArmor = 0;
+    static const int defaultGold = 0;
+
 private:
     std::string id;
     std::string name;
@@ -56,6 +69,7 @@ private:
 
     std::string areaID;
     Inventory inventory;
+
 };
 
 
@@ -71,7 +85,7 @@ public:
                 int armor,
                 int gold,
                 Inventory inventory,
-                const std::string& areaID,
+                std::string& areaID,
                 int thac0,
                 const std::string& description,
                 const std::string& keywords,
@@ -83,11 +97,23 @@ public:
     std::string getlongDesc() const;
     int getThac0() const;
 
+    int getCounter() const;
+    void increaseCounter();
+    void setCounter(int newCount);
+
+    //Defaults
+    static const std::vector<std::string> defaultDescription;
+    static const std::vector<std::string> defaultKeywords;
+    static const std::vector<std::string> defaultLongDescription;
+    static const int defaultThac0 = 0;
+
+
 private:
     std::string description;
     std::string keywords;
     std::string longDesc;
     int thac0;
+    int counter;
 
 };
 

@@ -9,7 +9,7 @@ Character::Character(const std::string& id,
                      int armor,
                      int gold,
                      Inventory inventory,
-                     const std::string& areaID
+                     std::string& areaID
                     )
 
                     :
@@ -26,6 +26,12 @@ Character::Character(const std::string& id,
                     {
                        inventory = Inventory(inventory); //Unsure if this works/keeps consistency
                     }
+
+
+const std::string Character::defaultID = "0";
+const std::string Character::defaultName = "noName";
+const std::string Character::defaultHit = "2d7+98";
+const std::string Character::defaultDamage = "1d7+2";
 
 //Getters
 std::string Character::getID() const {
@@ -126,7 +132,7 @@ NPC::NPC(const std::string& id,
                    int armor,
                    int gold,
                    Inventory inventory,
-                   const std::string& areaID,
+                   std::string& areaID,
                    int thac0,
                    const std::string& description,
                    const std::string& keywords,
@@ -152,6 +158,10 @@ NPC::NPC(const std::string& id,
                     {
                     }
 
+const std::vector<std::string> NPC::defaultDescription = {"noDescription", " "};
+const std::vector<std::string> NPC::defaultKeywords = {"noKeywords", " "};
+const std::vector<std::string> NPC::defaultLongDescription = {"noDescription", " "};
+
 
 //Getters
 std::string NPC::getDescription() const {
@@ -168,4 +178,16 @@ std::string NPC::getlongDesc() const {
 
 int NPC::getThac0() const {
     return thac0;
+}
+
+int NPC::getCounter() const {
+    return counter;
+}
+
+void NPC::increaseCounter() {
+    this->counter++;
+}
+
+void NPC::setCounter(int newCount) {
+    this->counter = newCount;
 }
