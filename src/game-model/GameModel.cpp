@@ -302,3 +302,7 @@ void GameModel::addSpell(Spell spell) {
     Spell* spellRef = &(spells.at(spellName));
     combatManager.addSpellAction(*spellRef);
 }
+
+std::vector<std::string>& GameModel::getOutputStringBuffer() {
+    return outputStringBuffer;
+}

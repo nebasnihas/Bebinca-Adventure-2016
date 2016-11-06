@@ -35,6 +35,7 @@ const std::string Character::defaultName = "noName";
 const std::string Character::defaultHit = "2d7+98";
 const std::string Character::defaultDamage = "1d7+2";
 
+
 //Getters
 std::string Character::getID() const {
     return id;
@@ -172,7 +173,7 @@ NPC::NPC(const std::string& id,
                    int thac0,
                    const std::string& description,
                    const std::string& keywords,
-                   const std::string& longdesc
+                   const std::string& longDesc
                     )
 
                     : Character(id,

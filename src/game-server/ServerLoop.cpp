@@ -9,7 +9,7 @@ ServerLoop::ServerLoop(const ServerConfig& serverConfig)
           server{serverConfig.getPort(), [this](Connection c){this->onConnect(c);}, [this](Connection c){this->onDisconnect(c);}},
           controller{gameModel, server, CommandConfig{serverConfig.getCommandConfigFile()}},
           gameFunctions{controller} {
-    GameDataImporter::loadyamlFile(gameModel, serverConfig.getMapFilePath());
+    initGameModel(gameModel);
     std::cout << "Server ready. Listening on port: " << serverConfig.getPort() << std::endl;
 }
 
@@ -45,6 +45,20 @@ void ServerLoop::update() {
     }
 
     gameModel.update();
+
+
+    for(auto& message: gameModel.getOutputStringBuffer()) {
+        auto allClients = controller.getAllClients();
+        auto playerHealth = DisplayMessageBuilder{message}.
+                addClients(allClients).
+                setSender(DisplayMessageBuilder::SENDER_SERVER).buildMessages();
+        server.send(playerHealth);
+    }
+    gameModel.getOutputStringBuffer().clear();
+
+
+
+
 }
 
 void ServerLoop::onConnect(Connection c) {
@@ -81,4 +95,29 @@ void ServerLoop::processRegistrationRequest(const protocols::RequestMessage& req
     if (responseCode == protocols::RegistrationResponseCode::REGISTRATION_OK) {
         controller.addNewPlayer(PlayerInfo{registrationRequest.username, clientId});
     }
+}
+
+void ServerLoop::initGameModel(GameModel& gameModel) {
+    auto dataFile = GameDataImporter::getRootYAMLNode(gameModel, serverConfig.getMapFilePath());
+
+    const YAML::Node NPCS = dataFile["NPCS"];
+    gameModel.setNPCs(GameDataImporter::returnNPCS(gameModel, NPCS));
+
+    const YAML::Node ROOMS = dataFile["ROOMS"];
+    auto rooms = GameDataImporter::getRooms(ROOMS);
+    for (auto& room: rooms) {
+        gameModel.addArea(room);
+    }
+    gameModel.setDefaultLocationID(rooms[0].getID());
+
+    const YAML::Node OBJECTS = dataFile["OBJECTS"];
+
+    const YAML::Node RESETS = dataFile["RESETS"];
+
+    const YAML::Node SHOPS = dataFile["SHOPS"];
+
+    //SPELLS
+    const YAML::Node DEFENSE_SPELLS = dataFile["defense"];
+    const YAML::Node OFFENSE_SPELLS = dataFile["offense"];
+//    loadSpells(/*gameModel,*/ DEFENSE_SPELLS);
 }

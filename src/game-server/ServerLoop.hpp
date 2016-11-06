@@ -30,6 +30,8 @@ private:
     void onDisconnect(networking::Connection c);
     void processLoginRequest(const protocols::RequestMessage& request, const networking::Connection& clientId);
     void processRegistrationRequest(const protocols::RequestMessage& request, const networking::Connection& clientId);
+
+    void initGameModel(GameModel &gameModel);
 };
 
 

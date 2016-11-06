@@ -38,7 +38,6 @@ public:
 	 *	AREA FUNCTIONS
 	 */
 
-  	bool addArea(const Area& area);
   	Area* getAreaByID(const std::string& areaID) const;
   	std::string getAreaDescription(const std::string& areaID) const;
   	std::unordered_map<std::string, std::string>* getConnectedAreas(const std::string& areaID) const;
@@ -87,6 +86,7 @@ public:
     std::vector<std::string> getAvailableActions(const std::string& characterID);
     void update();
 
+	std::vector<std::string>& getOutputStringBuffer();
 private:
     void manageDeadCharacters();
     bool characterCanMove(const Character& character);
@@ -103,6 +103,8 @@ private:
     std::unordered_map<std::string, NPC> npcTemplates;
 
     unsigned long long gameTicks = 0;
+
+	std::vector<std::string> outputStringBuffer;
 
 }; //GameModel class
 

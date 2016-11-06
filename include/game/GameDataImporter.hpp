@@ -28,16 +28,17 @@ public:
 
 	//Inputs .YAML file for parsing
     static void loadyamlFile(GameModel& gameModel, const std::string& fileName);
+	static YAML::Node getRootYAMLNode(GameModel& gameModel, const std::string& fileName);
 
-    static std::vector<Area> getRooms(YAML::Node ROOMS);
-	static std::vector<Object> getObjects(YAML::Node OBJECTS);
-	static std::map<std::string, NPC> returnNPCS(GameModel& gameModel, YAML::Node);
-	static std::vector<Resets> returnResets(GameModel& gameModel, YAML::Node);
-	static void loadShops(GameModel& gameModel, YAML::Node);
+    static std::vector<Area> getRooms(const YAML::Node& ROOMS);
+	static std::vector<Object> getObjects(const YAML::Node& OBJECTS);
+	static std::unordered_map<std::string, NPC> returnNPCS(GameModel& gameModel, const YAML::Node&);
+	static std::vector<Resets> returnResets(GameModel& gameModel, const YAML::Node&);
+	static void loadShops(GameModel& gameModel, const YAML::Node&);
 
 
 	//Spells
-	static void loadSpells(YAML::Node);
+	static void loadSpells(const YAML::Node&);
 
 
 };

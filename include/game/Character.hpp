@@ -86,7 +86,7 @@ public:
     static const std::string defaultHit;
     static const std::string defaultDamage;
 
-    static const int defaultLevel = 0;
+    static const int defaultLevel = 1;
     static const int defaultExp = 0;
     static const int defaultArmor = 0;
     static const int defaultGold = 0;
