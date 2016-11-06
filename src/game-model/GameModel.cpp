@@ -32,7 +32,7 @@ bool GameModel::createCharacter(const std::string& characterID,
 							  areaID
 	);
 	characters.insert(std::pair<std::string, Character>(characterID, character));
-
+    outputBufferMap[characterID] = std::deque<std::string>();
 	// Possible failure cases
 	// - Invalid character; taken care of by the Character class
 
@@ -303,6 +303,18 @@ void GameModel::addSpell(Spell spell) {
     combatManager.addSpellAction(*spellRef);
 }
 
-std::vector<std::string>& GameModel::getOutputStringBuffer() {
-    return outputStringBuffer;
+
+
+std::unordered_map<std::string, std::deque<std::string>>& GameModel::getOutputBufferMap() {
+    return outputBufferMap;
+}
+
+void GameModel::pushToOutputBuffer(const std::string& characterID, std::string message) {
+	auto bufferMapIterator = outputBufferMap.find(characterID);
+	if (bufferMapIterator == outputBufferMap.end()) {
+		std::cerr << "Character not found in buffer map";
+		return;
+	}
+
+	bufferMapIterator->second.push_back(message);
 }

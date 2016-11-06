@@ -28,6 +28,7 @@ public:
     void addNewPlayer(const PlayerInfo& player);
     void removePlayer(const networking::Connection& clientID);
     void disconnectPlayer(const std::string& playerID);
+    void update();
 
     boost::optional<networking::Connection> getClientID(const std::string& playerID) const;
     std::string getPlayerID(const networking::Connection& clientID) const;

@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <utility>
 #include <exception>
+#include <deque>
 
 #include <game/Area.hpp>
 #include <game/Character.hpp>
@@ -86,7 +87,9 @@ public:
     std::vector<std::string> getAvailableActions(const std::string& characterID);
     void update();
 
-	std::vector<std::string>& getOutputStringBuffer();
+	std::unordered_map<std::string, std::deque<std::string>>& getOutputBufferMap();
+	void pushToOutputBuffer(const std::string& characterID, std::string message);
+
 private:
     void manageDeadCharacters();
     bool characterCanMove(const Character& character);
@@ -104,7 +107,7 @@ private:
 
     unsigned long long gameTicks = 0;
 
-	std::vector<std::string> outputStringBuffer;
+	std::unordered_map<std::string, std::deque<std::string>> outputBufferMap;
 
 }; //GameModel class
 

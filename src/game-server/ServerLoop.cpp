@@ -43,22 +43,8 @@ void ServerLoop::update() {
                 break;
         }
     }
-
     gameModel.update();
-
-
-    for(auto& message: gameModel.getOutputStringBuffer()) {
-        auto allClients = controller.getAllClients();
-        auto playerHealth = DisplayMessageBuilder{message}.
-                addClients(allClients).
-                setSender(DisplayMessageBuilder::SENDER_SERVER).buildMessages();
-        server.send(playerHealth);
-    }
-    gameModel.getOutputStringBuffer().clear();
-
-
-
-
+    controller.update();
 }
 
 void ServerLoop::onConnect(Connection c) {

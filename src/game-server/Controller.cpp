@@ -165,6 +165,21 @@ void Controller::disconnectPlayer(const std::string& playerID) {
     server.disconnect(clientId.get());
 }
 
+void Controller::update() {
+	for(auto& characterBufferPair: gameModel.getOutputBufferMap()) {
+		for (auto& message: characterBufferPair.second) {
+			auto optionalTargetClient = getClientID(characterBufferPair.first);
+			if (optionalTargetClient) {
+				auto displayMessage = DisplayMessageBuilder{message}.
+						addClient(optionalTargetClient.get()).
+						setSender(DisplayMessageBuilder::SENDER_SERVER).buildMessages();
+				server.send(displayMessage);
+			}
+		}
+		characterBufferPair.second.clear();
+	}
+}
+
 
 
 
