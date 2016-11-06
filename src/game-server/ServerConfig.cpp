@@ -6,6 +6,7 @@ namespace {
 const std::string PORT_KEY = "port";
 const std::string TICKS_KEY = "ticks-per-second";
 const std::string MAPFILE_KEY = "map-file";
+const std::string SPELLFILE_KEY = "spell-file";
 const std::string COMMANDS_KEY = "commands-file";
 const std::string GLOG_DIR_KEY = "google-log-directory";
 
@@ -29,6 +30,10 @@ const std::string& ServerConfig::getMapFilePath() const {
     return mapFilePath;
 }
 
+const std::string& ServerConfig::getSpellFilePath() const {
+    return spellFilePath;
+}
+
 unsigned int ServerConfig::getTicksPerSecond() const {
     return ticks;
 }
@@ -43,6 +48,7 @@ void ServerConfig::loadConfigFile() {
     port = getConfigValueAs<unsigned short>(PORT_KEY, root);
     ticks = getConfigValueAs<unsigned int>(TICKS_KEY, root);
     mapFilePath = getConfigValueAs<std::string>(MAPFILE_KEY, root);
+    spellFilePath = getConfigValueAs<std::string>(SPELLFILE_KEY, root);
     logDir = getConfigValueAs<std::string>(GLOG_DIR_KEY, root);
     commandConfigFile = getConfigValueAs<std::string>(COMMANDS_KEY, root);
 }

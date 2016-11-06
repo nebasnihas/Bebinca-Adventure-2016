@@ -3,7 +3,7 @@
 
 #include <string>
 #include "CharacterInstance.hpp"
-#include "../Spell.hpp"
+#include "game/Spell.hpp"
 
 class CombatAction {
 

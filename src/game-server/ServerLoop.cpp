@@ -84,10 +84,10 @@ void ServerLoop::processRegistrationRequest(const protocols::RequestMessage& req
 }
 
 void ServerLoop::initGameModel(GameModel& gameModel) {
-    auto dataFile = GameDataImporter::getRootYAMLNode(gameModel, serverConfig.getMapFilePath());
+    auto dataFile = GameDataImporter::getRootYAMLNode(serverConfig.getMapFilePath());
 
     const YAML::Node NPCS = dataFile["NPCS"];
-    gameModel.setNPCs(GameDataImporter::returnNPCS(gameModel, NPCS));
+    gameModel.setNPCs(GameDataImporter::returnNPCS(NPCS));
 
     const YAML::Node ROOMS = dataFile["ROOMS"];
     auto rooms = GameDataImporter::getRooms(ROOMS);
@@ -103,7 +103,9 @@ void ServerLoop::initGameModel(GameModel& gameModel) {
     const YAML::Node SHOPS = dataFile["SHOPS"];
 
     //SPELLS
-    const YAML::Node DEFENSE_SPELLS = dataFile["defense"];
-    const YAML::Node OFFENSE_SPELLS = dataFile["offense"];
-//    loadSpells(/*gameModel,*/ DEFENSE_SPELLS);
+    auto spellDataFile = GameDataImporter::getRootYAMLNode(serverConfig.getSpellFilePath());
+    auto spells = GameDataImporter::getSpells(spellDataFile);
+    for (const auto& spell : spells) {
+        gameModel.addSpell(spell);
+    }
 }

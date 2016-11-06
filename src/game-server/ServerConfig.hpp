@@ -12,6 +12,7 @@ public:
     unsigned short getPort() const;
     unsigned int getTicksPerSecond() const;
     const std::string& getMapFilePath() const; //only one file for now
+    const std::string& getSpellFilePath() const;
     const std::string& getLogDirectory() const;
     const std::string& getCommandConfigFile() const;
 private:
@@ -22,6 +23,7 @@ private:
     unsigned short port;
     unsigned int ticks;
     std::string mapFilePath;
+    std::string spellFilePath;
     std::string logDir;
     std::string commandConfigFile;
 };

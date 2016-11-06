@@ -2,7 +2,7 @@
 #include "../../src/game-model/ExpressionExtractor.hpp"
 
 static std::string createInput(const std::string expression) {
-    return "'''" + expression + "''";
+    return "'" + expression + "'";
 }
 
 TEST(ExpressionExtractorTest, NormalInput) {

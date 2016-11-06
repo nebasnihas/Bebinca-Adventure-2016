@@ -1,31 +1,37 @@
-//
-// Created by pmadeya on 31/10/16.
-//
-
 #ifndef SPELL_HPP
 #define SPELL_HPP
 
 #include <string>
-#include <assert.h>
+#include <game/Character.hpp>
+#include <expr-evaluator/ExprEvaluator.hpp>
 
-class Spell
-{
+enum SpellType {
+    OFFENSE,
+    DEFENSE,
+    STATUS,
+    UNDEFINED
+};
 
-private:
-    int duration;
-    std::string effect;
-    std::string name;
-
-
+class Spell {
 
 public:
 
-    Spell(const std::string &effect, int duration, const std::string &name);
+    Spell();
+    Spell(const std::string& name, int manaCost, SpellType type, const std::string& effect);
 
-    const std::string &getEffect() const;
-    int getDuration() const;
-    const std::string &getName() const;
+    std::string getName() const;
+    int getManaCost() const;
+    int getPower() const;
+    SpellType getType() const;
+    int getPower(const Character& caster) const;
 
+private:
+
+    std::string name;
+    int manaCost;
+    int power;
+    std::string effect;
+    SpellType type;
 
 };
 
