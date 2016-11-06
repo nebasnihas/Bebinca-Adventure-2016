@@ -46,7 +46,7 @@ private:
     //keep a list of all connected clients, since its useful when sending messages
     std::vector<networking::Connection> allClients;
 
-    std::unordered_map<std::string, std::shared_ptr<CommandHandle>>  inputToCommandMap;
+    std::unordered_map<std::string, CommandHandle>  inputToCommandMap;
 
     GameModel& gameModel;
     networking::Server& server;

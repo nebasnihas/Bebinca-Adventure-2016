@@ -6,19 +6,19 @@ Command& CommandHandle::getCommand() {
     return command;
 }
 
-const std::string& CommandHandle::getId() {
+const std::string& CommandHandle::getId() const {
     return id;
 }
 
-const std::string& CommandHandle::getDescription() {
+const std::string& CommandHandle::getDescription() const {
     return description;
 }
 
-const std::string& CommandHandle::getUsage() {
+const std::string& CommandHandle::getUsage() const {
     return usage;
 }
 
-const std::vector<std::string>& CommandHandle::getInputBindings() {
+const std::vector<std::string>& CommandHandle::getInputBindings() const {
     return inputBindings;
 }
 

@@ -10,10 +10,10 @@ public:
     CommandHandle(const std::string& id, Command& command);
 
     Command& getCommand();
-    const std::string& getId();
-    const std::string& getDescription();
-    const std::string& getUsage();
-    const std::vector<std::string>& getInputBindings();
+    const std::string& getId() const;
+    const std::string& getDescription() const;
+    const std::string& getUsage() const;
+    const std::vector<std::string>& getInputBindings() const;
 
     void setDescription(const std::string& description);
     void setUsage(const std::string& usage);

@@ -1,0 +1,18 @@
+strings:
+ invalid-direction: 'You cannot go that way'
+ invalid-target: 'not found'
+
+ players-list-area: 'Players in your area'
+ players-list-world: 'Players in the world'
+ exits-list: 'Exits from your area'
+
+ unspecified-player: 'Player not specified'
+ unspecified-target: 'Target not specified'
+
+ player: 'Player'
+ object: 'Object'
+
+ global-tag: '[All]'
+ area-tag: '[Area]'
+ private-tag: '[Whisper]'
+
