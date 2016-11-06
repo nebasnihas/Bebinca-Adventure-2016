@@ -1,8 +1,9 @@
 add_library(game Area.cpp
             Character.cpp
-            Entity.cpp
+            Object.cpp
             GameModel.cpp
             Inventory.cpp
+            Resets.cpp
             GameDataImporter.cpp
             Attributes.cpp
             combat/CombatManager.cpp

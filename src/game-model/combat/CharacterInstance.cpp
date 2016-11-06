@@ -1,6 +1,6 @@
 #include "CharacterInstance.hpp"
 
-Character CharacterInstance::nullCharacter = Character("", "", "");
+Character CharacterInstance::nullCharacter = Character();
 CharacterInstance CharacterInstance::nullTarget = CharacterInstance(nullCharacter, "", nullTarget, 0);
 
 CharacterInstance::CharacterInstance(Character& character, const std::string& initialActionID, CharacterInstance& target, int teamID)

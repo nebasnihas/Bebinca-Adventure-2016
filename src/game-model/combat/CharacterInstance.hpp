@@ -2,7 +2,7 @@
 #define CHARACTERINSTANCE_HPP
 
 #include <string>
-#include "../Character.hpp"
+#include <game/Character.hpp>
 
 class CharacterInstance {
 

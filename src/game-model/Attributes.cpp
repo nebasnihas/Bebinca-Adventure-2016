@@ -1,4 +1,4 @@
-#include "Attributes.hpp"
+#include "../../include/game/Attributes.hpp"
 #include <algorithm>
 
 Attributes::Attributes() {

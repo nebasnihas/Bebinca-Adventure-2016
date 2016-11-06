@@ -2,7 +2,7 @@
 #define SPELL_HPP
 
 #include <string>
-#include "Character.hpp"
+#include <game/Character.hpp>
 
 enum SpellType {
     OFFENSE,
