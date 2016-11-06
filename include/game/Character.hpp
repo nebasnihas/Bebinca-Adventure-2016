@@ -5,6 +5,10 @@
 #include "Inventory.hpp"
 #include <vector>
 #include <iostream>
+#include <deque>
+#include <memory>
+
+typedef std::shared_ptr<std::deque<std::string>> MessageBuffer;
 
 enum CharacterState {
     IDLE,
@@ -30,6 +34,7 @@ protected:
     std::string hit;
     int gold;
     CharacterState state = CharacterState::IDLE;
+	MessageBuffer outputBuffer;
 
 public:
     static const int STARTING_LEVEL = 1;
@@ -63,6 +68,7 @@ public:
     int getGold() const;
     Inventory& getInventory();
     CharacterState getState() const;
+	MessageBuffer getOutputBuffer();
 
     void setID(const std::string& id);
     void setName(const std::string& name);
@@ -79,6 +85,7 @@ public:
     void setCurrentMana(int currentMana);
     void increaseLevel();
     void increaseExp(int expToAdd);
+	void setOutputBuffer(MessageBuffer outputBuffer);
 
     //Defaults
     static const std::string defaultID;

@@ -3,7 +3,7 @@
 Character::Character() {}
 
 Character::Character(const std::string& id,
-                     const std::string& name, //Shortdesc is a name
+                     const std::string& name,
                      std::string& hit,
                      std::string& damage,
                      int level,
@@ -24,9 +24,8 @@ Character::Character(const std::string& id,
                     , armor(armor)
                     , gold(gold)
                     , areaID(areaID)
-
                     {
-                       inventory = Inventory(inventory); //Unsure if this works/keeps consistency (Understatement of the year)
+                       inventory = Inventory(inventory);
                     }
 
 
@@ -89,10 +88,12 @@ Inventory& Character::getInventory() {
     return inventory;
 }
 
-// Setters
-
 CharacterState Character::getState() const {
     return state;
+}
+
+MessageBuffer Character::getOutputBuffer() {
+	return outputBuffer;
 }
 
 void Character::setID(const std::string& id) {
@@ -155,6 +156,9 @@ void Character::setAreaID(const std::string& newAreaID){
     this->areaID = newAreaID;
 }
 
+void Character::setOutputBuffer(MessageBuffer outputBuffer) {
+	this->outputBuffer = outputBuffer;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////                                     NPC Subclass                                               ///////

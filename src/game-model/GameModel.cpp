@@ -20,6 +20,8 @@ bool GameModel::createCharacter(const std::string& characterID,
     Inventory inventory;
     std::string areaID = this->getDefaultLocationID();
 
+
+
 	Character character(      characterID,
 							  characterName,
 							  hit,
@@ -32,7 +34,10 @@ bool GameModel::createCharacter(const std::string& characterID,
 							  areaID
 	);
 	characters.insert(std::pair<std::string, Character>(characterID, character));
-    outputBufferMap[characterID] = std::deque<std::string>();
+
+	auto outputBuffer = std::make_shared<std::deque<std::string>>();
+	outputBufferMap[characterID] = outputBuffer;
+	character.setOutputBuffer(outputBuffer);
 	// Possible failure cases
 	// - Invalid character; taken care of by the Character class
 
@@ -305,7 +310,7 @@ void GameModel::addSpell(Spell spell) {
 
 
 
-std::unordered_map<std::string, std::deque<std::string>>& GameModel::getOutputBufferMap() {
+std::unordered_map<std::string, MessageBuffer>& GameModel::getOutputBufferMap() {
     return outputBufferMap;
 }
 
@@ -316,5 +321,5 @@ void GameModel::pushToOutputBuffer(const std::string& characterID, std::string m
 		return;
 	}
 
-	bufferMapIterator->second.push_back(message);
+	bufferMapIterator->second->push_back(message);
 }

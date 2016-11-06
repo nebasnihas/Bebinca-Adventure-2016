@@ -6,6 +6,7 @@
 #include <utility>
 #include <exception>
 #include <deque>
+#include <memory>
 
 #include <game/Area.hpp>
 #include <game/Character.hpp>
@@ -87,7 +88,7 @@ public:
     std::vector<std::string> getAvailableActions(const std::string& characterID);
     void update();
 
-	std::unordered_map<std::string, std::deque<std::string>>& getOutputBufferMap();
+	std::unordered_map<std::string, MessageBuffer>& getOutputBufferMap();
 	void pushToOutputBuffer(const std::string& characterID, std::string message);
 
 private:
@@ -107,7 +108,7 @@ private:
 
     unsigned long long gameTicks = 0;
 
-	std::unordered_map<std::string, std::deque<std::string>> outputBufferMap;
+	std::unordered_map<std::string, MessageBuffer> outputBufferMap;
 
 }; //GameModel class
 
