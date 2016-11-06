@@ -8,8 +8,7 @@ add_executable(game-server
         Looper.cpp Looper.hpp
         ServerLoop.cpp ServerLoop.hpp
         ServerConfig.cpp ServerConfig.hpp
-        ${commands_src}
-        )
+        ${commands_src})
 
 target_link_libraries(game-server
         networking

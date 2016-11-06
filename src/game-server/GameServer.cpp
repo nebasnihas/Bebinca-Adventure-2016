@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
     ServerConfig config{configFilePath};
 
     FLAGS_log_dir = config.getLogDirectory();
-    google::InitGoogleLogging("GameSever");
+    google::InitGoogleLogging("GameServer");
 
     ServerLoop loop{config};
     Looper looper{config.getTicksPerSecond()};
