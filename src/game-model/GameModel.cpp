@@ -182,10 +182,25 @@ void GameModel::setDefaultLocationID(const std::string& locationID) {
 
 Character* GameModel::getCharacterByID(const std::string& characterID) const {
 	if (characters.count(characterID) == 1) {
-        return (Character*)&(characters.at(characterID));
+        auto character = (Character*)&(characters.at(characterID));
+        return getBodySwappedCharacter(character);
     }
 
 	return nullptr;
+}
+
+Character* GameModel::getBodySwappedCharacter(Character* character) const {
+
+    auto& statusEffects = character->getStatusEffects();
+    auto statusEffect = std::find_if(statusEffects.begin(), statusEffects.end(),
+                                     [] (const auto& se) { return se->getType() == StatusType::BODYSWAP; });
+    if (statusEffect == statusEffects.end()) {
+        return character;
+    } else {
+        // TODO: print bodyswapped message
+        return getCharacterByID(std::static_pointer_cast<BodySwapStatus>(*statusEffect)->getSwappedID());
+    }
+
 }
 
 void GameModel::addNPCsToAreas() {
@@ -277,6 +292,9 @@ void GameModel::update() {
         combatManager.update();
     }
 
+    // Consider not calling this every tick
+    updateStatusEffects();
+
     gameTicks++;
 }
 
@@ -301,4 +319,23 @@ void GameModel::addSpell(Spell spell) {
     spells.insert({ spellName, std::move(spell) });
     Spell* spellRef = &(spells.at(spellName));
     combatManager.addSpellAction(*spellRef);
+}
+
+void GameModel::updateStatusEffects() {
+
+    time_t currentTime;
+    time(&currentTime);
+
+    for (auto& pair : characters) {
+        auto& character = pair.second;
+        auto& statusEffects = character.getStatusEffects();
+
+        // Remove if we have passed the end time
+        auto eraseIter = std::remove_if(statusEffects.begin(), statusEffects.end(),
+                                        [&currentTime] (const auto& se) {
+                                            return se->getEndTime() < currentTime;
+                                        }
+        );
+        statusEffects.erase(eraseIter, statusEffects.end());
+    }
 }

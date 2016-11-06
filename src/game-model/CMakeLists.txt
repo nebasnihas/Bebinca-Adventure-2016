@@ -10,7 +10,10 @@ add_library(game Area.cpp
             combat/CombatInstance.cpp
             combat/CharacterInstance.cpp
             combat/CombatAction.cpp
-            Spell.cpp)
+            Spell.cpp
+            StatusEffect.cpp)
+
+target_link_libraries(game glog)
 
 set_property(TARGET game PROPERTY CXX_STANDARD 14)
 

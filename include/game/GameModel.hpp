@@ -90,6 +90,8 @@ public:
 private:
     void manageDeadCharacters();
     bool characterCanMove(const Character& character);
+    void updateStatusEffects();
+    Character* getBodySwappedCharacter(Character* character) const;
 
 	CombatManager combatManager;
     std::unordered_map<std::string, Character> characters;

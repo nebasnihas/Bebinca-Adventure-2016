@@ -88,6 +88,10 @@ Inventory& Character::getInventory() {
     return inventory;
 }
 
+std::vector<std::shared_ptr<StatusEffect>>& Character::getStatusEffects() {
+    return statusEffects;
+}
+
 // Setters
 
 CharacterState Character::getState() const {
@@ -154,6 +158,9 @@ void Character::setAreaID(const std::string& newAreaID){
     this->areaID = newAreaID;
 }
 
+void Character::addStatusEffect(std::shared_ptr<StatusEffect> statusEffect) {
+    statusEffects.push_back(statusEffect);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////                                     NPC Subclass                                               ///////

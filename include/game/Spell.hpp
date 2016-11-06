@@ -16,8 +16,6 @@ private:
     std::string effect;
     std::string name;
 
-
-
 public:
 
     Spell(const std::string &effect, int duration, const std::string &name);
