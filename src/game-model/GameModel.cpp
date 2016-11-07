@@ -34,7 +34,6 @@ bool GameModel::createCharacter(const std::string& characterID,
 							  areaID
 	);
 	auto outputBuffer = std::make_shared<std::deque<std::string>>();
-	outputBufferMap[characterID] = outputBuffer;
 	character.setOutputBuffer(outputBuffer);
 
 	characters.insert(std::pair<std::string, Character>(characterID, character));
@@ -311,17 +310,6 @@ void GameModel::addSpell(Spell spell) {
 }
 
 
-
-std::unordered_map<std::string, MessageBuffer>& GameModel::getOutputBufferMap() {
-    return outputBufferMap;
-}
-
 void GameModel::pushToOutputBuffer(const std::string& characterID, std::string message) {
-	auto bufferMapIterator = outputBufferMap.find(characterID);
-	if (bufferMapIterator == outputBufferMap.end()) {
-		std::cerr << "Character not found in buffer map";
-		return;
-	}
-
-	bufferMapIterator->second->push_back(message);
+	getCharacterByID(characterID)->pushToBuffer(message);
 }

@@ -166,17 +166,16 @@ void Controller::disconnectPlayer(const std::string& playerID) {
 }
 
 void Controller::update() {
-	for(auto& characterBufferPair: gameModel.getOutputBufferMap()) {
-		for (auto& message: *characterBufferPair.second) {
-			auto optionalTargetClient = getClientID(characterBufferPair.first);
-			if (optionalTargetClient) {
-				auto displayMessage = DisplayMessageBuilder{message}.
-						addClient(optionalTargetClient.get()).
-						setSender(DisplayMessageBuilder::SENDER_SERVER).buildMessages();
-				server.send(displayMessage);
-			}
+	for(auto& client: getAllClients()) {
+		auto targetChar = gameModel.getCharacterByID(getPlayerID(client));
+		auto outputBuffer = targetChar->getOutputBuffer();
+		for (auto& message: *outputBuffer ) {
+			auto displayMessage = DisplayMessageBuilder{message}.
+					addClient(client).
+					setSender(DisplayMessageBuilder::SENDER_SERVER).buildMessages();
+			server.send(displayMessage);
 		}
-		characterBufferPair.second->clear();
+		outputBuffer->clear();
 	}
 }
 

@@ -88,7 +88,6 @@ public:
     std::vector<std::string> getAvailableActions(const std::string& characterID);
     void update();
 
-	std::unordered_map<std::string, MessageBuffer>& getOutputBufferMap();
 	void pushToOutputBuffer(const std::string& characterID, std::string message);
 
 private:
@@ -107,8 +106,6 @@ private:
     std::unordered_map<std::string, NPC> npcTemplates;
 
     unsigned long long gameTicks = 0;
-
-	std::unordered_map<std::string, MessageBuffer> outputBufferMap;
 
 }; //GameModel class
 
