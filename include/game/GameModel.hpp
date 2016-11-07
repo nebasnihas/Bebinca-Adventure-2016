@@ -86,6 +86,7 @@ public:
     bool setCombatTarget(const std::string& characterID, const std::string& targetID);
     std::vector<std::string> getPossibleTargets(const std::string& characterID);
     std::vector<std::string> getAvailableActions(const std::string& characterID);
+	void listValidSpells(const std::string& characterID);
     void update();
 
 	void pushToOutputBuffer(const std::string& characterID, std::string message);

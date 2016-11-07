@@ -12,7 +12,7 @@ GameFunctions::GameFunctions(Controller& controller)
           shoutCommand{gameModel, controller},
           whisperCommand{controller},
           attackCommand{gameModel, controller},
-          castCommand{gameModel} {
+          castCommand{gameModel, controller} {
     registerCommands();
 }
 

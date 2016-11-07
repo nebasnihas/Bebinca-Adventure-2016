@@ -23,8 +23,6 @@ private:
     std::string SET_COMBAT_ACTION = "You start attacking your opponent";
     std::string COMBAT_ENGAGED = "You engage in combat with: ";
 
-    std::unique_ptr<MessageBuilder> buildPlayerMessage(const PlayerInfo &player, std::string& message) const;
-
     std::unique_ptr<MessageBuilder> setCombatAction(const PlayerInfo &info);
 };
 

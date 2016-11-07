@@ -20,6 +20,7 @@ void CombatInstance::update() {
             auto& action = iter->second;
             action->execute(characterInstance, characterInstance.getTarget());
         } else {
+			characterInstance.getCharacterRef().pushToBuffer("You do not know the spell " + characterInstance.getCombatActionID());
             //TODO: Add case to use default action
         }
 

@@ -46,9 +46,3 @@ AttackCommand::setCombatAction(const PlayerInfo &player) {
     return buildPlayerMessage(player, SET_COMBAT_ACTION);
 }
 
-
-std::unique_ptr<MessageBuilder> AttackCommand::buildPlayerMessage(const PlayerInfo &player, std::string& message) const {
-    return DisplayMessageBuilder{message}
-            .addClient(player.clientID)
-            .setSender(DisplayMessageBuilder::SENDER_SERVER);
-}

@@ -53,8 +53,7 @@ void CombatCast::execute(CharacterInstance &source, CharacterInstance &target) {
     auto currentMana = character.getCurrentMana();
 
     if (currentMana < manaCost) {
-        // Not enough mana for spell cast
-        // TODO: Send error message to client
+		source.getCharacterRef().pushToBuffer("Not enough mana to cast " + spell.getName());
         return;
     } else {
         character.setCurrentMana(currentMana - manaCost);
@@ -63,9 +62,13 @@ void CombatCast::execute(CharacterInstance &source, CharacterInstance &target) {
     auto power = spell.getPower(source.getCharacterRef());
     switch (spell.getType()) {
         case SpellType::OFFENSE:
+			source.getCharacterRef().pushToBuffer("You cast " + spell.getName() + " for damage " + std::to_string(power));
+			target.getCharacterRef().pushToBuffer(source.getCharacterRef().getName() + "casts " + spell.getName() + " on you for damage " + std::to_string(power));
             dealDamage(target, power);
             break;
         case SpellType::DEFENSE:
+			source.getCharacterRef().pushToBuffer("You cast " + spell.getName() + " for effect " + std::to_string(power));
+			target.getCharacterRef().pushToBuffer(source.getCharacterRef().getName() + "casts " + spell.getName() + " on you for effect " + std::to_string(power));
             healDamage(target, power);
             break;
     }

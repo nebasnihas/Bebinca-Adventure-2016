@@ -3,15 +3,17 @@
 
 #include <commands/Command.hpp>
 #include <game/GameModel.hpp>
+#include <Controller.hpp>
 
 class CastCommand : public Command {
 public:
-    CastCommand(GameModel& gameModel);
+    CastCommand(GameModel& gameModel, Controller& controller);
     virtual std::unique_ptr<MessageBuilder> execute(const gsl::span<std::string, -1> arguments,
                                                     const PlayerInfo& player) override;
 
 private:
     GameModel& gameModel;
+	Controller& controller;
 
 };
 

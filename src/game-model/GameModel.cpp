@@ -313,3 +313,12 @@ void GameModel::addSpell(Spell spell) {
 void GameModel::pushToOutputBuffer(const std::string& characterID, std::string message) {
 	getCharacterByID(characterID)->pushToBuffer(message);
 }
+
+void GameModel::listValidSpells(const std::string& characterID) {
+	auto character = getCharacterByID(characterID);
+	std::string message = "List of Spells:\n";
+	for (auto& spellPairs: spells) {
+		message += spellPairs.first + ", ";
+	}
+	character->pushToBuffer(message);
+}
