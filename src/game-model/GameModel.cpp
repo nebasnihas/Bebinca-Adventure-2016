@@ -365,16 +365,28 @@ void GameModel::listValidSpells(const std::string& characterID) {
 }
 
 void GameModel::loadDefaultSpells() {
-    Spell bodySwap("bodyswap", 0, SpellType::BODY_SWAP, "");
+    Spell bodySwap("body swap", 0, SpellType::BODY_SWAP, "");
     addSpell(bodySwap);
 }
 
 void GameModel::castSpell(const std::string& sourceID, const std::string& targetID, const std::string& spellID) {
 	auto spellsIter = spells.find(spellID);
 	if (spellsIter != spells.end()) {
+		if (characterIsInCombat(sourceID)) {
+			//TODO: Handle switching targets based on targetID
+			setCombatAction(sourceID, spellID);
+			return;
+		}
+
 		auto& spell = spellsIter->second;
-		CombatCast spellCast{spell};
-		spellCast.execute(*getCharacterByID(sourceID), *getCharacterByID(targetID));
+		if (spell.getType() == SpellType::OFFENSE) {
+			engageCharacterInCombat(sourceID, targetID);
+			setCombatAction(sourceID, spellID);
+		}
+		else {
+			CombatCast spellCast{spell};
+			spellCast.execute(*getCharacterByID(sourceID), *getCharacterByID(targetID));
+		}
 	} else {
 		getCharacterByID(sourceID)->pushToBuffer("You do not know the spell " + spellID);
 	}

@@ -19,10 +19,15 @@ std::unique_ptr<MessageBuilder> CastCommand::execute(const gsl::span<std::string
 	std::string targetID = *(arguments.end() - 1);
 
 	if (!controller.getClientID(targetID)) {
-		return buildPlayerMessage(player.clientID, targetID + " not found");
+		if (targetID == TARGET_SELF) {
+			targetID = player.playerID;
+		}
+		else {
+			return buildPlayerMessage(player.clientID, targetID + " not found");
+		}
 	}
 
 	gameModel.castSpell(player.playerID, targetID, spell);
-	return buildPlayerMessage(player.clientID, "You attempt to cast " + spell + " on " + targetID);
+	return buildPlayerMessage(player.clientID, "Casting spell " + spell);
 
 }

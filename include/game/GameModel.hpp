@@ -24,7 +24,7 @@ public:
 	 */
 
     // TODO: Make this configurable
-    static const int GAME_TICKS_PER_COMBAT_TICK = 20;
+    static const int GAME_TICKS_PER_COMBAT_TICK = 30;
 
 	GameModel();
 

@@ -26,6 +26,8 @@ protected:
 				.addClient(client)
 				.setSender(DisplayMessageBuilder::SENDER_SERVER);
 	}
+
+	const std::string TARGET_SELF = "self";
 };
 
 

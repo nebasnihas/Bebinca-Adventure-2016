@@ -14,15 +14,19 @@ void CombatInstance::update() {
         if (!characterInstance.isAlive()) {
             continue;
         }
-
+		//TODO: eliminate lookup conditions and replace with assertion, callers will ensure valid strings are passed
         auto iter = actionLookup->find(characterInstance.getCombatActionID());
         if (iter != actionLookup->end()) {
             auto& action = iter->second;
             action->execute(characterInstance.getCharacterRef(), characterInstance.getTarget().getCharacterRef());
         } else {
 			characterInstance.getCharacterRef().pushToBuffer("You do not know the spell " + characterInstance.getCombatActionID());
-            //TODO: Add case to use default action
         }
+
+		//TODO: Extract default case
+		if (characterInstance.getCombatActionID() != "attack") {
+			characterInstance.setCombatActionID("attack");
+		}
 
     }
 

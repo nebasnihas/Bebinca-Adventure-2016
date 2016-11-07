@@ -165,7 +165,7 @@ std::vector<Spell> GameDataImporter::getSpells(const YAML::Node& SPELLS) {
     auto& OFFENSE_SPELLS = SPELLS["offense"];
     for (const auto& OFFENSE : OFFENSE_SPELLS) {
         Spell spell;
-        if (tryParseSpell(OFFENSE, SpellType::DEFENSE, spell)) {
+        if (tryParseSpell(OFFENSE, SpellType::OFFENSE, spell)) {
             returnSpells.push_back(spell);
         }
     }

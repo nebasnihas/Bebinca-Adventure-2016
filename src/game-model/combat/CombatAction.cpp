@@ -58,17 +58,27 @@ void CombatCast::execute(Character& source, Character& target) {
 
     auto power = spell.getPower(source);
     switch (spell.getType()) {
-        case SpellType::OFFENSE:
-			source.pushToBuffer("You cast " + spell.getName() + " for damage " + std::to_string(power));
-			target.pushToBuffer(source.getName() + "casts " + spell.getName() + " on you for damage " + std::to_string(power));
+		case SpellType::OFFENSE:
+			if (source.getName() == target.getName()) {
+				source.pushToBuffer("You cast " + spell.getName() + " on yourself for damage " + std::to_string(power));
+			}
+			else {
+				source.pushToBuffer("You cast " + spell.getName() + " on " + target.getName() + " for damage " + std::to_string(power));
+				target.pushToBuffer(source.getName() + " casts " + spell.getName() + " on you for damage " + std::to_string(power));
+			}
             dealDamage(target, power);
             break;
         case SpellType::DEFENSE:
             // TODO: Resolve and fix this temporary patchwork
-            // Redirect healing to yourself for now, unknown if this will be the case forever
-            source.pushToBuffer("You cast " + spell.getName() + " and heal " + std::to_string(power));
-            //target.getCharacterRef().pushToBuffer(source.getCharacterRef().getName() + "casts " + spell.getName() + " on you for effect " + std::to_string(power));
-            healDamage(source, power);
+			if (source.getName() == target.getName() || source.getState() == CharacterState::BATTLE) {
+				source.pushToBuffer("You cast " + spell.getName() + " on yourself and heal " + std::to_string(power));
+				healDamage(source, power);
+			}
+			else {
+				source.pushToBuffer("You cast " + spell.getName() + " on " + target.getName() + " and heal " + std::to_string(power));
+				target.pushToBuffer(source.getName() + " casts " + spell.getName() + " on you and heals you for " + std::to_string(power));
+				healDamage(target, power);
+			}
             break;
     }
 }
