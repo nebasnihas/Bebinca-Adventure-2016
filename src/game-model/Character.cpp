@@ -157,7 +157,11 @@ void Character::setAreaID(const std::string& newAreaID){
 }
 
 void Character::setOutputBuffer(MessageBuffer outputBuffer) {
-	this->outputBuffer = outputBuffer;
+	this->outputBuffer = std::move(outputBuffer);
+}
+
+void Character::pushToBuffer(const std::string message) {
+	outputBuffer->push_back(message);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////

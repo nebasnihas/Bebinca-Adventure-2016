@@ -61,9 +61,11 @@ void CombatInstance::battleCleanup() {
             // TODO: Add actual exp tracking
             character.increaseLevel();
             character.setState(CharacterState::IDLE);
+			character.pushToBuffer("You won the battle");
         } else {
             // Character is dead. Set to dead state, GameModel will clean up later.
             character.setState(CharacterState::DEAD);
+			character.pushToBuffer("You were killed");
         }
     }
 }

@@ -87,6 +87,8 @@ public:
     void increaseExp(int expToAdd);
 	void setOutputBuffer(MessageBuffer outputBuffer);
 
+	void pushToBuffer(const std::string message);
+
     //Defaults
     static const std::string defaultID;
     static const std::string defaultName;

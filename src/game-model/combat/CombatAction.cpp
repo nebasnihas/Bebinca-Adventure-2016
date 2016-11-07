@@ -35,6 +35,11 @@ void CombatAttack::execute(CharacterInstance &source, CharacterInstance &target)
     // TODO: Move this formula somewhere configurable
     auto damage = 10 * sourceLevel;
     dealDamage(target, damage);
+
+	auto sourceMessage = "You attack " + target.getCharacterRef().getName() + " and deal " + std::to_string(damage) + " damage";
+	auto targetMessage = "You take " + std::to_string(damage) + " damage" + " from " + source.getCharacterRef().getName();
+	source.getCharacterRef().pushToBuffer(sourceMessage);
+	target.getCharacterRef().pushToBuffer(targetMessage);
 }
 
 std::string CombatAttack::getID() {

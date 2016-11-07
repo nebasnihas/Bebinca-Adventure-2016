@@ -33,11 +33,13 @@ bool GameModel::createCharacter(const std::string& characterID,
 							  inventory,
 							  areaID
 	);
-	characters.insert(std::pair<std::string, Character>(characterID, character));
-
 	auto outputBuffer = std::make_shared<std::deque<std::string>>();
 	outputBufferMap[characterID] = outputBuffer;
 	character.setOutputBuffer(outputBuffer);
+
+	characters.insert(std::pair<std::string, Character>(characterID, character));
+
+
 	// Possible failure cases
 	// - Invalid character; taken care of by the Character class
 
