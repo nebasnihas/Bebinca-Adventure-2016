@@ -67,5 +67,17 @@ std::vector<std::string> CombatManager::getPossibleTargets(const std::string& ch
 }
 
 void CombatManager::addSpellAction(const Spell& spell) {
-    actionLookup.insert({ spell.getName(), std::make_shared<CombatCast>(spell) });
+    if (spell.getType() == SpellType::BODY_SWAP) {
+
+    } else {
+        actionLookup.insert({ spell.getName(), std::make_shared<CombatCast>(spell) });
+    }
+}
+
+std::unordered_map<std::string, std::shared_ptr<CombatAction>> CombatManager::getDefaultActionMap() {
+    std::unordered_map<std::string, std::shared_ptr<CombatAction>> map;
+    std::shared_ptr<CombatAttack> a = std::make_shared<CombatAttack>();
+    map.insert({ a->getID(), a });
+    return map;
+
 }

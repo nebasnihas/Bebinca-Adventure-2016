@@ -8,7 +8,7 @@
 enum class SpellType {
     OFFENSE,
     DEFENSE,
-    STATUS,
+    BODY_SWAP,
     UNDEFINED
 };
 

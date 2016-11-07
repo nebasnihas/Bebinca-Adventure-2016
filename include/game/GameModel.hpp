@@ -26,6 +26,8 @@ public:
     // TODO: Make this configurable
     static const int GAME_TICKS_PER_COMBAT_TICK = 20;
 
+	GameModel();
+
 	bool createCharacter(const std::string& characterID, const std::string& characterName);
 	bool moveCharacter(const std::string& characterID, const std::string& areaTag);
 	Character* getCharacterByID(const std::string& characterID) const;
@@ -96,6 +98,7 @@ private:
     bool characterCanMove(const Character& character);
     void updateStatusEffects();
     Character* getBodySwappedCharacter(Character* character) const;
+	void loadDefaultSpells();
 
 	CombatManager combatManager;
     std::unordered_map<std::string, Character> characters;

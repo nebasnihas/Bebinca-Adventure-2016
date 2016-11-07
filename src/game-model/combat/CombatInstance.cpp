@@ -18,7 +18,7 @@ void CombatInstance::update() {
         auto iter = actionLookup->find(characterInstance.getCombatActionID());
         if (iter != actionLookup->end()) {
             auto& action = iter->second;
-            action->execute(characterInstance, characterInstance.getTarget());
+            action->execute(characterInstance.getCharacterRef(), characterInstance.getTarget().getCharacterRef());
         } else {
 			characterInstance.getCharacterRef().pushToBuffer("You do not know the spell " + characterInstance.getCombatActionID());
             //TODO: Add case to use default action

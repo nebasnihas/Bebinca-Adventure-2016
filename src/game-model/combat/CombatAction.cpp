@@ -5,8 +5,7 @@ CombatCast::CombatCast(const Spell &spell) : spell(spell)
 
 }
 
-void CombatAction::dealDamage(CharacterInstance &target, int amount) {
-    Character& character = target.getCharacterRef();
+void CombatAction::dealDamage(Character& character, int amount) {
     auto newHealth = character.getCurrentHealth() - amount;
     if (newHealth < 0) {
         newHealth = 0;
@@ -14,8 +13,7 @@ void CombatAction::dealDamage(CharacterInstance &target, int amount) {
     character.setCurrentHealth(newHealth);
 }
 
-void CombatAction::healDamage(CharacterInstance &target, int amount) {
-    auto character = target.getCharacterRef();
+void CombatAction::healDamage(Character& character, int amount) {
     auto maxHealth = character.getMaxHealth();
     auto newHealth = character.getCurrentHealth() + amount;
     if (newHealth > maxHealth) {
@@ -24,52 +22,53 @@ void CombatAction::healDamage(CharacterInstance &target, int amount) {
     character.setCurrentHealth(newHealth);
 }
 
-void CombatAction::execute(CharacterInstance &source, CharacterInstance &target) {}
+void CombatAction::execute(Character& source, Character& target) {}
 
 std::string CombatAction::getID() {
     return "NULL";
 }
 
-void CombatAttack::execute(CharacterInstance &source, CharacterInstance &target) {
-    auto sourceLevel = source.getCharacterRef().getLevel();
+void CombatAttack::execute(Character& source, Character& target) {
+    auto sourceLevel = source.getLevel();
     // TODO: Move this formula somewhere configurable
     auto damage = 10 * sourceLevel;
     dealDamage(target, damage);
 
-	auto sourceMessage = "You attack " + target.getCharacterRef().getName() + " and deal " + std::to_string(damage) + " damage";
-	auto targetMessage = "You take " + std::to_string(damage) + " damage" + " from " + source.getCharacterRef().getName();
-	source.getCharacterRef().pushToBuffer(sourceMessage);
-	target.getCharacterRef().pushToBuffer(targetMessage);
+	auto sourceMessage = "You attack " + target.getName() + " and deal " + std::to_string(damage) + " damage";
+	auto targetMessage = "You take " + std::to_string(damage) + " damage" + " from " + source.getName();
+	source.pushToBuffer(sourceMessage);
+	target.pushToBuffer(targetMessage);
 }
 
 std::string CombatAttack::getID() {
     return "attack";
 }
 
-void CombatCast::execute(CharacterInstance &source, CharacterInstance &target) {
+void CombatCast::execute(Character& source, Character& target) {
 
     auto manaCost = spell.getManaCost();
-    auto character = source.getCharacterRef();
-    auto currentMana = character.getCurrentMana();
+    auto currentMana = source.getCurrentMana();
 
     if (currentMana < manaCost) {
-		source.getCharacterRef().pushToBuffer("Not enough mana to cast " + spell.getName());
+		source.pushToBuffer("Not enough mana to cast " + spell.getName());
         return;
     } else {
-        character.setCurrentMana(currentMana - manaCost);
+        source.setCurrentMana(currentMana - manaCost);
     }
 
-    auto power = spell.getPower(source.getCharacterRef());
+    auto power = spell.getPower(source);
     switch (spell.getType()) {
         case SpellType::OFFENSE:
-			source.getCharacterRef().pushToBuffer("You cast " + spell.getName() + " for damage " + std::to_string(power));
-			target.getCharacterRef().pushToBuffer(source.getCharacterRef().getName() + "casts " + spell.getName() + " on you for damage " + std::to_string(power));
+			source.pushToBuffer("You cast " + spell.getName() + " for damage " + std::to_string(power));
+			target.pushToBuffer(source.getName() + "casts " + spell.getName() + " on you for damage " + std::to_string(power));
             dealDamage(target, power);
             break;
         case SpellType::DEFENSE:
-			source.getCharacterRef().pushToBuffer("You cast " + spell.getName() + " for effect " + std::to_string(power));
-			target.getCharacterRef().pushToBuffer(source.getCharacterRef().getName() + "casts " + spell.getName() + " on you for effect " + std::to_string(power));
-            healDamage(target, power);
+            // TODO: Resolve and fix this temporary patchwork
+            // Redirect healing to yourself for now, unknown if this will be the case forever
+            source.pushToBuffer("You cast " + spell.getName() + " and heal " + std::to_string(power));
+            //target.getCharacterRef().pushToBuffer(source.getCharacterRef().getName() + "casts " + spell.getName() + " on you for effect " + std::to_string(power));
+            healDamage(source, power);
             break;
     }
 }

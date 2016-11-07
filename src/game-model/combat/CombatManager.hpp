@@ -26,12 +26,7 @@ private:
     std::unordered_map<std::string, std::shared_ptr<CombatAction>> actionLookup;
     std::vector<CombatInstance> combatInstances;
 
-    static std::unordered_map<std::string, std::shared_ptr<CombatAction>> getDefaultActionMap() {
-        std::unordered_map<std::string, std::shared_ptr<CombatAction>> map;
-        std::shared_ptr<CombatAttack> a = std::make_shared<CombatAttack>();
-        map.insert({ a->getID(), a });
-        return map;
-    };
+    static std::unordered_map<std::string, std::shared_ptr<CombatAction>> getDefaultActionMap();
 };
 
 #endif

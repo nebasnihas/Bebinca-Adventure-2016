@@ -10,11 +10,11 @@ class CombatAction {
 public:
 
     //TODO: Add constructor for new actions with different effects
-    virtual void execute(CharacterInstance& source, CharacterInstance& target);
+    virtual void execute(Character& source, Character& target);
     virtual std::string getID();
 
-    static void dealDamage(CharacterInstance& target, int amount);
-    static void healDamage(CharacterInstance& target, int amount);
+    static void dealDamage(Character& character, int amount);
+    static void healDamage(Character& character, int amount);
 
 private:
 
@@ -26,7 +26,7 @@ class CombatAttack : public CombatAction {
 
 public:
 
-    virtual void execute(CharacterInstance& source, CharacterInstance& target);
+    virtual void execute(Character& source, Character& target);
     virtual std::string getID();
 
 private:
@@ -38,7 +38,7 @@ class CombatCast : public CombatAction {
 public:
 
     CombatCast(const Spell& spell);
-    virtual void execute(CharacterInstance& source, CharacterInstance& target);
+    virtual void execute(Character& source, Character& target);
     virtual std::string getID();
     const Spell& getSpellRef() const;
 

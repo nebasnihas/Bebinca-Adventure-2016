@@ -1,6 +1,11 @@
 #include "game/GameModel.hpp"
 #include "combat/CombatManager.hpp"
 
+GameModel::GameModel() {
+    // TODO: Move this to something more elegant
+    loadDefaultSpells();
+}
+
 /*
  *	CHARACTER FUNCTIONS
  */
@@ -354,4 +359,9 @@ void GameModel::listValidSpells(const std::string& characterID) {
 		message += spellPairs.first + ", ";
 	}
 	character->pushToBuffer(message);
+}
+
+void GameModel::loadDefaultSpells() {
+    Spell bodySwap("bodyswap", 0, SpellType::BODY_SWAP, "");
+    addSpell(bodySwap);
 }
