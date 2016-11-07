@@ -31,8 +31,8 @@ protected:
     // TODO: Fix this
     int maxHealth = 100;
     int currentHealth = 100;
-    int maxMana = 10;
-    int currentMana = 10;
+    int maxMana = 100;
+    int currentMana = 100;
     Inventory inventory;
     std::string hit;
     int gold;

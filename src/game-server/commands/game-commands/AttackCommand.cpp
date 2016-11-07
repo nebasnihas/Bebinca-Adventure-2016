@@ -16,15 +16,15 @@ AttackCommand::execute(const gsl::span<std::string, -1> arguments, const PlayerI
 
     if (!targetClient) {
         std::string invalidPlayer = targetID + " " + NOT_FOUND;
-        return buildPlayerMessage(player, invalidPlayer);
+        return buildPlayerMessage(player.clientID, invalidPlayer);
     }
 
     if (gameModel.characterIsInCombat(player.playerID)) {
-        return buildPlayerMessage(player, PLAYER_IN_BATTLE);
+        return buildPlayerMessage(player.clientID, PLAYER_IN_BATTLE);
     }
 
     if (gameModel.characterIsInCombat(targetID)) {
-        return buildPlayerMessage(player, TARGET_IN_BATTLE);
+        return buildPlayerMessage(player.clientID, TARGET_IN_BATTLE);
     }
 
     if (!gameModel.engageCharacterInCombat(player.playerID, targetID)) {
@@ -39,10 +39,10 @@ AttackCommand::execute(const gsl::span<std::string, -1> arguments, const PlayerI
 std::unique_ptr<MessageBuilder>
 AttackCommand::setCombatAction(const PlayerInfo &player) {
     if (gameModel.getCharacterByID(player.playerID)->getState() != CharacterState::BATTLE) {
-        return buildPlayerMessage(player, NOT_IN_COMBAT);
+        return buildPlayerMessage(player.clientID, NOT_IN_COMBAT);
     }
 
     gameModel.setCombatAction(player.playerID, "attack");
-    return buildPlayerMessage(player, SET_COMBAT_ACTION);
+    return buildPlayerMessage(player.clientID, SET_COMBAT_ACTION);
 }
 

@@ -254,6 +254,9 @@ bool GameModel::engageCharacterInCombat(const std::string& characterID, const st
     battleInstance.addCharacterToNewTeam(*c2);
     combatManager.loadCombatInstance(battleInstance);
 
+	c1->pushToBuffer("You have engaged " + target + " in battle!");
+	c2->pushToBuffer("You have been engaged in battle by " + characterID);
+
     return true;
 }
 
@@ -364,4 +367,15 @@ void GameModel::listValidSpells(const std::string& characterID) {
 void GameModel::loadDefaultSpells() {
     Spell bodySwap("bodyswap", 0, SpellType::BODY_SWAP, "");
     addSpell(bodySwap);
+}
+
+void GameModel::castSpell(const std::string& sourceID, const std::string& targetID, const std::string& spellID) {
+	auto spellsIter = spells.find(spellID);
+	if (spellsIter != spells.end()) {
+		auto& spell = spellsIter->second;
+		CombatCast spellCast{spell};
+		spellCast.execute(*getCharacterByID(sourceID), *getCharacterByID(targetID));
+	} else {
+		getCharacterByID(sourceID)->pushToBuffer("You do not know the spell " + spellID);
+	}
 }

@@ -1,5 +1,6 @@
 
 #include <commands/DisplayMessageBuilder.hpp>
+#include <boost/algorithm/string/join.hpp>
 #include "CastCommand.hpp"
 
 CastCommand::CastCommand(GameModel &gameModel, Controller& controller) : gameModel{gameModel}, controller{controller} {}
@@ -9,19 +10,19 @@ std::unique_ptr<MessageBuilder> CastCommand::execute(const gsl::span<std::string
 		gameModel.listValidSpells(player.playerID);
 		return buildPlayerMessage(player.clientID, "Cast what?");
 	}
-
-	auto spell = arguments[0];
-
-	auto targetClient = player.clientID;
-	if (arguments.size() > 1) {
-		auto targetPlayerID = arguments[1];
-		if (!controller.getClientID(targetPlayerID)) {
-			return buildPlayerMessage(player.clientID, "Player " + targetPlayerID + "not found");
-		}
-		targetClient = controller.getClientID(targetPlayerID).get();
+	else if (arguments.size() == 1) {
+		return buildPlayerMessage(player.clientID, "Invalid usage of cast. Type \"help cast\"");
 	}
 
-	gameModel.setCombatAction(player.playerID, spell);
-	return buildPlayerMessage(player.clientID, "You attempt to cast " + spell);
+	auto spellStrings = arguments.subspan(0, arguments.size() - 1);
+	std::string spell = boost::algorithm::join(spellStrings, " ");
+	std::string targetID = *(arguments.end() - 1);
+
+	if (!controller.getClientID(targetID)) {
+		return buildPlayerMessage(player.clientID, targetID + " not found");
+	}
+
+	gameModel.castSpell(player.playerID, targetID, spell);
+	return buildPlayerMessage(player.clientID, "You attempt to cast " + spell + " on " + targetID);
 
 }
