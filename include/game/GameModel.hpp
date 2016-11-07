@@ -97,8 +97,8 @@ public:
 private:
     void manageDeadCharacters();
     bool characterCanMove(const Character& character);
-    void updateStatusEffects();
     Character* getBodySwappedCharacter(Character* character) const;
+	void updateStatusEffects();
 	void loadDefaultSpells();
 
 	CombatManager combatManager;

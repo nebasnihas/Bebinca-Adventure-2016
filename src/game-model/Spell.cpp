@@ -24,5 +24,11 @@ SpellType Spell::getType() const {
 }
 
 int Spell::getPower(const Character &caster) const {
-    return std::stoi(ExprEvaluator::evaluate_infix_1(effect, caster.getLevel()));
+	if (effect != "") {
+		return std::stoi(ExprEvaluator::evaluate_infix_1(effect, caster.getLevel()));
+	}
+	else {
+		return 0;
+	}
+
 }

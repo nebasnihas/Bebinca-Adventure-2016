@@ -206,9 +206,9 @@ Character* GameModel::getBodySwappedCharacter(Character* character) const {
         return character;
     } else {
         // TODO: print bodyswapped message
-        return getCharacterByID(std::static_pointer_cast<BodySwapStatus>(*statusEffect)->getSwappedID());
+        auto characterID = std::static_pointer_cast<BodySwapStatus>(*statusEffect)->getSwappedID();
+		return (Character*)&(characters.at(characterID));
     }
-
 }
 
 void GameModel::addNPCsToAreas() {
@@ -347,6 +347,9 @@ void GameModel::updateStatusEffects() {
                                             return se->getEndTime() < currentTime;
                                         }
         );
+		if (eraseIter != statusEffects.end()) {
+			character.pushToBuffer("Your status effect wears off");
+		}
         statusEffects.erase(eraseIter, statusEffects.end());
     }
 }
@@ -379,7 +382,7 @@ void GameModel::castSpell(const std::string& sourceID, const std::string& target
 		}
 
 		auto& spell = spellsIter->second;
-		if (spell.getType() == SpellType::OFFENSE) {
+		if (spell.getType() == SpellType::OFFENSE && sourceID != targetID) {
 			engageCharacterInCombat(sourceID, targetID);
 			setCombatAction(sourceID, spellID);
 		}

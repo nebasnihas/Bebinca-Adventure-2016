@@ -56,6 +56,7 @@ void CombatCast::execute(Character& source, Character& target) {
         source.setCurrentMana(currentMana - manaCost);
     }
 
+
     auto power = spell.getPower(source);
     switch (spell.getType()) {
 		case SpellType::OFFENSE:
@@ -80,6 +81,14 @@ void CombatCast::execute(Character& source, Character& target) {
 				healDamage(target, power);
 			}
             break;
+		case SpellType::BODY_SWAP:
+			auto sourceStatus = std::make_shared<BodySwapStatus>(10, target.getID());
+			target.pushToBuffer("You cast " + spell.getName() + " on " + target.getName());
+			source.addStatusEffect(sourceStatus);
+
+			auto targetStatus = std::make_shared<BodySwapStatus>(10, source.getID());
+			source.pushToBuffer(source.getName() + " casts " + spell.getName() + " on you");
+			target.addStatusEffect(targetStatus);
     }
 }
 
