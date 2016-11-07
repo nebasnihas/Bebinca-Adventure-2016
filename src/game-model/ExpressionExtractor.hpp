@@ -7,7 +7,7 @@
 static inline bool tryExtractEffectsExpression(const std::string& input, std::string& out) {
     using namespace boost;
 
-    const auto pattern = R"%(^'''([^']+).*)%";
+    const auto pattern = R"%(^'([^']+).*)%";
     regex effectsRegex{pattern};
     smatch matches;
 

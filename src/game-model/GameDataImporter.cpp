@@ -1,4 +1,5 @@
 #include "game/GameDataImporter.hpp"
+#include "ExpressionExtractor.hpp"
 
 using std::cout;
 using std::endl;
@@ -6,11 +7,11 @@ using std::vector;
 using std::string;
 using std::unordered_map;
 
-YAML::Node GameDataImporter::getRootYAMLNode(GameModel& gameModel, const std::string& fileName) {
-    return YAML::LoadFile(fileName);;
+YAML::Node GameDataImporter::getRootYAMLNode(const std::string& fileName) {
+    return YAML::LoadFile(fileName);
 }
 
-std::unordered_map<std::string, NPC> GameDataImporter::returnNPCS(GameModel& gameModel, const YAML::Node& NPCS){
+std::unordered_map<std::string, NPC> GameDataImporter::returnNPCS(const YAML::Node& NPCS){
     std::unordered_map<std::string, NPC> npcs;
 
     for(const auto& nodeNPC : NPCS){
@@ -111,7 +112,7 @@ std::vector<Object> GameDataImporter::getObjects(const YAML::Node& OBJECTS){
     return objects;
 }
 
-vector<Resets> GameDataImporter::returnResets(GameModel& gameModel, const YAML::Node& RESETS) {
+vector<Resets> GameDataImporter::returnResets(const YAML::Node& RESETS) {
     vector<Resets> resets = {};
     for(const auto& RESET : RESETS) {
         string resetAction = " ";
@@ -149,96 +150,85 @@ vector<Resets> GameDataImporter::returnResets(GameModel& gameModel, const YAML::
     return resets;
 }
 
-void GameDataImporter::loadSpells(const YAML::Node& DEFENSE_SPELLS) {
+std::vector<Spell> GameDataImporter::getSpells(const YAML::Node& SPELLS) {
+
+    std::vector<Spell> returnSpells;
+
+    auto& DEFENSE_SPELLS = SPELLS["defense"];
     for (const auto& DEFENSE : DEFENSE_SPELLS) {
-        int duration = 0;
-        string effect;
-        string wearoff;
-        string hitchar;
-        string hitroom;
-        string hitvict;
-        string dammsg;
-        //vector<string> wearoffVector;
-
-        if (DEFENSE["Wearoff"]) {
-            wearoff = DEFENSE["Wearoff"].as<string>();
+        Spell spell;
+        if (tryParseSpell(DEFENSE, SpellType::DEFENSE, spell)) {
+            returnSpells.push_back(spell);
         }
-
-        if (DEFENSE["Dammsg"]) {
-            dammsg = DEFENSE["Wearoff"].as<string>();
-        }
-
-        //wearoff = getStringData(DEFENSE, "wearoff");
-
-        if (DEFENSE["Hitchar"]) {
-            hitchar = DEFENSE["Hitchar"].as<string>();
-        }
-
-        if (DEFENSE["Hitroom"]) {
-            hitroom = DEFENSE["Hitroom"].as<string>();
-        }
-
-        if (DEFENSE["Hitvict"]) {
-            hitvict = DEFENSE["Hitvict"].as<string>();
-        }
-
-
-
-
-        if (DEFENSE["Effect"]) {
-            //vector<string> EffectsVector = DEFENSE["Effect"].as<vector<string>>();
-            //effects = boost::algorithm::join(EffectsVector, " ");
-            effect = DEFENSE["Effect"].as<string>();
-        }
-
-        if (DEFENSE["Duration"]) {
-            duration = DEFENSE["Duration"].as<int>();
-        }
-
-        int mana = DEFENSE["Mana"].as<int>();
-        string name = DEFENSE["Name"].as<string>();
-        int minLevel = DEFENSE["Minlevel"].as<int>();
-
-
-
-
-        cout << "Name: " << name << endl;
-        cout << "Effect: " << effect << endl;
-        cout << "Mana: " << mana << endl;
-        cout << "Duration: " << duration << endl;
-        cout << "Min Level: " << minLevel << endl;
-        cout << "Wearoff: " << wearoff << endl;
-        cout << "Hitchar: " << hitchar << endl;
-        cout << "Hitroom: " << hitroom << endl;
-        cout << "Hitvict: " << hitvict << endl;
-        //cout << "Dammsg: " << dammsg << endl;
-
-        cout << "*************" << endl;
-
-
     }
 
-//    for (YAML::Node DEFENSE : DEFENSES) {
-//
-//
-//        //string effects = DEFENSE["Effect"].as<string>();
-//        int mana = DEFENSE["Mana"].as<int>();
-//        string name = DEFENSE["Name"].as<string>();
-//        int minLevel = DEFENSE["Minlevel"].as<int>();
-//        //double duration = DEFENSE["Duration"].as<double>();
-//
-//        cout << "Name: " << name << endl;
-//        //cout << "Effect: " << effects << endl;
-//        cout << "Mana: " << mana << endl;
-//        //cout << "Duration: " << duration << endl;
-//        cout << "Min Level: " << minLevel << endl;
-//
-//        cout << "*************" << endl;
-//
-//
-//    }
+    auto& OFFENSE_SPELLS = SPELLS["offense"];
+    for (const auto& OFFENSE : OFFENSE_SPELLS) {
+        Spell spell;
+        if (tryParseSpell(OFFENSE, SpellType::DEFENSE, spell)) {
+            returnSpells.push_back(spell);
+        }
+    }
 
+    return returnSpells;
 
+}
+
+bool GameDataImporter::tryParseSpell(const YAML::Node &SPELL, SpellType spellType, Spell &retSpell) {
+
+    // Required values, exit if not present
+    if (!SPELL["Mana"] || !SPELL["Name"] || !SPELL["Minlevel"]) {
+        return false;
+    }
+
+    int mana = SPELL["Mana"].as<int>();
+    string name = SPELL["Name"].as<string>();
+    int minLevel = SPELL["Minlevel"].as<int>();
+
+    // Exit if effect cannot be parsed
+    string effect;
+    if (SPELL["Effect"]) {
+        effect = SPELL["Effect"].as<string>();
+    }
+    bool successfulParse = tryExtractEffectsExpression(effect, effect);
+    if (!successfulParse) {
+        return false;
+    }
+
+    // Optional values
+    int duration = 0;
+    string wearoff;
+    string hitchar;
+    string hitroom;
+    string hitvict;
+    string dammsg;
+
+    if (SPELL["Wearoff"]) {
+        wearoff = SPELL["Wearoff"].as<string>();
+    }
+
+    if (SPELL["Dammsg"]) {
+        dammsg = SPELL["Dammsg"].as<string>();
+    }
+
+    if (SPELL["Hitchar"]) {
+        hitchar = SPELL["Hitchar"].as<string>();
+    }
+
+    if (SPELL["Hitroom"]) {
+        hitroom = SPELL["Hitroom"].as<string>();
+    }
+
+    if (SPELL["Hitvict"]) {
+        hitvict = SPELL["Hitvict"].as<string>();
+    }
+
+    if (SPELL["Duration"]) {
+        duration = SPELL["Duration"].as<int>();
+    }
+
+    retSpell = Spell(name, mana, spellType, effect);
+    return true;
 }
 
 //Spell helper functions

@@ -1,17 +1,18 @@
-#include "Spell.hpp"
+#include "game/Spell.hpp"
 
-Spell::Spell(const std::string& name, int manaCost, int power, SpellType type, int (*fPtr)(int))
-        : name(name), manaCost(manaCost), power(power), type(type), fPtr(fPtr)
+Spell::Spell() : Spell("", 0, SpellType::UNDEFINED, "")
+{
+
+}
+
+Spell::Spell(const std::string& name, int manaCost, SpellType type, const std::string& effect)
+        : name(name), manaCost(manaCost), type(type), effect(effect)
 {
 
 }
 
 std::string Spell::getName() const {
     return this->name;
-}
-
-int Spell::getPower() const {
-    return this->power;
 }
 
 int Spell::getManaCost() const {
@@ -23,5 +24,5 @@ SpellType Spell::getType() const {
 }
 
 int Spell::getPower(const Character &caster) const {
-    return (fPtr)(caster.getLevel());
+    return std::stoi(ExprEvaluator::evaluate_infix_1(effect, caster.getLevel()));
 }

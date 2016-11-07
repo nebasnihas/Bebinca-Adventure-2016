@@ -1,6 +1,6 @@
 
 add_library(expr-evaluator
-        ExprEvaluator.hpp
+        ../../include/expr-evaluator/ExprEvaluator.hpp
         ExprEvaluator.cpp
         )
 

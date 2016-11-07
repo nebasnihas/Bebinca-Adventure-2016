@@ -10,6 +10,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
 include_directories(
         ${CMAKE_SOURCE_DIR}/include
         ${CMAKE_SOURCE_DIR}/lib/yaml-cpp/include
+        ${CMAKE_SOURCE_DIR}/lib/expr-evaluator
         ${CMAKE_SOURCE_DIR}/tests/lib/googlemock/include
         ${CMAKE_SOURCE_DIR}/tests/lib/googletest/include
 )

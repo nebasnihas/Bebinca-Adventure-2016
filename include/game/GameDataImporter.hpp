@@ -10,7 +10,6 @@
 
 #include <boost/algorithm/string/join.hpp>
 #include "yaml-cpp/yaml.h"
-#include <game/GameModel.hpp>
 #include <game/Character.hpp>
 #include "../../src/game-model/Resets.hpp"
 
@@ -18,27 +17,27 @@
 #include <game/Object.hpp>
 #include <game/GameModel.hpp>
 
-
 class GameDataImporter {
 
 private:
+
+	static bool tryParseSpell(const YAML::Node& SPELL, SpellType spellType, Spell& retSpell);
 
 public:
 
 
 	//Inputs .YAML file for parsing
-    static void loadyamlFile(GameModel& gameModel, const std::string& fileName);
-	static YAML::Node getRootYAMLNode(GameModel& gameModel, const std::string& fileName);
+    static YAML::Node getRootYAMLNode(const std::string& fileName);
 
     static std::vector<Area> getRooms(const YAML::Node& ROOMS);
 	static std::vector<Object> getObjects(const YAML::Node& OBJECTS);
-	static std::unordered_map<std::string, NPC> returnNPCS(GameModel& gameModel, const YAML::Node&);
-	static std::vector<Resets> returnResets(GameModel& gameModel, const YAML::Node&);
+	static std::unordered_map<std::string, NPC> returnNPCS(const YAML::Node&);
+	static std::vector<Resets> returnResets(const YAML::Node&);
 	static void loadShops(GameModel& gameModel, const YAML::Node&);
 
 
 	//Spells
-	static void loadSpells(const YAML::Node&);
+	static std::vector<Spell> getSpells(const YAML::Node&);
 
 
 };
