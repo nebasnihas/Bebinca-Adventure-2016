@@ -24,8 +24,9 @@ Character::Character(const std::string& id,
                     , armor(armor)
                     , gold(gold)
                     , areaID(areaID)
+
                     {
-                       inventory = Inventory(inventory);
+                       inventory = Inventory(inventory); //Unsure if this works/keeps consistency (Understatement of the year)
                     }
 
 
@@ -33,7 +34,6 @@ const std::string Character::defaultID = "0";
 const std::string Character::defaultName = "noName";
 const std::string Character::defaultHit = "2d7+98";
 const std::string Character::defaultDamage = "1d7+2";
-
 
 //Getters
 std::string Character::getID() const {
@@ -87,6 +87,12 @@ int Character::getGold() const{
 Inventory& Character::getInventory() {
     return inventory;
 }
+
+std::vector<std::shared_ptr<StatusEffect>>& Character::getStatusEffects() {
+    return statusEffects;
+}
+
+// Setters
 
 CharacterState Character::getState() const {
     return state;
@@ -156,6 +162,9 @@ void Character::setAreaID(const std::string& newAreaID){
     this->areaID = newAreaID;
 }
 
+void Character::addStatusEffect(std::shared_ptr<StatusEffect> statusEffect) {
+    statusEffects.push_back(statusEffect);
+}
 void Character::setOutputBuffer(MessageBuffer outputBuffer) {
 	this->outputBuffer = std::move(outputBuffer);
 }

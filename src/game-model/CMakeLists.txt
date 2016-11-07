@@ -11,12 +11,14 @@ add_library(game Area.cpp
             combat/CharacterInstance.cpp
             combat/CombatAction.cpp
             Spell.cpp
+            StatusEffect.cpp
             ExpressionExtractor.hpp)
 
 find_package(Boost 1.58 COMPONENTS regex REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 target_link_libraries(game
         ${Boost_LIBRARIES}
+        glog
         expr-evaluator)
 
 set_property(TARGET game PROPERTY CXX_STANDARD 14)

@@ -3,8 +3,11 @@
 
 #include "Attributes.hpp"
 #include "Inventory.hpp"
+#include <game/StatusEffect.hpp>
 #include <vector>
 #include <iostream>
+#include <memory>
+#include <algorithm>
 #include <deque>
 #include <memory>
 
@@ -35,6 +38,7 @@ protected:
     int gold;
     CharacterState state = CharacterState::IDLE;
 	MessageBuffer outputBuffer;
+    std::vector<std::shared_ptr<StatusEffect>> statusEffects;
 
 public:
     static const int STARTING_LEVEL = 1;
@@ -68,6 +72,7 @@ public:
     int getGold() const;
     Inventory& getInventory();
     CharacterState getState() const;
+    std::vector<std::shared_ptr<StatusEffect>>& getStatusEffects();
 	MessageBuffer getOutputBuffer();
 
     void setID(const std::string& id);
@@ -88,6 +93,7 @@ public:
 	void setOutputBuffer(MessageBuffer outputBuffer);
 
 	void pushToBuffer(const std::string message);
+    void addStatusEffect(std::shared_ptr<StatusEffect> statusEffect);
 
     //Defaults
     static const std::string defaultID;

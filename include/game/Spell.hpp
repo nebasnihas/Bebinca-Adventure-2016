@@ -5,7 +5,7 @@
 #include <game/Character.hpp>
 #include <expr-evaluator/ExprEvaluator.hpp>
 
-enum SpellType {
+enum class SpellType {
     OFFENSE,
     DEFENSE,
     STATUS,
