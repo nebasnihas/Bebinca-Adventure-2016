@@ -296,7 +296,7 @@ std::vector<std::string> GameModel::getPossibleTargets(const std::string& charac
 void GameModel::update() {
 
     // Manage dead characters
-    //manageDeadCharacters();
+    manageDeadCharacters();
 
     if (gameTicks % GameModel::GAME_TICKS_PER_COMBAT_TICK == 0) {
         // Update all the combat instances
@@ -311,11 +311,14 @@ void GameModel::update() {
 
 void GameModel::manageDeadCharacters() {
     for (auto& pair : characters) {
-        auto character = pair.second;
+        auto& character = pair.second;
         if (character.getState() == CharacterState::DEAD) {
             // TODO: Add NPC Clause
             character.setAreaID(getDefaultLocationID());
             character.setState(CharacterState::IDLE);
+            character.setCurrentHealth(character.getMaxHealth());
+            character.setCurrentMana(character.getMaxMana());
+            character.getInventory().removeAllItems();
         }
     }
 }
