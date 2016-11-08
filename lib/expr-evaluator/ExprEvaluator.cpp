@@ -344,18 +344,14 @@ void ExprEvaluator::debug_infix_eval(){
     }
 }
 
-std::string ExprEvaluator::evaluate_infix_1(const std::string &expr, int level){
+int ExprEvaluator::evaluate_infix_1(const std::string &expr, int level){
     
     std::string filled_expr = fill_variables(expr, level);
     Calculation_output output = evaluate_infix(filled_expr);
     
     if (output.is_okay()){
-        
-        std::string return_value;
-        std::ostringstream sstream;
-        sstream << output.value;
-        return_value = sstream.str();
-        return return_value;
+   
+        return output.value;
         
     } else {
         return "Error encountered: " + output.error + "\n";

@@ -96,7 +96,7 @@ enum class T_Type: char {
         //-------------------FUNCTIONS FOR SPELLS-----------------------------
         //
         //Infix Expr evaluate with one variable (level)
-        static std::string evaluate_infix_1(const std::string& expr, int level);
+        static int evaluate_infix_1(const std::string& expr, int level);
         
         
         //--------------------------------Debug Functions --------------------
