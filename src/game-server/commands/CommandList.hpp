@@ -13,5 +13,6 @@ static const std::string COMMAND_WHISPER = "whisper";
 static const std::string COMMAND_SHOUT = "shout";
 static const std::string COMMAND_ATTACK = "attack";
 static const std::string COMMAND_CAST = "cast";
+static const std::string COMMAND_STATUS = "status";
 
 #endif //ADVENTURE2016_COMMANDLIST_HPP

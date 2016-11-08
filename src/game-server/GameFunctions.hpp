@@ -23,6 +23,7 @@ private:
     WhisperCommand whisperCommand;
     AttackCommand attackCommand;
     CastCommand castCommand;
+	StatusCommand statusCommand;
 
 };
 

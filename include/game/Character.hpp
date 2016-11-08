@@ -74,6 +74,7 @@ public:
     CharacterState getState() const;
     std::vector<std::shared_ptr<StatusEffect>>& getStatusEffects();
 	MessageBuffer getOutputBuffer();
+	std::string getStatus();
 
     void setID(const std::string& id);
     void setName(const std::string& name);

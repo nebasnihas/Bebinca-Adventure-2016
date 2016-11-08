@@ -173,6 +173,13 @@ void Character::pushToBuffer(const std::string message) {
 	outputBuffer->push_back(message);
 }
 
+std::string Character::getStatus() {
+	std::string status = name + "\n" +
+						"Health: " + std::to_string(currentHealth) + "\n" +
+						"Mana: " + std::to_string(currentMana) + "\n" +
+						"Level: " + std::to_string(getLevel());
+	return status;
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////                                     NPC Subclass                                               ///////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
