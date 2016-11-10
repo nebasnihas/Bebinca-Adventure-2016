@@ -267,7 +267,7 @@ pid_t GetTID() {
 #if defined OS_LINUX
   return getpid();  // Linux:  getpid returns thread ID when gettid is absent
 #elif defined OS_WINDOWS || defined OS_CYGWIN
-  return GetCurrentThreadId();
+//  return GetCurrentThreadId();
 #else
   // If none of the techniques above worked, we use pthread_self().
   return (pid_t)(uintptr_t)pthread_self();

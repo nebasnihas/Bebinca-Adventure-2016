@@ -49,3 +49,21 @@ commands:
     bindings:
       - "whisper"
       - "/w"
+  command-attack:
+      desc: "Initiate combat with a player, or use your auto-attack when in combat"
+      usage: "<player-name>"
+      bindings:
+        - "attack"
+        - "/a"
+  command-cast:
+      desc: "Cast a spell, inside or outside of combat"
+      usage: "<spell> [<player-name>]"
+      bindings:
+        - "cast"
+        - "/c"
+  command-status:
+      desc: "Get player status"
+      usage: ""
+      bindings:
+        - "status"
+

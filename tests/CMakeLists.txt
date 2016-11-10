@@ -11,7 +11,7 @@ include_directories(${Boost_INCLUDE_DIR})
 add_executable(runAllTests
         dummy.cpp
         CommandConfigTests.cpp
-        lib/ExpressionExtractorTests.cpp)
+        lib/ExpressionExtractorTests.cpp SpellImportingTest.cpp)
 
 target_link_libraries(runAllTests
         gtest

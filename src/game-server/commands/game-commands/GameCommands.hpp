@@ -8,5 +8,8 @@
 #include <commands/game-commands/SayCommand.hpp>
 #include <commands/game-commands/ShoutCommand.hpp>
 #include <commands/game-commands/WhisperCommand.hpp>
+#include <commands/game-commands/AttackCommand.hpp>
+#include <commands/game-commands/CastCommand.hpp>
+#include <commands/game-commands/StatusCommand.hpp>
 
 #endif //ADVENTURE2016_GAMECOMMANDS_HPP

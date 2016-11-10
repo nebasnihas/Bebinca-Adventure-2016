@@ -1,197 +1,253 @@
 #include "game/GameDataImporter.hpp"
-#include "Area.hpp"
-#include "yaml-cpp/yaml.h"
-#include <fstream>
-#include <iostream>
-#include <vector>
-#include <unordered_map>
-#include <typeinfo>
-#include <boost/algorithm/string/join.hpp>
+#include "ExpressionExtractor.hpp"
 
-using namespace std;
-
+using std::cout;
+using std::endl;
 using std::vector;
 using std::string;
 using std::unordered_map;
 
-#include <string>
-
-
-//NOTE: If compiling in command line, must include -lyaml-cpp flag at the end of g++ sequence
-
-void GameDataImporter::loadyamlFile(GameModel& gameModel, std::string fileName) {
-	//Loading source .yaml file,split at initial nodes (NPCS, ROOM, OBJECTS, RESETS, SHOPS)
-
-    YAML::Node dataFile = YAML::LoadFile(fileName);
-	const YAML::Node NPCS = dataFile["NPCS"];
-    loadNPCS(gameModel, NPCS);
-
-    const YAML::Node ROOMS = dataFile["ROOMS"];
-    loadRooms(gameModel, ROOMS);
-
-    const YAML::Node OBJECTS = dataFile["OBJECTS"];
-    loadObjects(gameModel, OBJECTS);
-
-    const YAML::Node RESETS = dataFile["RESETS"];
-    loadResets(gameModel, RESETS);
-
-    const YAML::Node SHOPS = dataFile["SHOPS"];
-    loadShops(gameModel, SHOPS);
-
+YAML::Node GameDataImporter::getRootYAMLNode(const std::string& fileName) {
+    return YAML::LoadFile(fileName);
 }
 
-//The following five methods take a root node and parse it one level deeper (to get an individual description)
+std::unordered_map<std::string, NPC> GameDataImporter::returnNPCS(const YAML::Node& NPCS){
+    std::unordered_map<std::string, NPC> npcs;
 
-void GameDataImporter::loadNPCS(GameModel& gameModel, YAML::Node NPCS){
-    //Sequence Iterator
-    for(YAML::Node NPC : NPCS){
+    for(const auto& nodeNPC : NPCS){
+        int armor = nodeNPC["armor"]? nodeNPC["armor"].as<int>() :NPC::defaultArmor;
+        int thac0 = nodeNPC["thac0"] ? nodeNPC["thac0"].as<int>() : NPC::defaultThac0;
+        int exp =  nodeNPC["exp"] ? nodeNPC["exp"].as<int>() : NPC::defaultExp;
+        int gold = nodeNPC["gold"] ? nodeNPC["gold"].as<int>() : NPC::defaultGold;
+        int level = nodeNPC["level"] ? nodeNPC["level"].as<int>() : NPC::defaultLevel;
 
-        string armor = NPC["armor"].as<string>();
-        string damage = NPC["damage"].as<string>();
-        vector<string> description = NPC["description"].as<vector<string>>();
-        int exp =  NPC["exp"].as<int>();
-        int gold = NPC["gold"].as<int>();
-        string hit = NPC["hit"].as<std::string>();
-        string npcID = NPC["id"].as<string>();
-        vector<string> keywords = NPC["keywords"].as<vector<string>>();
-        int level = NPC["level"].as<int>();
-        vector<string> longdesc = NPC["longdesc"].as<vector<string>>();
-        string shortdesc = NPC["shortdesc"].as<string>();
-        int thac0 = NPC["thac0"].as<int>();
+        string damage = nodeNPC["damage"] ? nodeNPC["damage"].as<string>() : NPC::defaultDamage;
+        string shortdesc = nodeNPC["shortdesc"] ? nodeNPC["shortdesc"].as<string>() : NPC::defaultName;
+        string hit = nodeNPC["hit"] ? nodeNPC["hit"].as<string>() : NPC::defaultHit;
+        string npcID = nodeNPC["id"] ? nodeNPC["id"].as<string>() : NPC::defaultID;
 
+        vector<string> description = nodeNPC["description"] ? nodeNPC["description"].as<vector<string>>() : NPC::defaultDescription;
+        vector<string> keywords = nodeNPC["keywords"] ? nodeNPC["keywords"].as<vector<string>>() : NPC::defaultKeywords;
+        vector<string> longdesc = nodeNPC["longdesc"] ? nodeNPC["longdesc"].as<vector<string>>() : NPC::defaultLongDescription;
+
+        string sDescription = boost::algorithm::join(description, " ");
+        string sKeywords = boost::algorithm::join(keywords, " ");
+        string sLongDescription = boost::algorithm::join(longdesc, " ");
+
+        Inventory inventory;
+        std::string areaID;
+
+        NPC newNPC = NPC(npcID, shortdesc, hit, damage, level, exp, armor, gold, inventory, areaID, thac0,
+                              sDescription, sKeywords, sLongDescription);
+        npcs.insert(std::pair<std::string, ::NPC>(npcID, newNPC));
     }
+    return npcs;
 }
 
-void GameDataImporter::loadRooms(GameModel& gameModel, YAML::Node ROOMS){
 
-    //Create vector to hold instances of ROOM
+/*
+Room objects contain:
+string ID
+string roomName
+map of connected areas (string, string)
+string description (of area)
+*/
+
+std::vector<Area> GameDataImporter::getRooms(const YAML::Node& ROOMS) {
     vector<Area> rooms;
     std::string roomDescription;
 
-   	/*
-   	Room objects contain:
-
-   	string ID
-   	string roomName
-   	map of connected areas (string, string)
-   	string description (of area)
-
-	*/
-
-    for(YAML::Node ROOM : ROOMS){
-
-        //Store room descriptions
+    for(const auto& ROOM : ROOMS){
         vector<string> desc = ROOM["desc"].as<vector<string>>();
         string description = boost::algorithm::join(desc, " ");
-
-        //Store ID and name of room
+        vector<string> extended_descriptions = ROOM["extended_descriptions"].as<vector<string>>();
         string id = ROOM["id"].as<string>();
         string name = ROOM["name"].as<string>();
 
-        //Area newArea = Area(id, name);
-        //rooms.push_back(newArea);
-
-        //cout << "ID: \t" << newArea.getID() << "Name: " << newArea.getTitle() << endl;
-
-
-
-        //dir is key, maps to room ID
         unordered_map<string, string> doorsMap;
         const YAML::Node doors = ROOM["doors"];
-        for(YAML::Node door : doors){
-
+        for(const auto& door : doors){
             string dir = door["dir"].as<string>();
             string to = door["to"].as<string>();
 
             //Following two are currently empty on the YAML file
 //            vector<string> desc = door["desc"].as<vector<string>>();
 //            vector<string> doorKeywords = door["keywords"].as<vector<string>>();
-
             std::pair<string, string> doorKeyValuePair (dir, to);
             doorsMap.insert(doorKeyValuePair);
         }
-
         //Create an Area objects with ID, title, connected areas, and descriptions
-        Area newArea = Area(id, name, doorsMap, description);
+        Area newArea = Area(id, name, doorsMap, description, extended_descriptions);
         rooms.push_back(newArea);
-
-        cout << "ID: " << newArea.getID() << endl << "Name: " << newArea.getTitle() << endl;
-
-
-		//Print out contents of map
-		for (const auto &pair : *newArea.getConnectedAreas())
-		{
-    		cout << "m[" << pair.first << "] = " << pair.second << '\n';
-		}
-
-		//Print out description of each Area
-		cout << newArea.getDescription() << endl;
-
     }
-
-    //Might want to return the vector of Area objects
-    gameModel.setDefaultLocationID(rooms[0].getID());
-    for (const auto& room : rooms) {
-        gameModel.addArea(room);
-    }
-    cout << rooms.size();
-
+    return rooms;
 }
 
-void GameDataImporter::loadObjects(GameModel& gameModel, YAML::Node OBJECTS){
+std::vector<Object> GameDataImporter::getObjects(const YAML::Node& OBJECTS){
+    vector<Object> objects = {};
 
-    for(YAML::Node OBJECT : OBJECTS){
+    /*
+    Split up objects in YML file and store them in the objects class
+    */
 
-        vector<string> attributes = OBJECT["attributes"].as<vector<string>>();
+    for(const auto& OBJECT : OBJECTS){
         int cost = OBJECT["cost"].as<int>();
-        vector<string> extra = OBJECT["extra"].as<vector<string>>();
-        string objectId = OBJECT["id"].as<string>();
-        string item_type = OBJECT["item_type"].as<string>();
-        vector<string> longdesc = OBJECT["longdesc"].as<vector<string>>();
-        string shortdesc = OBJECT["shortdesc"].as<string>();
-        vector<string> wear_flags = OBJECT["wear_flags"].as<vector<string>>();
         int weight = OBJECT["weight"].as<int>();
 
+        string objectId = OBJECT["id"].as<string>();
+        string item_type = OBJECT["item_type"].as<string>();
+        string shortdesc = OBJECT["shortdesc"].as<string>();
+
+        vector<string> attributes = OBJECT["attributes"].as<vector<string>>();
+        vector<string> extra = OBJECT["extra"].as<vector<string>>();
+        vector<string> keywords = OBJECT["keywords"].as<vector<string>>();
+        vector<string> longdesc = OBJECT["longdesc"].as<vector<string>>();
+        vector<string> wear_flags = OBJECT["wear_flags"].as<vector<string>>();
+
+        string description = boost::algorithm::join(longdesc, " ");
+
+        Object newObject = Object(attributes, cost, extra, objectId, item_type, keywords, description, shortdesc, wear_flags, weight);
+        objects.push_back(newObject);
+    }
+    return objects;
+}
+
+vector<Resets> GameDataImporter::returnResets(const YAML::Node& RESETS) {
+    vector<Resets> resets = {};
+    for(const auto& RESET : RESETS) {
+        string resetAction = " ";
+        if(RESET["action"]) {
+            resetAction = RESET["action"].as<string>();
+        }
+
+        string itemID = " ";
+        if(RESET["id"]) {
+            itemID = RESET["id"].as<string>();
+        }
+
+        string roomID = " ";
+        if(RESET["room"]) {
+            roomID = RESET["room"].as<string>();
+        }
+
+        string stateOfDoor = " ";
+        if(RESET["state"]) {
+            stateOfDoor = RESET["state"].as<string>();
+        }
+
+        int limit = 1;
+        if(RESET["limit"]) {
+            limit = RESET["limit"].as<int>();
+        }
+
+        int slot = 0;
+        if(RESET["slot"]) {
+            slot = RESET["slot"].as<int>();
+        }
+        Resets newReset = Resets(resetAction, itemID, roomID, stateOfDoor, slot, limit);
+        resets.push_back(newReset);
+    }
+    return resets;
+}
+
+std::vector<Spell> GameDataImporter::getSpells(const YAML::Node& SPELLS) {
+
+    std::vector<Spell> returnSpells;
+
+    auto& DEFENSE_SPELLS = SPELLS["defense"];
+    for (const auto& DEFENSE : DEFENSE_SPELLS) {
+        Spell spell;
+        if (tryParseSpell(DEFENSE, SpellType::DEFENSE, spell)) {
+            returnSpells.push_back(spell);
+        }
+    }
+
+    auto& OFFENSE_SPELLS = SPELLS["offense"];
+    for (const auto& OFFENSE : OFFENSE_SPELLS) {
+        Spell spell;
+        if (tryParseSpell(OFFENSE, SpellType::OFFENSE, spell)) {
+            returnSpells.push_back(spell);
+        }
+    }
+
+    return returnSpells;
+
+}
+
+bool GameDataImporter::tryParseSpell(const YAML::Node &SPELL, SpellType spellType, Spell &retSpell) {
+
+    // Required values, exit if not present
+    if (!SPELL["Mana"] || !SPELL["Name"] || !SPELL["Minlevel"]) {
+        return false;
+    }
+
+    int mana = SPELL["Mana"].as<int>();
+    string name = SPELL["Name"].as<string>();
+    int minLevel = SPELL["Minlevel"].as<int>();
+
+    // Exit if effect cannot be parsed
+    string effect;
+    if (SPELL["Effect"]) {
+        effect = SPELL["Effect"].as<string>();
+    }
+    bool successfulParse = tryExtractEffectsExpression(effect, effect);
+    if (!successfulParse) {
+        return false;
+    }
+
+    // Optional values
+    int duration = 0;
+    string wearoff;
+    string hitchar;
+    string hitroom;
+    string hitvict;
+    string dammsg;
+
+    if (SPELL["Wearoff"]) {
+        wearoff = SPELL["Wearoff"].as<string>();
+    }
+
+    if (SPELL["Dammsg"]) {
+        dammsg = SPELL["Dammsg"].as<string>();
+    }
+
+    if (SPELL["Hitchar"]) {
+        hitchar = SPELL["Hitchar"].as<string>();
+    }
+
+    if (SPELL["Hitroom"]) {
+        hitroom = SPELL["Hitroom"].as<string>();
+    }
+
+    if (SPELL["Hitvict"]) {
+        hitvict = SPELL["Hitvict"].as<string>();
+    }
+
+    if (SPELL["Duration"]) {
+        duration = SPELL["Duration"].as<int>();
+    }
+
+    retSpell = Spell(name, mana, spellType, effect);
+    return true;
+}
+
+//Spell helper functions
+string getStringData(const YAML::Node node, string keyword) {
+    if (node[keyword]) {
+        //vector<string> EffectsVector = DEFENSE["Effect"].as<vector<string>>();
+        //effects = boost::algorithm::join(EffectsVector, " ");
+        return node[keyword].as<string>();
     }
 }
 
-//The workflow for RESETS ends here, not sure how to utilize yet
-void GameDataImporter::loadResets(GameModel& gameModel, YAML::Node RESETS){
 
-    for(YAML::Node RESET : RESETS){
-
-        //ie. does it reset npc, equip, door etc.
-        string resetAction = RESET["action"].as<string>();
-        string itemId = RESET["id"].as<string>();
-
-        //Different reset actions have different properties, these must be taken into account
-        if(resetAction == "npc") int limit = RESET["limit"].as<int>();
-        if(resetAction != "equip") string roomId = RESET["room"].as<string>();
-        if(resetAction == "equip") int slot = RESET["slot"].as<int>();
-        if(resetAction == "door") string stateOfDoor = RESET["state"].as<string>();
-
-    }
-}
 
 //The workflow for SHOPS ends here, not sure how to utilize yet
-void GameDataImporter::loadShops(GameModel& gameModel, YAML::Node SHOPS){
+void GameDataImporter::loadShops(GameModel& gameModel, const YAML::Node& SHOPS){
 
-    for(YAML::Node SHOP : SHOPS){
+    for(const auto& SHOP : SHOPS){
         //no data on shops in mgoose file
 
     }
 
 }
-
-
-
-//use main for testing
-/*int main() {
-
-
-	GameDataImporter::loadyamlFile("../../data/mgoose.yml");
-
-
-
-	return 0;
-}*/
