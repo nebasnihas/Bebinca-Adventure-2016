@@ -3,6 +3,7 @@
 //  expr_evaluator
 
 #include "expr-evaluator/ExprEvaluator.hpp"
+#include <glog/logging.h>
 
 typedef std::vector<Token> Expr_Token;
 
@@ -348,13 +349,7 @@ int ExprEvaluator::evaluate_infix_1(const std::string &expr, int level){
     
     std::string filled_expr = fill_variables(expr, level);
     Calculation_output output = evaluate_infix(filled_expr);
-    
-    if (output.is_okay()){
-   
-        return output.value;
-        
-    } else {
-        return "Error encountered: " + output.error + "\n";
-    }
-    
+
+    CHECK(output.is_okay()) << "Error encountered: " + output.error;
+    return output.value;
 }
