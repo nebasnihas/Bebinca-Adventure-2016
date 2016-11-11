@@ -99,15 +99,16 @@ void Controller::processCommand(const protocols::PlayerCommand& command,
     if (it == inputToCommandMap.end()) {
         auto msg = DisplayMessageBuilder{"<" + cmd + "> is an invalid command. Type help."}
                 .addClient(client)
-                .setSender(DisplayMessageBuilder::SENDER_SERVER).buildMessages();
-        server.send(msg);
+                .setSender(DisplayMessageBuilder::SENDER_SERVER);
+        sendOutput(msg);
         return;
     }
 
     auto& handler = it->second.getCommand();
     auto playerID = getPlayerID(client);
-    auto output = handler.execute(cmdArgs, PlayerInfo{playerID, client})->buildMessages();
-    server.send(output);
+    auto output = handler.execute(cmdArgs, PlayerInfo{playerID, client});
+
+    sendOutput(*output);
 }
 
 void Controller::registerCommand(const std::string& commandId, Command& command) {
@@ -124,9 +125,8 @@ void Controller::addNewPlayer(const PlayerInfo& player) {
 
     auto outMsg = DisplayMessageBuilder{"Player <" + player.playerID + "> has joined."}
             .setSender(DisplayMessageBuilder::SENDER_SERVER)
-            .addClients(allClients)
-            .buildMessages();
-    server.send(outMsg);
+            .addClients(allClients);
+    sendOutput(outMsg);
 }
 
 const std::vector<Connection>& Controller::getAllClients() const {
@@ -146,8 +146,8 @@ void Controller::removePlayer(const networking::Connection& clientID) {
 
     auto outMsg = DisplayMessageBuilder{"Player <" + player + "> has disconnected."}
             .setSender(DisplayMessageBuilder::SENDER_SERVER)
-            .addClients(allClients).buildMessages();
-    server.send(outMsg);
+            .addClients(allClients);
+    sendOutput(outMsg);
 }
 
 boost::optional<Connection> Controller::getClientID(const std::string& playerID) const {
@@ -172,11 +172,21 @@ void Controller::update() {
 		for (auto& message: *outputBuffer ) {
 			auto displayMessage = DisplayMessageBuilder{message}.
 					addClient(client).
-					setSender(DisplayMessageBuilder::SENDER_SERVER).buildMessages();
-			server.send(displayMessage);
+					setSender(DisplayMessageBuilder::SENDER_SERVER);
+			sendOutput(displayMessage);
 		}
 		outputBuffer->clear();
 	}
+}
+
+void Controller::sendOutput(const MessageBuilder& messageBuilder) const {
+    for (const auto& msg : messageBuilder.buildMessages()) {
+        auto messageForClient = protocols::DisplayMessage{msg.message, msg.sender};
+        auto responseMessage = protocols::createDisplayResponseMessage(messageForClient);
+        auto serializedResponseMessage = protocols::serializeResponseMessage(responseMessage);
+
+        server.send(networking::Message{msg.client, serializedResponseMessage});
+    }
 }
 
 

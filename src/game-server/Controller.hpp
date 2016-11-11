@@ -53,6 +53,8 @@ private:
     networking::Server& server;
     CommandConfig commandConfig;
 
+    void sendOutput(const MessageBuilder& messageBuilder) const;
+
     //help command
     class HelpCommand;
     std::shared_ptr<HelpCommand> helpCommand;
