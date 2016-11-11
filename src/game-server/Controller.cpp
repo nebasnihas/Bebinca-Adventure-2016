@@ -9,6 +9,7 @@
 #include "StringUtils.hpp"
 #include "commands/DisplayMessageBuilder.hpp"
 #include "CommandList.hpp"
+#include "PigLatinDecorator.hpp"
 
 using namespace networking;
 using namespace std::placeholders;
@@ -180,7 +181,7 @@ void Controller::update() {
 }
 
 void Controller::sendOutput(const MessageBuilder& messageBuilder) const {
-    for (const auto& msg : messageBuilder.buildMessages()) {
+    for (const auto& msg : PigLatinDecorator{messageBuilder}.buildMessages()) {
         auto messageForClient = protocols::DisplayMessage{msg.message, msg.sender};
         auto responseMessage = protocols::createDisplayResponseMessage(messageForClient);
         auto serializedResponseMessage = protocols::serializeResponseMessage(responseMessage);

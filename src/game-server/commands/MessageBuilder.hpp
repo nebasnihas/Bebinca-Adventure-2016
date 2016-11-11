@@ -21,4 +21,15 @@ protected:
     MessageBuilder(){};
 };
 
+class MessageBuilderDecorator : public MessageBuilder {
+public:
+    MessageBuilderDecorator(const MessageBuilder& messageBuilder) : messageBuilder{messageBuilder} {};
+    virtual std::vector<MessageInfo> buildMessages() const override {
+        return messageBuilder.buildMessages();
+    }
+
+private:
+    const MessageBuilder& messageBuilder;
+};
+
 #endif //ADVENTURE2016_MESSAGEBUILDER_HPP

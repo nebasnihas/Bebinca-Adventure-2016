@@ -9,7 +9,7 @@ add_library(game-server-lib
         ServerConfig.cpp ServerConfig.hpp
         ${commands_src}
         StringResourceImporter.cpp GameStrings.hpp
-        )
+        PigLatinDecorator.cpp PigLatinDecorator.hpp)
 
 set_target_properties(game-server-lib
         PROPERTIES
