@@ -1,13 +1,16 @@
 #include <functional>
+#include <iostream>
 #include "ServerLoop.hpp"
 
 using namespace networking;
 
-ServerLoop::ServerLoop(unsigned short serverPort, const std::string& mapFilePath)
-        : server{serverPort, [this](Connection c){this->onConnect(c);}, [this](Connection c){this->onDisconnect(c);}},
-          controller{gameModel, server},
+ServerLoop::ServerLoop(const ServerConfig& serverConfig)
+        : serverConfig{serverConfig},
+          server{serverConfig.getPort(), [this](Connection c){this->onConnect(c);}, [this](Connection c){this->onDisconnect(c);}},
+          controller{gameModel, server, CommandConfig{serverConfig.getCommandConfigFile()}},
           gameFunctions{controller} {
-    GameDataImporter::loadyamlFile(gameModel, mapFilePath);
+    initGameModel(gameModel);
+    std::cout << "Server ready. Listening on port: " << serverConfig.getPort() << std::endl;
 }
 
 void ServerLoop::processInputs(bool& quit) {
@@ -33,14 +36,15 @@ void ServerLoop::update() {
                 break;
             case protocols::RequestHeader::PLAYER_COMMAND_REQUEST: {
                 auto playerCommand = protocols::readPlayerCommandRequestMessage(requestMessage);
-                auto outgoing = controller.processCommand(playerCommand, clientMessage.connection)->buildMessages();
-                server.send(outgoing);
+                controller.processCommand(playerCommand, clientMessage.connection);
                 break;
             }
             default:
                 break;
         }
     }
+    gameModel.update();
+    controller.update();
 }
 
 void ServerLoop::onConnect(Connection c) {
@@ -76,5 +80,32 @@ void ServerLoop::processRegistrationRequest(const protocols::RequestMessage& req
 
     if (responseCode == protocols::RegistrationResponseCode::REGISTRATION_OK) {
         controller.addNewPlayer(PlayerInfo{registrationRequest.username, clientId});
+    }
+}
+
+void ServerLoop::initGameModel(GameModel& gameModel) {
+    auto dataFile = GameDataImporter::getRootYAMLNode(serverConfig.getMapFilePath());
+
+    const YAML::Node NPCS = dataFile["NPCS"];
+    gameModel.setNPCs(GameDataImporter::returnNPCS(NPCS));
+
+    const YAML::Node ROOMS = dataFile["ROOMS"];
+    auto rooms = GameDataImporter::getRooms(ROOMS);
+    for (auto& room: rooms) {
+        gameModel.addArea(room);
+    }
+    gameModel.setDefaultLocationID(rooms[0].getID());
+
+    const YAML::Node OBJECTS = dataFile["OBJECTS"];
+
+    const YAML::Node RESETS = dataFile["RESETS"];
+
+    const YAML::Node SHOPS = dataFile["SHOPS"];
+
+    //SPELLS
+    auto spellDataFile = GameDataImporter::getRootYAMLNode(serverConfig.getSpellFilePath());
+    auto spells = GameDataImporter::getSpells(spellDataFile);
+    for (const auto& spell : spells) {
+        gameModel.addSpell(spell);
     }
 }
