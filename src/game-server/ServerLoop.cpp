@@ -7,7 +7,7 @@ using namespace networking;
 ServerLoop::ServerLoop(const ServerConfig& serverConfig)
         : serverConfig{serverConfig},
           server{serverConfig.getPort(), [this](Connection c){this->onConnect(c);}, [this](Connection c){this->onDisconnect(c);}},
-          controller{gameModel, server, CommandConfig{serverConfig.getCommandConfigFile()}},
+          controller{gameModel, *this, *this, CommandConfig{serverConfig.getCommandConfigFile()}},
           gameFunctions{controller} {
     initGameModel(gameModel);
     std::cout << "Server ready. Listening on port: " << serverConfig.getPort() << std::endl;
@@ -108,4 +108,19 @@ void ServerLoop::initGameModel(GameModel& gameModel) {
     for (const auto& spell : spells) {
         gameModel.addSpell(spell);
     }
+}
+
+void ServerLoop::send(const MessageBuilder& messageBuilder) {
+    for (const auto& msg : messageBuilder.buildMessages()) {
+        auto messageForClient = protocols::DisplayMessage{msg.message, msg.sender};
+        auto responseMessage = protocols::createDisplayResponseMessage(messageForClient);
+        auto serializedResponseMessage = protocols::serializeResponseMessage(responseMessage);
+
+        server.send(networking::Message{msg.client, serializedResponseMessage});
+    }
+}
+
+void ServerLoop::disconnectClient(const Connection& connection) {
+    LOG(INFO) << "Disconnecting player: " << connection.id;
+    server.disconnect(connection);
 }

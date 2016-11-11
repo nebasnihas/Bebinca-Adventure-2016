@@ -10,6 +10,7 @@
 #include "commands/DisplayMessageBuilder.hpp"
 #include "CommandList.hpp"
 #include "PigLatinDecorator.hpp"
+#include "ConnectionManager.hpp"
 
 using namespace networking;
 using namespace std::placeholders;
@@ -85,8 +86,13 @@ std::string Controller::HelpCommand::getCommandBindingsHelpMessage(const std::st
  * Controller
  */
 
-Controller::Controller(GameModel& gameModel, Server& server, const CommandConfig& commandCreator)
-        : gameModel{gameModel}, server{server}, commandConfig{commandCreator}, helpCommand{std::make_unique<HelpCommand>(*this)} {
+Controller::Controller(GameModel& gameModel, MessageIO& messageIO, ConnectionManager& connectionManager,
+                       const CommandConfig& commandCreator)
+        : gameModel{gameModel},
+          messageIO{messageIO},
+          commandConfig{commandCreator},
+          connectionManager{connectionManager},
+          helpCommand{std::make_unique<HelpCommand>(*this)} {
     registerCommand(COMMAND_HELP, *helpCommand);
 
 }
@@ -163,7 +169,8 @@ std::string Controller::getPlayerID(const networking::Connection& clientID) cons
 
 void Controller::disconnectPlayer(const std::string& playerID) {
     auto clientId = getClientID(playerID);
-    server.disconnect(clientId.get());
+    CHECK(clientId) << "Player does not have client id associated with it";
+    connectionManager.disconnectClient(clientId.get());
 }
 
 void Controller::update() {
@@ -181,13 +188,8 @@ void Controller::update() {
 }
 
 void Controller::sendOutput(const MessageBuilder& messageBuilder) const {
-    for (const auto& msg : PigLatinDecorator{messageBuilder}.buildMessages()) {
-        auto messageForClient = protocols::DisplayMessage{msg.message, msg.sender};
-        auto responseMessage = protocols::createDisplayResponseMessage(messageForClient);
-        auto serializedResponseMessage = protocols::serializeResponseMessage(responseMessage);
-
-        server.send(networking::Message{msg.client, serializedResponseMessage});
-    }
+    auto msg = PigLatinDecorator{messageBuilder};
+    messageIO.send(msg);
 }
 
 
