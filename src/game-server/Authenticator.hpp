@@ -9,15 +9,9 @@
 #include "yaml-cpp/yaml.h"
 #include "game/protocols/Authentication.hpp"
 
-enum class PlayerRole {
-    NORMAL = 1 << 0,
-    ADMIN = 1 << 1,
-    WORLDBUILDER = 1 << 2,
-};
-
 struct AccountInfo {
     std::string username;
-    int playerRoles;
+    int playerRoleFlags;
 
     bool operator==(const AccountInfo& other) const {
         return username == other.username;

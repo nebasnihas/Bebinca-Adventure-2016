@@ -5,11 +5,10 @@
 
 #include "Authenticator.hpp"
 #include "GameStrings.hpp"
+#include "PlayerRole.hpp"
 #include <glog/logging.h>
 #include <fstream>
-#include <sys/types.h>
 #include <sys/stat.h>
-#include <unistd.h>
 //#include <boost/filesystem.hpp> does not compile
 
 
@@ -68,7 +67,7 @@ AuthResult<protocols::LoginResponseCode> Authenticator::login(const std::string&
     if(file_user == username && file_pass == password){
         AccountInfo userAccount;
         userAccount.username = file_user;
-        userAccount.playerRoles = roles;
+        userAccount.playerRoleFlags = roles;
         return {protocols::LoginResponseCode::LOGIN_OK, userAccount};
     } else {
         return {protocols::LoginResponseCode::INVALID_CREDENTIALS};
@@ -94,7 +93,7 @@ AuthResult<protocols::RegistrationResponseCode> Authenticator::registerAccount(c
     set_savefilevals(username, password);
     AccountInfo userAccount;
     userAccount.username = username;
-    userAccount.playerRoles = DEFAULT_ROLE_FLAGS;
+    userAccount.playerRoleFlags = DEFAULT_ROLE_FLAGS;
 
     return {protocols::RegistrationResponseCode::REGISTRATION_OK, userAccount};
 }

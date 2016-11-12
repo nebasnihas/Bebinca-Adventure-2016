@@ -33,3 +33,11 @@ void CommandHandle::setUsage(const std::string& usage) {
 void CommandHandle::addInputBinding(const std::string& inputBinding) {
     inputBindings.push_back(inputBinding);
 }
+
+void CommandHandle::setRole(PlayerRole role) {
+    this->role = role;
+}
+
+PlayerRole CommandHandle::getRole() const {
+    return role;
+}

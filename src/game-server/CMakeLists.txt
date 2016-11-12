@@ -22,7 +22,7 @@ add_library(game-server-lib
         ${commands_src}
         PigLatinDecorator.cpp PigLatinDecorator.hpp
         MessageIO.hpp
-        ConnectionManager.hpp)
+        ConnectionManager.hpp PlayerRole.hpp)
 
 set_target_properties(game-server-lib
         PROPERTIES

@@ -60,6 +60,7 @@ private:
     ConnectionManager& connectionManager;
 
     void sendOutput(const MessageBuilder& messageBuilder) const;
+    const AccountInfo& getAccountInfo(const networking::Connection& client) const;
 
     //help command
     class HelpCommand;

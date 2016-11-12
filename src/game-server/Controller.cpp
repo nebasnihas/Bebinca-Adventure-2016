@@ -97,13 +97,18 @@ Controller::Controller(GameModel& gameModel, MessageIO& messageIO, ConnectionMan
 
 }
 
+static constexpr bool hasRole(int roleFlags, PlayerRole role) {
+    return (bool)(roleFlags & (int)role);
+}
+
 void Controller::processCommand(const protocols::PlayerCommand& command,
                                 const Connection& client) {
     auto cmd = command.command;
     auto cmdArgs = splitString(command.arguments);
 
+    auto accountInfo = getAccountInfo(client);
     auto it = inputToCommandMap.find(cmd);
-    if (it == inputToCommandMap.end()) {
+    if (it == inputToCommandMap.end() || !hasRole(accountInfo.playerRoleFlags, it->second.getRole())) {
         auto msg = DisplayMessageBuilder{"<" + cmd + "> is an invalid command. Type help."}
                 .addClient(client)
                 .setSender(DisplayMessageBuilder::SENDER_SERVER);
@@ -198,6 +203,11 @@ void Controller::update() {
 void Controller::sendOutput(const MessageBuilder& messageBuilder) const {
     auto msg = PigLatinDecorator{messageBuilder};
     messageIO.send(msg);
+}
+
+const AccountInfo& Controller::getAccountInfo(const networking::Connection& client) const {
+    auto id = getPlayerID(client);
+    return playerAccountMap.find(id)->second;
 }
 
 
