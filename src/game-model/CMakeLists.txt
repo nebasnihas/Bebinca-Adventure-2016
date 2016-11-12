@@ -12,7 +12,8 @@ add_library(game Area.cpp
             combat/CombatAction.cpp
             Spell.cpp
             StatusEffect.cpp
-            ExpressionExtractor.hpp)
+            ExpressionExtractor.hpp
+        YamlAreaBuilder.cpp)
 
 find_package(Boost 1.58 COMPONENTS regex REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
