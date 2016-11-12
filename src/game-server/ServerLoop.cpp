@@ -1,5 +1,6 @@
 #include <functional>
 #include <iostream>
+#include <glog/logging.h>
 #include "ServerLoop.hpp"
 
 using namespace networking;
@@ -58,29 +59,35 @@ void ServerLoop::onDisconnect(Connection c) {
 
 void ServerLoop::processLoginRequest(const protocols::RequestMessage& request, const Connection& clientId) {
     auto loginRequest = protocols::readAuthenticationRequestMessage(request);
-    auto responseCode = Authenticator::login(loginRequest.username, loginRequest.password);
-    auto loginResponse = protocols::createLoginResponseMessage(responseCode);
+    auto result = Authenticator::login(loginRequest.username, loginRequest.password);
 
+    auto responseCode = result.result;
+    if (responseCode == protocols::LoginResponseCode::LOGIN_OK) {
+        if (!controller.addNewPlayer(result.account.get(), clientId)) {
+            responseCode = protocols::LoginResponseCode::USER_LOGGED_IN;
+        }
+    }
+
+    auto loginResponse = protocols::createLoginResponseMessage(responseCode);
     auto output = protocols::serializeResponseMessage(loginResponse);
     server.send(Message{clientId, output});
 
     //TODO character select. for now skip it and add the player after sucess
-    if (responseCode == protocols::LoginResponseCode::LOGIN_OK) {
-        controller.addNewPlayer(PlayerInfo{loginRequest.username, clientId});
-    }
 }
 
 void ServerLoop::processRegistrationRequest(const protocols::RequestMessage& request, const Connection& clientId) {
     auto registrationRequest = protocols::readAuthenticationRequestMessage(request);
-    auto responseCode = Authenticator::registerAccount(registrationRequest.username, registrationRequest.password);
-    auto registrationResponse = protocols::createRegistrationResponseMessage(responseCode);
+    auto result = Authenticator::registerAccount(registrationRequest.username, registrationRequest.password);
 
+    auto responseCode = result.result;
+    if (responseCode == protocols::RegistrationResponseCode::REGISTRATION_OK) {
+        auto addOk = controller.addNewPlayer(result.account.get(), clientId);
+        CHECK(addOk) << "Could not add player after registering account";
+    }
+
+    auto registrationResponse = protocols::createRegistrationResponseMessage(responseCode);
     auto output = protocols::serializeResponseMessage(registrationResponse);
     server.send(Message{clientId, output});
-
-    if (responseCode == protocols::RegistrationResponseCode::REGISTRATION_OK) {
-        controller.addNewPlayer(PlayerInfo{registrationRequest.username, clientId});
-    }
 }
 
 void ServerLoop::initGameModel(GameModel& gameModel) {

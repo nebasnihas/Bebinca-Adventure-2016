@@ -125,15 +125,22 @@ void Controller::registerCommand(const std::string& commandId, Command& command)
     }
 }
 
-void Controller::addNewPlayer(const PlayerInfo& player) {
-    playerMap.insert(PlayerMapPair{player.playerID, player.clientID});
-    allClients.push_back(player.clientID);
-    gameModel.createCharacter(player.playerID, player.playerID);
+bool Controller::addNewPlayer(const AccountInfo& accountInfo, const networking::Connection& client) {
+    if (playerMap.left.count(accountInfo.username) == 1 || playerMap.right.count(client) == 1) {
+        return false;
+    }
 
-    auto outMsg = DisplayMessageBuilder{"Player <" + player.playerID + "> has joined."}
+    playerMap.insert(PlayerMapPair{accountInfo.username, client});
+    playerAccountMap.insert({accountInfo.username, accountInfo});
+    allClients.push_back(client);
+    gameModel.createCharacter(accountInfo.username, accountInfo.username);
+
+    auto outMsg = DisplayMessageBuilder{"Player <" + accountInfo.username + "> has joined."}
             .setSender(DisplayMessageBuilder::SENDER_SERVER)
             .addClients(allClients);
     sendOutput(outMsg);
+
+    return true;
 }
 
 const std::vector<Connection>& Controller::getAllClients() const {
@@ -148,6 +155,7 @@ void Controller::removePlayer(const networking::Connection& clientID) {
     auto player = getPlayerID(clientID);
 
     playerMap.right.erase(clientID);
+    playerAccountMap.erase(player);
     allClients.erase(std::remove(allClients.begin(), allClients.end(), clientID), allClients.end());
     //TODO remove from game model
 

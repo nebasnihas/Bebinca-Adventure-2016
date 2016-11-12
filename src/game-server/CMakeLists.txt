@@ -1,5 +1,17 @@
-file(GLOB_RECURSE commands_src "commands/*.hpp" "commands/*.cpp")
+add_library(string-resource-importer
+        StringResourceImporter.cpp GameStrings.hpp)
 
+set_target_properties(string-resource-importer
+        PROPERTIES
+        LINKER_LANGUAGE CXX
+        CXX_STANDARD 14
+        )
+
+target_link_libraries(string-resource-importer
+        yaml-cpp
+        )
+
+file(GLOB_RECURSE commands_src "commands/*.hpp" "commands/*.cpp")
 add_library(game-server-lib
         Authenticator.cpp
         Controller.cpp
@@ -8,7 +20,6 @@ add_library(game-server-lib
         ServerLoop.cpp ServerLoop.hpp
         ServerConfig.cpp ServerConfig.hpp
         ${commands_src}
-        StringResourceImporter.cpp GameStrings.hpp
         PigLatinDecorator.cpp PigLatinDecorator.hpp
         MessageIO.hpp
         ConnectionManager.hpp)
@@ -22,6 +33,7 @@ set_target_properties(game-server-lib
 target_link_libraries(game-server-lib
         networking
         game
+        string-resource-importer
         protocols
         glog
         )

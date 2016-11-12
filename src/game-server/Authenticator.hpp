@@ -9,7 +9,33 @@
 #include "yaml-cpp/yaml.h"
 #include "game/protocols/Authentication.hpp"
 
+enum class PlayerRole {
+    NORMAL = 1 << 0,
+    ADMIN = 1 << 1,
+    WORLDBUILDER = 1 << 2,
+};
 
+struct AccountInfo {
+    std::string username;
+    int playerRoles;
+
+    bool operator==(const AccountInfo& other) const {
+        return username == other.username;
+    }
+};
+
+struct AccountInfoHash {
+    size_t operator()(const AccountInfo& other) const
+    {
+        return std::hash<std::string>()(other.username);
+    }
+};
+
+template <class T>
+struct AuthResult {
+    T result;
+    boost::optional<AccountInfo> account;
+};
 
 class Authenticator {
 private:
@@ -20,8 +46,9 @@ private:
 public:
     static const int USERNAME_MAX_LENGTH = 10;
     
-    static protocols::LoginResponseCode login(const std::string& username, const std::string& password);
-    static protocols::RegistrationResponseCode registerAccount(const std::string& username, const std::string& password);
+    static AuthResult<protocols::LoginResponseCode> login(const std::string& username, const std::string& password);
+    static AuthResult<protocols::RegistrationResponseCode> registerAccount(const std::string& username,
+                                                                           const std::string& password);
 };
 
 #endif /* loginsystem_hpp */

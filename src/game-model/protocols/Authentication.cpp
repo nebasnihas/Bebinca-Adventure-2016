@@ -2,6 +2,7 @@
 #include "game/protocols/RequestMessage.hpp"
 #include "game/protocols/ResponseMessage.hpp"
 #include "yaml-cpp/yaml.h"
+#include "../../game-server/GameStrings.hpp"
 #include <string>
 
 namespace protocols {
@@ -16,11 +17,13 @@ std::string getLoginReponseMessage(LoginResponseCode code)
 {
     switch (code) {
         case LoginResponseCode::LOGIN_OK:
-            return "Login successful";
+            return GameStrings::get(GameStringKeys::LOGIN_Ok);
         case LoginResponseCode::USERNAME_NOT_FOUND:
-            return "This user doesn't exist";
+            return GameStrings::get(GameStringKeys::USER_NOT_FOUND);
         case LoginResponseCode::INVALID_CREDENTIALS:
-            return "You have entered invalid credentials";
+            return GameStrings::get(GameStringKeys::INVALID_CREDENTIALS);
+        case LoginResponseCode::USER_LOGGED_IN:
+            return GameStrings::get(GameStringKeys::USER_LOGGED_IN);
     }
 }
 
@@ -28,11 +31,13 @@ std::string getRegistrationMessage(RegistrationResponseCode code)
 {
     switch (code) {
         case RegistrationResponseCode::REGISTRATION_OK:
-            return "Registration successful. Welcome!";
+            return GameStrings::get(GameStringKeys::REG_OK);
         case RegistrationResponseCode::USERNAME_EXISTS:
-            return "This username has already been taken";
+            return GameStrings::get(GameStringKeys::USER_EXISTS);
         case RegistrationResponseCode::USERNAME_TOO_LONG:
-            return "This username has too many characters";
+            return GameStrings::get(GameStringKeys::USERNAME_TOO_LONG);
+        case RegistrationResponseCode::USERNAME_INVALID:
+            return GameStrings::get(GameStringKeys::USERNAME_INVALD);
     }
 }
 

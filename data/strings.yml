@@ -15,4 +15,14 @@ strings:
  global-tag: '[All]'
  area-tag: '[Area]'
  private-tag: '[Whisper]'
+ server-name: "Server"
 
+ login-ok: "Login successful"
+ user-not-found: "This user doesn't exist"
+ invalid-cred: "You have entered invalid credentials"
+ user-logged-in: "User is already logged in"
+
+ reg-ok: "Registration successful. Welcome!"
+ user-exists: "This username has already been taken"
+ username-too-long: "This username has too many characters"
+ username-invalid: "You cannot use that username"

@@ -18,6 +18,7 @@
 #include "commands/CommandConfig.hpp"
 #include "MessageIO.hpp"
 #include "ConnectionManager.hpp"
+#include "Authenticator.hpp"
 
 class Controller {
 public:
@@ -28,7 +29,7 @@ public:
     void processCommand(const protocols::PlayerCommand& command,
                         const networking::Connection& client);
 
-    void addNewPlayer(const PlayerInfo& player);
+    bool addNewPlayer(const AccountInfo& accountInfo, const networking::Connection& client);
     void removePlayer(const networking::Connection& clientID);
     void disconnectPlayer(const std::string& playerID);
     void update();
@@ -51,6 +52,7 @@ private:
     std::vector<networking::Connection> allClients;
 
     std::unordered_map<std::string, CommandHandle>  inputToCommandMap;
+    std::unordered_map<std::string, AccountInfo> playerAccountMap;
 
     GameModel& gameModel;
     MessageIO& messageIO;
