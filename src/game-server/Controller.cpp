@@ -5,12 +5,9 @@
 #include <glog/logging.h>
 #include <unordered_set>
 #include "Controller.hpp"
-#include "Authenticator.hpp"
 #include "StringUtils.hpp"
-#include "commands/DisplayMessageBuilder.hpp"
 #include "CommandList.hpp"
 #include "PigLatinDecorator.hpp"
-#include "ConnectionManager.hpp"
 
 using namespace networking;
 using namespace std::placeholders;
@@ -38,27 +35,35 @@ std::unique_ptr<MessageBuilder> Controller::HelpCommand::execute(const gsl::span
         return allCommandsHelp(player.clientID);
     }
 
-    std::string message;
+    auto accountInfo = controller.getAccountInfo(player.clientID);
     auto command = arguments[0];
-
     auto it = controller.inputToCommandMap.find(command);
-    if (it == controller.inputToCommandMap.end()) {
-        message = "Command <" + command + "> not found.";
-    } else {
-        message = "Help for command <" + command + ">\n";
-        message += "\tDescription: " + it->second.getDescription() + "\n";
-        message += "\tUsage: " + command + " " + it->second.getUsage() + "\n";
-        message += "\t" + getCommandBindingsHelpMessage(command);
+    if (it == controller.inputToCommandMap.end() || !accountInfo.hasRole(it->second.getRole())) {
+        auto message = "Command <" + command + "> not found.";
+        return DisplayMessageBuilder{message}.addClient(player.clientID)
+                .setSender(DisplayMessageBuilder::SENDER_SERVER);
     }
+
+    std::string message;
+    message = "Help for command <" + command + ">\n";
+    message += "\tDescription: " + it->second.getDescription() + "\n";
+    message += "\tUsage: " + command + " " + it->second.getUsage() + "\n";
+    message += "\t" + getCommandBindingsHelpMessage(command);
 
     return DisplayMessageBuilder{message}.addClient(player.clientID)
             .setSender(DisplayMessageBuilder::SENDER_SERVER);
 }
 
 std::unique_ptr<MessageBuilder> Controller::HelpCommand::allCommandsHelp(const networking::Connection& clientID) {
+    auto accountInfo = controller.getAccountInfo(clientID);
+
     //Get all unique commands
     std::unordered_set<std::string> commands;
     for (const auto& it : controller.inputToCommandMap) {
+        if (!accountInfo.hasRole(it.second.getRole())) {
+            continue;
+        }
+
         commands.insert(it.second.getId());
     }
 
@@ -97,18 +102,13 @@ Controller::Controller(GameModel& gameModel, MessageIO& messageIO, ConnectionMan
 
 }
 
-static constexpr bool hasRole(int roleFlags, PlayerRole role) {
-    return (bool)(roleFlags & (int)role);
-}
-
-void Controller::processCommand(const protocols::PlayerCommand& command,
-                                const Connection& client) {
+void Controller::processCommand(const protocols::PlayerCommand& command, const Connection& client) {
     auto cmd = command.command;
     auto cmdArgs = splitString(command.arguments);
 
     auto accountInfo = getAccountInfo(client);
     auto it = inputToCommandMap.find(cmd);
-    if (it == inputToCommandMap.end() || !hasRole(accountInfo.playerRoleFlags, it->second.getRole())) {
+    if (it == inputToCommandMap.end() || !accountInfo.hasRole(it->second.getRole())) {
         auto msg = DisplayMessageBuilder{"<" + cmd + "> is an invalid command. Type help."}
                 .addClient(client)
                 .setSender(DisplayMessageBuilder::SENDER_SERVER);

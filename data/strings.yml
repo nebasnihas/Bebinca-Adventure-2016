@@ -26,3 +26,5 @@ strings:
  user-exists: "This username has already been taken"
  username-too-long: "This username has too many characters"
  username-invalid: "You cannot use that username"
+
+ player-kicked: "has been kicked out"

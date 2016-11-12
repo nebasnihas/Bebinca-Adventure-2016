@@ -5,7 +5,6 @@
 
 #include "Authenticator.hpp"
 #include "GameStrings.hpp"
-#include "PlayerRole.hpp"
 #include <glog/logging.h>
 #include <fstream>
 #include <sys/stat.h>

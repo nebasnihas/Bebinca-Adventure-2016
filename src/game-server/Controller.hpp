@@ -19,6 +19,7 @@
 #include "MessageIO.hpp"
 #include "ConnectionManager.hpp"
 #include "Authenticator.hpp"
+#include "AccountInfo.hpp"
 
 class Controller {
 public:
@@ -26,8 +27,7 @@ public:
                    const CommandConfig& commandCreator);
 
     void registerCommand(const std::string& commandId, Command& command);
-    void processCommand(const protocols::PlayerCommand& command,
-                        const networking::Connection& client);
+    void processCommand(const protocols::PlayerCommand& command, const networking::Connection& client);
 
     bool addNewPlayer(const AccountInfo& accountInfo, const networking::Connection& client);
     void removePlayer(const networking::Connection& clientID);

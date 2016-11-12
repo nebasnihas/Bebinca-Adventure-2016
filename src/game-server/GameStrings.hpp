@@ -33,6 +33,8 @@ const std::string REG_OK = "reg-ok";
 const std::string USER_EXISTS = "user-exists";
 const std::string USERNAME_TOO_LONG = "username-too-long";
 const std::string USERNAME_INVALD = "username-invalid";
+
+const std::string PLAYER_KICKED = "player-kicked";
 }
 
 class GameStrings {

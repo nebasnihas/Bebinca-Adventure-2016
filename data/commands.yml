@@ -76,3 +76,10 @@ commands:
     role: "user"
     bindings:
       - "status"
+  command-kick:
+    desc: "Kick a player"
+    usage: "<player>"
+    role: "admin"
+    bindings:
+      - "kick"
+      - "/k"

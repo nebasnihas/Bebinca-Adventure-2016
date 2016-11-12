@@ -1,29 +1,10 @@
-
 #ifndef loginsystem_hpp
 #define loginsystem_hpp
 
-#include <stdio.h>
-#include <iostream>
 #include <string>
 #include <boost/optional.hpp>
-#include "yaml-cpp/yaml.h"
 #include "game/protocols/Authentication.hpp"
-
-struct AccountInfo {
-    std::string username;
-    int playerRoleFlags;
-
-    bool operator==(const AccountInfo& other) const {
-        return username == other.username;
-    }
-};
-
-struct AccountInfoHash {
-    size_t operator()(const AccountInfo& other) const
-    {
-        return std::hash<std::string>()(other.username);
-    }
-};
+#include "AccountInfo.hpp"
 
 template <class T>
 struct AuthResult {
