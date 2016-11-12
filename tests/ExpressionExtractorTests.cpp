@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../../src/game-model/ExpressionExtractor.hpp"
+#include "../src/game-model/ExpressionExtractor.hpp"
 
 static std::string createInput(const std::string expression) {
     return "'" + expression + "'";

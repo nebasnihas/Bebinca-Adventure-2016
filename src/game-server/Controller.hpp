@@ -16,10 +16,13 @@
 #include "boost/bimap/unordered_set_of.hpp"
 #include "boost/bimap.hpp"
 #include "commands/CommandConfig.hpp"
+#include "MessageIO.hpp"
+#include "ConnectionManager.hpp"
 
 class Controller {
 public:
-    Controller(GameModel& gameModel, networking::Server& server, const CommandConfig& commandCreator);
+    Controller(GameModel& gameModel, MessageIO& messageIO, ConnectionManager& connectionManager,
+                   const CommandConfig& commandCreator);
 
     void registerCommand(const std::string& commandId, Command& command);
     void processCommand(const protocols::PlayerCommand& command,
@@ -50,8 +53,11 @@ private:
     std::unordered_map<std::string, CommandHandle>  inputToCommandMap;
 
     GameModel& gameModel;
-    networking::Server& server;
+    MessageIO& messageIO;
     CommandConfig commandConfig;
+    ConnectionManager& connectionManager;
+
+    void sendOutput(const MessageBuilder& messageBuilder) const;
 
     //help command
     class HelpCommand;

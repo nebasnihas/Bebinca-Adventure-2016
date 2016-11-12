@@ -9,6 +9,8 @@
 #include "StringUtils.hpp"
 #include "commands/DisplayMessageBuilder.hpp"
 #include "CommandList.hpp"
+#include "PigLatinDecorator.hpp"
+#include "ConnectionManager.hpp"
 
 using namespace networking;
 using namespace std::placeholders;
@@ -84,8 +86,13 @@ std::string Controller::HelpCommand::getCommandBindingsHelpMessage(const std::st
  * Controller
  */
 
-Controller::Controller(GameModel& gameModel, Server& server, const CommandConfig& commandCreator)
-        : gameModel{gameModel}, server{server}, commandConfig{commandCreator}, helpCommand{std::make_unique<HelpCommand>(*this)} {
+Controller::Controller(GameModel& gameModel, MessageIO& messageIO, ConnectionManager& connectionManager,
+                       const CommandConfig& commandCreator)
+        : gameModel{gameModel},
+          messageIO{messageIO},
+          commandConfig{commandCreator},
+          connectionManager{connectionManager},
+          helpCommand{std::make_unique<HelpCommand>(*this)} {
     registerCommand(COMMAND_HELP, *helpCommand);
 
 }
@@ -99,15 +106,16 @@ void Controller::processCommand(const protocols::PlayerCommand& command,
     if (it == inputToCommandMap.end()) {
         auto msg = DisplayMessageBuilder{"<" + cmd + "> is an invalid command. Type help."}
                 .addClient(client)
-                .setSender(DisplayMessageBuilder::SENDER_SERVER).buildMessages();
-        server.send(msg);
+                .setSender(DisplayMessageBuilder::SENDER_SERVER);
+        sendOutput(msg);
         return;
     }
 
     auto& handler = it->second.getCommand();
     auto playerID = getPlayerID(client);
-    auto output = handler.execute(cmdArgs, PlayerInfo{playerID, client})->buildMessages();
-    server.send(output);
+    auto output = handler.execute(cmdArgs, PlayerInfo{playerID, client});
+
+    sendOutput(*output);
 }
 
 void Controller::registerCommand(const std::string& commandId, Command& command) {
@@ -124,9 +132,8 @@ void Controller::addNewPlayer(const PlayerInfo& player) {
 
     auto outMsg = DisplayMessageBuilder{"Player <" + player.playerID + "> has joined."}
             .setSender(DisplayMessageBuilder::SENDER_SERVER)
-            .addClients(allClients)
-            .buildMessages();
-    server.send(outMsg);
+            .addClients(allClients);
+    sendOutput(outMsg);
 }
 
 const std::vector<Connection>& Controller::getAllClients() const {
@@ -146,8 +153,8 @@ void Controller::removePlayer(const networking::Connection& clientID) {
 
     auto outMsg = DisplayMessageBuilder{"Player <" + player + "> has disconnected."}
             .setSender(DisplayMessageBuilder::SENDER_SERVER)
-            .addClients(allClients).buildMessages();
-    server.send(outMsg);
+            .addClients(allClients);
+    sendOutput(outMsg);
 }
 
 boost::optional<Connection> Controller::getClientID(const std::string& playerID) const {
@@ -162,7 +169,8 @@ std::string Controller::getPlayerID(const networking::Connection& clientID) cons
 
 void Controller::disconnectPlayer(const std::string& playerID) {
     auto clientId = getClientID(playerID);
-    server.disconnect(clientId.get());
+    CHECK(clientId) << "Player does not have client id associated with it";
+    connectionManager.disconnectClient(clientId.get());
 }
 
 void Controller::update() {
@@ -172,11 +180,16 @@ void Controller::update() {
 		for (auto& message: *outputBuffer ) {
 			auto displayMessage = DisplayMessageBuilder{message}.
 					addClient(client).
-					setSender(DisplayMessageBuilder::SENDER_SERVER).buildMessages();
-			server.send(displayMessage);
+					setSender(DisplayMessageBuilder::SENDER_SERVER);
+			sendOutput(displayMessage);
 		}
 		outputBuffer->clear();
 	}
+}
+
+void Controller::sendOutput(const MessageBuilder& messageBuilder) const {
+    auto msg = PigLatinDecorator{messageBuilder};
+    messageIO.send(msg);
 }
 
 
