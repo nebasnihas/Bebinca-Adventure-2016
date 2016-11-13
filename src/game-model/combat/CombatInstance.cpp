@@ -1,4 +1,6 @@
+#include <boost/format.hpp>
 #include "CombatInstance.hpp"
+#include "../../game-server/GameStrings.hpp"
 
 CombatInstance::CombatInstance(std::unordered_map<std::string, std::shared_ptr<CombatAction>>* actionLookup, std::string defaultActionID)
         : actionLookup(actionLookup), defaultActionID(defaultActionID)
@@ -20,7 +22,8 @@ void CombatInstance::update() {
             auto& action = iter->second;
             action->execute(characterInstance.getCharacterRef(), characterInstance.getTarget().getCharacterRef());
         } else {
-			characterInstance.getCharacterRef().pushToBuffer("You do not know the spell " + characterInstance.getCombatActionID());
+			characterInstance.getCharacterRef().pushToBuffer((boost::format(GameStrings::get(GameStringKeys::SPELL_UNKNOWN))
+															  % characterInstance.getCombatActionID()).str());
         }
 
 		//TODO: Extract default case
@@ -66,11 +69,11 @@ void CombatInstance::battleCleanup() {
             // TODO: Add actual exp tracking
             character.increaseLevel();
             character.setState(CharacterState::IDLE);
-			character.pushToBuffer("You won the battle");
+			character.pushToBuffer(GameStrings::get(GameStringKeys::COMBAT_VICTORY));
         } else {
             // Character is dead. Set to dead state, GameModel will clean up later.
             character.setState(CharacterState::DEAD);
-			character.pushToBuffer("You were killed");
+			character.pushToBuffer(GameStrings::get(GameStringKeys::COMBAT_LOSS));
         }
     }
 }

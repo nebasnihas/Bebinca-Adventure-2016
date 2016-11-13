@@ -16,3 +16,33 @@ strings:
  area-tag: '[Area]'
  private-tag: '[Whisper]'
 
+
+ combat-engage-issue: 'You engage %s in battle'
+ combat-engage-receive: 'You have been engaged in battle by %s'
+ combat-attack-issue: 'You attack %s and deal %d damage'
+ combat-attack-receive: 'You take %d damage from %s'
+ combat-attack-id: 'attack'
+ combat-result-victory: 'You won the battle'
+ combat-result-loss: 'You were killed and lost the battle'
+
+ spell-list-header: 'List of Spells: '
+ spell-insufficient-mana: 'Not enough mana to cast %s'
+ spell-unknown: 'You do not know the spell ''%s'''
+ spell-offense-self: 'You cast %s on yourself for %d damage'
+ spell-offense-source: 'You cast %s on %s for %d damage'
+ spell-offense-target: '%s casts %s on you for %d damage'
+ spell-defense-self: 'You cast %s on yourself and heal %d'
+ spell-defense-source: 'You cast %s on %s and heal %d'
+ spell-defense-target: '%s casts %s on you and heals you for %d'
+ spell-generic-self: 'You cast %s on yourself'
+ spell-generic-source: 'You cast %s on %s'
+ spell-generic-target: '%s casts %s on you'
+
+ status-effect-expiry: 'Your status effect wears off'
+
+ character-status: '%s\nLevel: %d\nHealth: %d\nMana: %d\n'
+
+
+
+
+

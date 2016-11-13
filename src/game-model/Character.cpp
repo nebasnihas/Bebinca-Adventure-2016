@@ -1,4 +1,6 @@
 #include <game/Character.hpp>
+#include <boost/format.hpp>
+#include "../game-server/GameStrings.hpp"
 
 Character::Character() {}
 
@@ -174,10 +176,8 @@ void Character::pushToBuffer(const std::string message) {
 }
 
 std::string Character::getStatus() {
-	std::string status = name + "\n" +
-						"Health: " + std::to_string(currentHealth) + "\n" +
-						"Mana: " + std::to_string(currentMana) + "\n" +
-						"Level: " + std::to_string(getLevel());
+	std::string status = (boost::format(GameStrings::get(GameStringKeys::CHAR_STATUS))
+						  % name % getLevel() % currentHealth % currentMana).str();
 	return status;
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////

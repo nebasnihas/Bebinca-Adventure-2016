@@ -1,4 +1,7 @@
+#include <boost/regex/v4/match_flags.hpp>
 #include "CombatAction.hpp"
+#include "../../game-server/GameStrings.hpp"
+#include <boost/format.hpp>
 
 CombatCast::CombatCast(const Spell &spell) : spell(spell)
 {
@@ -34,8 +37,8 @@ void CombatAttack::execute(Character& source, Character& target) {
     auto damage = 10 * sourceLevel;
     dealDamage(target, damage);
 
-	auto sourceMessage = "You attack " + target.getName() + " and deal " + std::to_string(damage) + " damage";
-	auto targetMessage = "You take " + std::to_string(damage) + " damage" + " from " + source.getName();
+	auto sourceMessage = (boost::format(GameStrings::get(GameStringKeys::PLAYER_ATTACKS)) % target.getName() % damage).str();
+	auto targetMessage = (boost::format(GameStrings::get(GameStringKeys::PLAYER_ATTACKED)) % damage % source.getName()).str();
 	source.pushToBuffer(sourceMessage);
 	target.pushToBuffer(targetMessage);
 }
@@ -50,7 +53,7 @@ void CombatCast::execute(Character& source, Character& target) {
     auto currentMana = source.getCurrentMana();
 
     if (currentMana < manaCost) {
-		source.pushToBuffer("Not enough mana to cast " + spell.getName());
+		source.pushToBuffer((boost::format(GameStrings::get(GameStringKeys::SPELL_NO_MANA)) % spell.getName()).str());
         return;
     } else {
         source.setCurrentMana(currentMana - manaCost);
@@ -61,33 +64,49 @@ void CombatCast::execute(Character& source, Character& target) {
     switch (spell.getType()) {
 		case SpellType::OFFENSE:
 			if (source.getName() == target.getName()) {
-				source.pushToBuffer("You cast " + spell.getName() + " on yourself for damage " + std::to_string(power));
+				auto sourceMessage = (boost::format(GameStrings::get(GameStringKeys::SPELL_OFFENSE_SELF)) % spell.getName() % power).str();
+				source.pushToBuffer(sourceMessage);
 			}
 			else {
-				source.pushToBuffer("You cast " + spell.getName() + " on " + target.getName() + " for damage " + std::to_string(power));
-				target.pushToBuffer(source.getName() + " casts " + spell.getName() + " on you for damage " + std::to_string(power));
+				auto sourceMessage = (boost::format(GameStrings::get(GameStringKeys::SPELL_OFFENSE_SOURCE))
+									  % spell.getName() % target.getName % power).str();
+				source.pushToBuffer(sourceMessage);
+
+				auto targetMessage = (boost::format(GameStrings::get(GameStringKeys::SPELL_OFFENSE_TARGET))
+									  % source.getName() % spell.getName() % power).str();
+				target.pushToBuffer(targetMessage);
 			}
             dealDamage(target, power);
             break;
         case SpellType::DEFENSE:
             // TODO: Resolve and fix this temporary patchwork
 			if (source.getName() == target.getName() || source.getState() == CharacterState::BATTLE) {
-				source.pushToBuffer("You cast " + spell.getName() + " on yourself and heal " + std::to_string(power));
+				auto sourceMessage = (boost::format(GameStrings::get(GameStringKeys::SPELL_DEFENSE_SELF)) % spell.getName() % power).str();
+				source.pushToBuffer(sourceMessage);
 				healDamage(source, power);
 			}
 			else {
-				source.pushToBuffer("You cast " + spell.getName() + " on " + target.getName() + " and heal " + std::to_string(power));
-				target.pushToBuffer(source.getName() + " casts " + spell.getName() + " on you and heals you for " + std::to_string(power));
+				auto sourceMessage = (boost::format(GameStrings::get(GameStringKeys::SPELL_DEFENSE_SOURCE))
+									  % spell.getName() % target.getName % power).str();
+				source.pushToBuffer(sourceMessage);
+
+				auto targetMessage = (boost::format(GameStrings::get(GameStringKeys::SPELL_DEFENSE_TARGET))
+									  % source.getName() % spell.getName % power).str();
+				target.pushToBuffer(targetMessage);
+
 				healDamage(target, power);
 			}
             break;
 		case SpellType::BODY_SWAP:
+			//TODO: determine duration of body swap based on player level
 			auto sourceStatus = std::make_shared<BodySwapStatus>(10, target.getID());
-			target.pushToBuffer("You cast " + spell.getName() + " on " + target.getName());
+			target.pushToBuffer((boost::format(GameStrings::get(GameStringKeys::SPELL_GENERIC_SOURCE))
+								 % spell.getName() % target.getName()).str());
 			source.addStatusEffect(sourceStatus);
 
 			auto targetStatus = std::make_shared<BodySwapStatus>(10, source.getID());
-			source.pushToBuffer(source.getName() + " casts " + spell.getName() + " on you");
+			source.pushToBuffer((boost::format(GameStrings::get(GameStringKeys::SPELL_GENERIC_SOURCE))
+								 % source.getName() % spell.getName()).str());
 			target.addStatusEffect(targetStatus);
     }
 }
