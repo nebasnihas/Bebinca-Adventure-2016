@@ -64,6 +64,8 @@ string AsciiConverter::process_font_type(const string &font_type){
         return "default";
     } else if (type == "test"){
         return "test";
+    }else if (type == "dark"){
+        return "dark";
     }//Add more font types here
     
     return "default";
