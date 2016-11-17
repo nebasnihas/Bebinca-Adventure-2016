@@ -21,6 +21,7 @@ uint16 AsciiConverter::extractShort (ifstream &f)
 
 uint32 AsciiConverter::extractInt (ifstream &f)
 {
+    
     char buf[4];
     f.read (buf, 4);
     uint32 value = buf[0] | (buf[1] << 8) | (buf[2] << 16) | (buf[3] << 24);
@@ -36,7 +37,7 @@ string AsciiConverter::get_loc(const string &font_type){
     
     string type = font_type;
     to_lower(type);
-
+    
     const string find_loc = "./assets/fontsets/" + type + "/";
     return find_loc;
 }
@@ -85,26 +86,26 @@ void AsciiConverter::readHeader(ifstream &f, BMPFileHeader &header){
     header.vertRes = extractInt (f);
     header.indicesUsed = extractInt (f);
     header.indicesImportant = extractInt (f);
- 
-/* DEBUG FLAGS------
-#ifdef DEBUG
-    cout << "filetype " << header.filetype << endl;
-    cout << "filesize " << header.filesize << endl;
-    cout << "reserved " << header.reserved << endl;
-    cout << "offset " << header.offset << endl;
-    cout << "bytesInHeader " << header.bytesInHeader << endl;
-    cout << "width " << int(header.width) << endl;
-    cout << "height " << int(header.height) << endl;
-    cout << "planes " << header.planes << endl;
-    cout << "bitsPerPixel " << header.bitsPerPixel << endl;
-    cout << "compression " << header.compression << endl;
-    cout << "size " << header.size << endl;
-    cout << "horizRes " << header.horizRes << endl;
-    cout << "vertRes " << header.vertRes << endl;
-    cout << "indicesUsed " << header.indicesUsed << endl;
-    cout << "indicesImportant " << header.indicesImportant << endl;
-#endif
-*/
+    
+    /* DEBUG FLAGS------
+     #ifdef DEBUG
+     cout << "filetype " << header.filetype << endl;
+     cout << "filesize " << header.filesize << endl;
+     cout << "reserved " << header.reserved << endl;
+     cout << "offset " << header.offset << endl;
+     cout << "bytesInHeader " << header.bytesInHeader << endl;
+     cout << "width " << int(header.width) << endl;
+     cout << "height " << int(header.height) << endl;
+     cout << "planes " << header.planes << endl;
+     cout << "bitsPerPixel " << header.bitsPerPixel << endl;
+     cout << "compression " << header.compression << endl;
+     cout << "size " << header.size << endl;
+     cout << "horizRes " << header.horizRes << endl;
+     cout << "vertRes " << header.vertRes << endl;
+     cout << "indicesUsed " << header.indicesUsed << endl;
+     cout << "indicesImportant " << header.indicesImportant << endl;
+     #endif
+     */
     
 }
 
@@ -118,12 +119,12 @@ string AsciiConverter::convertObject0(const string style, const string &objname)
     unsigned char *image;
     char def_shades[MAX_SHADES] = {'#','$','O','=','+','|','-','^','.',' '};
     char num_shades[MAX_SHADES] = {'0','1','2','3','4','5','6','7','8','.'};
-
+    
     // = {'#','$','O','=','+','|','-','^','.',' '};
     // = {'0','1','2','3','4','5','6','7','8','9'};
     int average_color = 0;
     
-
+    
     string ret_string;
     ifstream bmpfile;
     BMPFileHeader header;
@@ -143,10 +144,10 @@ string AsciiConverter::convertObject0(const string style, const string &objname)
     // Read image
     width = int(header.width);
     if ( width < 0 )
-        width *= -1;
+    width *= -1;
     height = int(header.height);
     if ( height < 0 )
-        height *= -1;
+    height *= -1;
     
     int rowsize = width * 3;
     
@@ -170,7 +171,7 @@ string AsciiConverter::convertObject0(const string style, const string &objname)
             // Convert to a shade
             average_color /= (256/MAX_SHADES);
             if(average_color >= MAX_SHADES)
-                average_color = MAX_SHADES-1;
+            average_color = MAX_SHADES-1;
             
             // Write Output to string
             if(style == "default"){
@@ -202,26 +203,26 @@ string AsciiConverter::word1(const string font_type, const string& word){
     process_letter_location(w_1[0], sf_1);
     
     /* DEBUG Flag
-    #ifdef DEBUG
-    cout << "The full location is " << sf_1 << endl;
-    #endif
-    */
-
+     #ifdef DEBUG
+     cout << "The full location is " << sf_1 << endl;
+     #endif
+     */
+    
     ifstream pf_1(sf_1);
     string pc_1;
     
     if(pf_1.is_open()){
         while (getline(pf_1, pc_1)){
             ret_string += pc_1;
-
+            
             ret_string += "\n";
             
-        /* DEBUG FLAGS
-        #ifdef DEBUG
-            cout << pc_1
-                 << "\n";
-        #endif
-        */
+            /* DEBUG FLAGS
+             #ifdef DEBUG
+             cout << pc_1
+             << "\n";
+             #endif
+             */
             
         }
         pf_1.close();
@@ -243,15 +244,15 @@ string AsciiConverter::word2(const string font_type, const string& word){
         sf.push_back(get_loc(font_type));
         process_letter_location(w_1[i], sf[i]);
     }
-  
+    
     
     /*DEBUG flag
-    #ifdef DEBUG
-    for(string s:sf){
-        cout << "The element: " << s << endl;
-    }
-    #endif
-    */
+     #ifdef DEBUG
+     for(string s:sf){
+     cout << "The element: " << s << endl;
+     }
+     #endif
+     */
     
     
     
@@ -264,7 +265,7 @@ string AsciiConverter::word2(const string font_type, const string& word){
     
     if(pf[0].is_open()){
         while (getline(pf[0],pc[0])){
-               getline(pf[1],pc[1]);
+            getline(pf[1],pc[1]);
             
             for(int i=0; i < get_word_size(w_1); i++){
                 ret_string += pc[i];
@@ -305,8 +306,8 @@ string AsciiConverter::word3(const string font_type, const string& word){
     
     if(pf[0].is_open()){
         while (getline(pf[0],pc[0])){
-               getline(pf[1],pc[1]);
-               getline(pf[2],pc[2]);
+            getline(pf[1],pc[1]);
+            getline(pf[2],pc[2]);
             
             for(int i=0; i < get_word_size(w_1); i++){
                 ret_string += pc[i];
@@ -440,7 +441,7 @@ string AsciiConverter::word6(const string font_type, const string& word){
             for(int i=0; i < get_word_size(w_1); i++){
                 ret_string += pc[i];
             }
-    
+            
             
             ret_string += "\n";
         }
@@ -548,7 +549,7 @@ string AsciiConverter::word8(const string font_type, const string& word){
 }
 
 string AsciiConverter::word9(const string font_type, const string& word){
-
+    
     string ret_string;
     
     string w_1 = word;
@@ -596,7 +597,7 @@ string AsciiConverter::word9(const string font_type, const string& word){
 }
 
 string AsciiConverter::word10(const string font_type, const string& word){
-
+    
     string ret_string;
     
     string w_1 = word;
@@ -629,7 +630,7 @@ string AsciiConverter::word10(const string font_type, const string& word){
             getline(pf[9],pc[9]);
             
             for(int i=0; i < get_word_size(w_1); i++){
-            ret_string += pc[i];
+                ret_string += pc[i];
             }
             
             
@@ -647,10 +648,10 @@ string AsciiConverter::word10(const string font_type, const string& word){
 
 
 
-string AsciiConverter::convertWord0(const string font_type, const string &word){
+string AsciiConverter::convertWord0(const string &font_type, const string &word){
     
-    string type = process_font_type(font_type);
-    string processed_word = word;
+    string type = process_font_type(move(font_type));
+    string processed_word = move(word);
     
     bool flag = false;
     
@@ -662,75 +663,76 @@ string AsciiConverter::convertWord0(const string font_type, const string &word){
     
     
     if(flag){
-      return "words cant be sentences";
+        return "words cant be sentences";
     }
     
     const int count = get_word_size(processed_word);
     
     if(count > MAX_WORD_COUNT){
-       return "Word size is too long";
+        return "Word size is too long";
     }
     
-   
+    
     switch (count) {
         case 0:
-            processed_word = "Blank word";
-            break;
-            
+        processed_word = "Blank word";
+        break;
+        
         case 1:
-            processed_word = word1(type, processed_word);
-            break;
-            
+        processed_word = word1(type, processed_word);
+        break;
+        
         case 2:
-            processed_word = word2(type, processed_word);
-            break;
-            
+        processed_word = word2(type, processed_word);
+        break;
+        
         case 3:
-            processed_word = word3(type, processed_word);
-            break;
-            
+        processed_word = word3(type, processed_word);
+        break;
+        
         case 4:
-            processed_word = word4(type, processed_word);
-            break;
-            
+        processed_word = word4(type, processed_word);
+        break;
+        
         case 5:
-            processed_word = word5(type, processed_word);
-            break;
-            
+        processed_word = word5(type, processed_word);
+        break;
+        
         case 6:
-            processed_word = word6(type, processed_word);
-            break;
-            
+        processed_word = word6(type, processed_word);
+        break;
+        
         case 7:
-            processed_word = word7(type, processed_word);
-            break;
-            
+        processed_word = word7(type, processed_word);
+        break;
+        
         case 8:
-            processed_word = word8(type, processed_word);
-            break;
-            
+        processed_word = word8(type, processed_word);
+        break;
+        
         case 9:
-            processed_word = word9(type, processed_word);
-            break;
-            
+        processed_word = word9(type, processed_word);
+        break;
+        
         case 10:
-            processed_word = word10(type, processed_word);
-            break;
-            
+        processed_word = word10(type, processed_word);
+        break;
+        
         default:
-            processed_word = "Error";
-            break;
+        processed_word = "Error";
+        break;
     }
-   
+    
     return processed_word;
 }
 
-
-string AsciiConverter::convertWord1(const string font_type, const string word){
-    
-    string type = process_font_type(font_type);
-    return convertWord0(font_type, word);
-}
-
+/*
+ string AsciiConverter::convertWord1(const string font_type, const string word){
  
+ string type = process_font_type(font_type);
+ return convertWord0(font_type, word);
+ }
+ */
+
+
 

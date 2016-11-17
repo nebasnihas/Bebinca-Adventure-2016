@@ -1,11 +1,11 @@
 /*
-- Image Art generator library from www.mcs.csueastbay.edu/~tebo/classes/1160/ascii-art/
-- Modified a bit tailored to Bebinca's Adventure game
-- Class generates two things: an ascii art of Bmp img and ascii art of text
-- Find/Place source images in assets/bmpimgs
-- Find/Place font txt files in assets/fontsets/<fontname>/<letter>.txt
-- Object list,Image specifications and Font Usage on WIKI [link:https://csil-git1.cs.surrey.sfu.ca/373-16-3-bebinca/adventure2016/wikis/AsciiConverter-Class ]
-*/
+ - Image Art generator library from www.mcs.csueastbay.edu/~tebo/classes/1160/ascii-art/
+ - Modified a bit tailored to Bebinca's Adventure game
+ - Class generates two things: an ascii art of Bmp img and ascii art of text
+ - Find/Place source images in assets/bmpimgs
+ - Find/Place font txt files in assets/fontsets/<fontname>/<letter>.txt
+ - Object list,Image specifications and Font Usage on WIKI [link:https://csil-git1.cs.surrey.sfu.ca/373-16-3-bebinca/adventure2016/wikis/AsciiConverter-Class ]
+ */
 
 #ifndef AsciiConverter_hpp
 #define AsciiConverter_hpp
@@ -23,7 +23,7 @@ using namespace std;
 
 class AsciiConverter {
     
-private:
+    private:
     
     //Types to hold BMP File header data
     typedef unsigned short uint16;
@@ -58,7 +58,7 @@ private:
     static uint32 extractInt(ifstream &f);
     
     static void readHeader(ifstream& f, BMPFileHeader& header);
-
+    
     
     static string get_loc(const string &font_type);
     static void to_lower(string& word);
@@ -86,7 +86,7 @@ private:
     
     
     
-public:
+    public:
     
     //Print Object: Returns a Multitext string of ASCII art of an object in the assets/bmpimgs folder
     //Styles: default, numbers
@@ -98,7 +98,7 @@ public:
     
     //Print Word: Returns a Multitext string of ASCII art of the word
     //Font Types: (...to be upadted)
-    static string convertWord0(const string font_type, const string &word);
+    static string convertWord0(const string &font_type, const string &word);
     static string convertWord1(const string font_type, const string word);
     
     //-------------For Debug purpose----------------
