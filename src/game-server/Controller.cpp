@@ -1,95 +1,15 @@
-#include <vector>
-#include <algorithm>
 #include <boost/algorithm/string.hpp>
-#include <game/protocols/DisplayMessage.hpp>
 #include <glog/logging.h>
-#include <unordered_set>
 #include "Controller.hpp"
 #include "StringUtils.hpp"
 #include "CommandList.hpp"
 #include "PigLatinDecorator.hpp"
+#include "MessageIO.hpp"
+#include "ConnectionManager.hpp"
+#include "game/GameModel.hpp"
 
 using namespace networking;
 using namespace std::placeholders;
-
-/*
- * Help command class
- */
-class Controller::HelpCommand : public Command {
-public:
-    HelpCommand(Controller& controller) : controller{controller} {};
-    ~HelpCommand() = default;
-
-    virtual std::unique_ptr<MessageBuilder> execute(const gsl::span<std::string, -1> arguments,
-                                                    const PlayerInfo& player) override;
-private:
-    Controller& controller;
-
-    std::unique_ptr<MessageBuilder> allCommandsHelp(const networking::Connection& clientID);
-    std::string getCommandBindingsHelpMessage(const std::string& command);
-};
-
-std::unique_ptr<MessageBuilder> Controller::HelpCommand::execute(const gsl::span<std::string, -1> arguments,
-                                                                 const PlayerInfo& player) {
-    if (arguments.empty()) {
-        return allCommandsHelp(player.clientID);
-    }
-
-    auto accountInfo = controller.getAccountInfo(player.clientID);
-    auto command = arguments[0];
-    auto it = controller.inputToCommandMap.find(command);
-    if (it == controller.inputToCommandMap.end() || !accountInfo.hasRole(it->second.getRole())) {
-        auto message = "Command <" + command + "> not found.";
-        return DisplayMessageBuilder{message}.addClient(player.clientID)
-                .setSender(DisplayMessageBuilder::SENDER_SERVER);
-    }
-
-    std::string message;
-    message = "Help for command <" + command + ">\n";
-    message += "\tDescription: " + it->second.getDescription() + "\n";
-    message += "\tUsage: " + command + " " + it->second.getUsage() + "\n";
-    message += "\t" + getCommandBindingsHelpMessage(command);
-
-    return DisplayMessageBuilder{message}.addClient(player.clientID)
-            .setSender(DisplayMessageBuilder::SENDER_SERVER);
-}
-
-std::unique_ptr<MessageBuilder> Controller::HelpCommand::allCommandsHelp(const networking::Connection& clientID) {
-    auto accountInfo = controller.getAccountInfo(clientID);
-
-    //Get all unique commands
-    std::unordered_set<std::string> commands;
-    for (const auto& it : controller.inputToCommandMap) {
-        if (!accountInfo.hasRole(it.second.getRole())) {
-            continue;
-        }
-
-        commands.insert(it.second.getId());
-    }
-
-    std::string message = "List of available commands. Type help <command> for more information\n";
-    for (const auto& cmd : commands) {
-        message += "Name: " + cmd;
-        message += " - " + getCommandBindingsHelpMessage(cmd);
-        message += "\n";
-    }
-
-    return DisplayMessageBuilder{message}.addClient(clientID)
-            .setSender(DisplayMessageBuilder::SENDER_SERVER);
-}
-
-std::string Controller::HelpCommand::getCommandBindingsHelpMessage(const std::string& command) {
-    std::string message;
-    message += "Command:[";
-    message += boost::algorithm::join(controller.inputToCommandMap.at(command).getInputBindings(), ",");
-    message += "]";
-
-    return message;
-}
-
-/*
- * Controller
- */
 
 Controller::Controller(GameModel& gameModel, MessageIO& messageIO, ConnectionManager& connectionManager,
                        const CommandConfig& commandCreator)
@@ -99,7 +19,6 @@ Controller::Controller(GameModel& gameModel, MessageIO& messageIO, ConnectionMan
           connectionManager{connectionManager},
           helpCommand{std::make_unique<HelpCommand>(*this)} {
     registerCommand(COMMAND_HELP, *helpCommand);
-
 }
 
 void Controller::processCommand(const protocols::PlayerCommand& command, const Connection& client) {

@@ -4,22 +4,20 @@
 #include <string>
 #include <map>
 #include <vector>
-#include <boost/optional.hpp>
 #include <memory>
-#include <commands/CommandHandle.hpp>
-
-#include "commands/Command.hpp"
-#include "game/GameModel.hpp"
-#include "networking/server.h"
-#include "game/protocols/PlayerCommand.hpp"
-#include "commands/MessageBuilder.hpp"
-#include "boost/bimap/unordered_set_of.hpp"
-#include "boost/bimap.hpp"
+#include <boost/optional.hpp>
+#include <boost/bimap.hpp>
+#include <boost/bimap/unordered_set_of.hpp>
 #include "commands/CommandConfig.hpp"
-#include "MessageIO.hpp"
-#include "ConnectionManager.hpp"
-#include "Authenticator.hpp"
+#include "commands/CommandHandle.hpp"
+#include "game/protocols/PlayerCommand.hpp"
 #include "AccountInfo.hpp"
+#include "HelpCommand.hpp"
+
+class Command;
+class ConnectionManager;
+class MessageIO;
+class GameModel;
 
 class Controller {
 public:
@@ -63,8 +61,8 @@ private:
     const AccountInfo& getAccountInfo(const networking::Connection& client) const;
 
     //help command
-    class HelpCommand;
-    std::shared_ptr<HelpCommand> helpCommand;
+    friend class HelpCommand;
+    std::unique_ptr<HelpCommand> helpCommand;
 };
 
 
