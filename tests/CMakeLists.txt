@@ -14,7 +14,7 @@ add_executable(runAllTests
         ExpressionExtractorTests.cpp
         SpellImportingTest.cpp
         CombatTests.cpp
-        )
+        YamlNodeTests.cpp)
 
 target_link_libraries(runAllTests
         gtest

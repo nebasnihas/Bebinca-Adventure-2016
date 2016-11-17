@@ -14,9 +14,9 @@ class YamlAreaBuilder
 {
 public:
 
-    static YAML::Node populateAreasNode(std::vector<std::string> desc, std::vector<std::string> extended_descriptions,
-                                        std::string id, std::string name, std::vector<std::string> doorDesc,
-                                        std::vector<std::string> keywords, std::string doorDir, std::string doorTo);
+    static YAML::Node populateAreasNode(const std::vector<std::string>& desc, const std::vector<std::string>& extended_descriptions,
+                                        const std::string& id, const std::string& name, const std::vector<std::string>& doorDesc,
+                                        const std::vector<std::string>& keywords, const std::string& doorDir, const std::string& doorTo);
 
 private:
 
