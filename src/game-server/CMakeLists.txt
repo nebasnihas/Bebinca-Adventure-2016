@@ -61,5 +61,20 @@ install(TARGETS game-server
 RUNTIME DESTINATION bin
 )
 
-file(COPY ${CMAKE_SOURCE_DIR}/data DESTINATION ${PROJECT_BINARY_DIR}/bin)
-file(COPY config.yml DESTINATION ${PROJECT_BINARY_DIR}/bin)
+#Copy data
+file(GLOB data RELATIVE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/data/*)
+add_custom_target(data_target ALL)
+foreach(file ${data})
+    set(SRC "${CMAKE_SOURCE_DIR}/${file}")
+    set(DST "${PROJECT_BINARY_DIR}/bin/${file}")
+    add_custom_command(
+            TARGET data_target
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SRC} ${DST}
+            )
+endforeach(file)
+
+add_custom_target(config ALL)
+add_custom_command(
+        TARGET config
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different config.yml ${PROJECT_BINARY_DIR}/bin/config.yml
+        )
