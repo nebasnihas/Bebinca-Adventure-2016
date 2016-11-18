@@ -17,13 +17,15 @@ enum class LoginResponseCode {
     LOGIN_OK,
     USERNAME_NOT_FOUND,
     INVALID_CREDENTIALS,
+    USER_LOGGED_IN,
 };
 
 
 enum class RegistrationResponseCode {
     REGISTRATION_OK,
     USERNAME_TOO_LONG,
-    USERNAME_EXISTS
+    USERNAME_EXISTS,
+    USERNAME_INVALID,
 };
 
 struct AuthenticationResponse {

@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <PlayerRole.hpp>
 #include "Command.hpp"
 
 class CommandHandle {
@@ -14,10 +15,12 @@ public:
     const std::string& getDescription() const;
     const std::string& getUsage() const;
     const std::vector<std::string>& getInputBindings() const;
+    PlayerRole getRole() const;
 
     void setDescription(const std::string& description);
     void setUsage(const std::string& usage);
     void addInputBinding(const std::string& inputBinding);
+    void setRole(PlayerRole role);
 
 private:
     Command& command;
@@ -25,6 +28,7 @@ private:
     std::string description;
     std::string usage;
     std::vector<std::string> inputBindings;
+    PlayerRole role;
 };
 
 

@@ -8,6 +8,7 @@ add_library(protocols
 
 target_link_libraries(protocols
         yaml-cpp
+        string-resource-importer
         )
 
 set_target_properties(protocols

@@ -8,6 +8,7 @@ strings:
 
  unspecified-player: 'Player not specified'
  unspecified-target: 'Target not specified'
+ unspecified-exit: 'No exit specified'
 
  player: 'Player'
  object: 'Object'
@@ -15,5 +16,16 @@ strings:
  global-tag: '[All]'
  area-tag: '[Area]'
  private-tag: '[Whisper]'
+ server-name: "Server"
 
- unspecified-exit: 'No exit specified'
+ login-ok: "Login successful"
+ user-not-found: "This user doesn't exist"
+ invalid-cred: "You have entered invalid credentials"
+ user-logged-in: "User is already logged in"
+
+ reg-ok: "Registration successful. Welcome!"
+ user-exists: "This username has already been taken"
+ username-too-long: "This username has too many characters"
+ username-invalid: "You cannot use that username"
+
+ player-kicked: "has been kicked out"
