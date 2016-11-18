@@ -15,6 +15,7 @@ namespace GameStringKeys {
 
     const std::string UNSPECIFIED_PLAYER = "unspecified-player";
     const std::string UNSPECIFIED_TARGET = "unspecified-target";
+    const std::string UNSPECIFIED_EXIT = "unspecified-exit";
 
     const std::string PLAYER = "player";
     const std::string OBJECT = "object";

@@ -16,3 +16,4 @@ strings:
  area-tag: '[Area]'
  private-tag: '[Whisper]'
 
+ unspecified-exit: 'No exit specified'
