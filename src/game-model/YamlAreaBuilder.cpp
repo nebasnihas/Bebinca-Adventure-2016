@@ -15,19 +15,19 @@ YAML::Node YamlAreaBuilder::populateAreasNode(const std::vector<std::string>& de
     YAML::Node doors;
 
       //ERROR:invalid node; this may result from using a map iterator as a sequence iterator, or vice-versa"
-    ROOMS["desc"].push_back(desc);
+    ROOM["desc"].push_back(desc[0]);
 
-    doors["desc"].push_back(doorDesc);
-    doors["desc"]["dir"].push_back(doorDir);
-    doors["desc"]["keywords"].push_back(keywords);
-    doors["desc"]["to"].push_back(doorTo);
-    ROOMS["desc"]["doors"].push_back(doors);
+    doors["desc"].push_back(doorDesc[0]);
+    doors["dir"] = doorDir[0];
+    doors["keywords"].push_back(keywords[0]);
+    doors["to"] = doorTo;
+    ROOM["doors"].push_back(doors);
 
-    ROOMS["desc"]["extended_descriptions"].push_back(extended_descriptions);
-    ROOMS["desc"]["id"].push_back(id);
-    ROOMS["desc"]["name"].push_back(name);
+    ROOM["extended_descriptions"].push_back(extended_descriptions[0]);
+    ROOM["id"] = id;
+    ROOM["name"] = name;
 
-    //ROOMS["ROOM"].push_back(ROOM);
+    ROOMS.push_back(ROOM);
 
     return ROOMS;
 }

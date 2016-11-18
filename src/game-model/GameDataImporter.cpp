@@ -57,7 +57,10 @@ std::vector<Area> GameDataImporter::getRooms(const YAML::Node& ROOMS) {
     vector<Area> rooms;
     std::string roomDescription;
 
+
+
     for(const auto& ROOM : ROOMS){
+
         vector<string> desc = ROOM["desc"].as<vector<string>>();
         string description = boost::algorithm::join(desc, " ");
         vector<string> extended_descriptions = ROOM["extended_descriptions"].as<vector<string>>();
