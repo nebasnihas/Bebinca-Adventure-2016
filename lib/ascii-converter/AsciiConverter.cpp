@@ -64,7 +64,7 @@ string AsciiConverter::process_font_type(const string &font_type){
         return "default";
     } else if (type == "test"){
         return "test";
-    }else if (type == "dark"){
+    } else if (type == "dark"){
         return "dark";
     }//Add more font types here
     
@@ -146,10 +146,10 @@ string AsciiConverter::convertObject0(const string style, const string &objname)
     // Read image
     width = int(header.width);
     if ( width < 0 )
-    width *= -1;
+        width *= -1;
     height = int(header.height);
     if ( height < 0 )
-    height *= -1;
+        height *= -1;
     
     int rowsize = width * 3;
     
@@ -173,7 +173,7 @@ string AsciiConverter::convertObject0(const string style, const string &objname)
             // Convert to a shade
             average_color /= (256/MAX_SHADES);
             if(average_color >= MAX_SHADES)
-            average_color = MAX_SHADES-1;
+                average_color = MAX_SHADES-1;
             
             // Write Output to string
             if(style == "default"){
@@ -308,8 +308,10 @@ string AsciiConverter::word3(const string font_type, const string& word){
     
     if(pf[0].is_open()){
         while (getline(pf[0],pc[0])){
-            getline(pf[1],pc[1]);
-            getline(pf[2],pc[2]);
+            
+            for (int i=1; i< get_word_size(w_1); i++) {
+                getline(pf[i], pc[i]);
+            }
             
             for(int i=0; i < get_word_size(w_1); i++){
                 ret_string += pc[i];
@@ -349,9 +351,10 @@ string AsciiConverter::word4(const string font_type, const string& word){
     
     if(pf[0].is_open()){
         while (getline(pf[0],pc[0])){
-            getline(pf[1],pc[1]);
-            getline(pf[2],pc[2]);
-            getline(pf[3],pc[3]);
+            
+            for (int i=1; i< get_word_size(w_1); i++) {
+                getline(pf[i], pc[i]);
+            }
             
             for(int i=0; i < get_word_size(w_1); i++){
                 ret_string += pc[i];
@@ -391,10 +394,10 @@ string AsciiConverter::word5(const string font_type, const string& word){
     
     if(pf[0].is_open()){
         while (getline(pf[0],pc[0])){
-            getline(pf[1],pc[1]);
-            getline(pf[2],pc[2]);
-            getline(pf[3],pc[3]);
-            getline(pf[4],pc[4]);
+            
+            for (int i=1; i< get_word_size(w_1); i++) {
+                getline(pf[i], pc[i]);
+            }
             
             for(int i=0; i < get_word_size(w_1); i++){
                 ret_string += pc[i];
@@ -434,11 +437,10 @@ string AsciiConverter::word6(const string font_type, const string& word){
     
     if(pf[0].is_open()){
         while (getline(pf[0],pc[0])){
-            getline(pf[1],pc[1]);
-            getline(pf[2],pc[2]);
-            getline(pf[3],pc[3]);
-            getline(pf[4],pc[4]);
-            getline(pf[5],pc[5]);
+            
+            for (int i=1; i< get_word_size(w_1); i++) {
+                getline(pf[i], pc[i]);
+            }
             
             for(int i=0; i < get_word_size(w_1); i++){
                 ret_string += pc[i];
@@ -480,12 +482,10 @@ string AsciiConverter::word7(const string font_type, const string& word){
     
     if(pf[0].is_open()){
         while (getline(pf[0],pc[0])){
-            getline(pf[1],pc[1]);
-            getline(pf[2],pc[2]);
-            getline(pf[3],pc[3]);
-            getline(pf[4],pc[4]);
-            getline(pf[5],pc[5]);
-            getline(pf[6],pc[6]);
+            
+            for (int i=1; i< get_word_size(w_1); i++) {
+                getline(pf[i], pc[i]);
+            }
             
             for(int i=0; i < get_word_size(w_1); i++){
                 ret_string += pc[i];
@@ -526,13 +526,10 @@ string AsciiConverter::word8(const string font_type, const string& word){
     
     if(pf[0].is_open()){
         while (getline(pf[0],pc[0])){
-            getline(pf[1],pc[1]);
-            getline(pf[2],pc[2]);
-            getline(pf[3],pc[3]);
-            getline(pf[4],pc[4]);
-            getline(pf[5],pc[5]);
-            getline(pf[6],pc[6]);
-            getline(pf[7],pc[7]);
+            
+            for (int i=1; i< get_word_size(w_1); i++) {
+                getline(pf[i], pc[i]);
+            }
             
             for(int i=0; i < get_word_size(w_1); i++){
                 ret_string += pc[i];
@@ -573,14 +570,10 @@ string AsciiConverter::word9(const string font_type, const string& word){
     
     if(pf[0].is_open()){
         while (getline(pf[0],pc[0])){
-            getline(pf[1],pc[1]);
-            getline(pf[2],pc[2]);
-            getline(pf[3],pc[3]);
-            getline(pf[4],pc[4]);
-            getline(pf[5],pc[5]);
-            getline(pf[6],pc[6]);
-            getline(pf[7],pc[7]);
-            getline(pf[8],pc[8]);
+            
+            for (int i=1; i< get_word_size(w_1); i++) {
+                getline(pf[i], pc[i]);
+            }
             
             for(int i=0; i < get_word_size(w_1); i++){
                 ret_string += pc[i];
@@ -597,6 +590,7 @@ string AsciiConverter::word9(const string font_type, const string& word){
     
     return ret_string;
 }
+
 
 string AsciiConverter::word10(const string font_type, const string& word){
     
@@ -621,15 +615,10 @@ string AsciiConverter::word10(const string font_type, const string& word){
     
     if(pf[0].is_open()){
         while (getline(pf[0],pc[0])){
-            getline(pf[1],pc[1]);
-            getline(pf[2],pc[2]);
-            getline(pf[3],pc[3]);
-            getline(pf[4],pc[4]);
-            getline(pf[5],pc[5]);
-            getline(pf[6],pc[6]);
-            getline(pf[7],pc[7]);
-            getline(pf[8],pc[8]);
-            getline(pf[9],pc[9]);
+            
+            for (int i=1; i< get_word_size(w_1); i++) {
+                getline(pf[i], pc[i]);
+            }
             
             for(int i=0; i < get_word_size(w_1); i++){
                 ret_string += pc[i];
@@ -677,52 +666,52 @@ string AsciiConverter::convertWord0(const string &font_type, const string &word)
     
     switch (count) {
         case 0:
-        processed_word = "Blank word";
-        break;
-        
+            processed_word = "Blank word";
+            break;
+            
         case 1:
-        processed_word = word1(type, processed_word);
-        break;
-        
+            processed_word = word1(type, processed_word);
+            break;
+            
         case 2:
-        processed_word = word2(type, processed_word);
-        break;
-        
+            processed_word = word2(type, processed_word);
+            break;
+            
         case 3:
-        processed_word = word3(type, processed_word);
-        break;
-        
+            processed_word = word3(type, processed_word);
+            break;
+            
         case 4:
-        processed_word = word4(type, processed_word);
-        break;
-        
+            processed_word = word4(type, processed_word);
+            break;
+            
         case 5:
-        processed_word = word5(type, processed_word);
-        break;
-        
+            processed_word = word5(type, processed_word);
+            break;
+            
         case 6:
-        processed_word = word6(type, processed_word);
-        break;
-        
+            processed_word = word6(type, processed_word);
+            break;
+            
         case 7:
-        processed_word = word7(type, processed_word);
-        break;
-        
+            processed_word = word7(type, processed_word);
+            break;
+            
         case 8:
-        processed_word = word8(type, processed_word);
-        break;
-        
+            processed_word = word8(type, processed_word);
+            break;
+            
         case 9:
-        processed_word = word9(type, processed_word);
-        break;
-        
+            processed_word = word9(type, processed_word);
+            break;
+            
         case 10:
-        processed_word = word10(type, processed_word);
-        break;
-        
+            processed_word = word10(type, processed_word);
+            break;
+            
         default:
-        processed_word = "Error";
-        break;
+            processed_word = "Error";
+            break;
     }
     
     return processed_word;
