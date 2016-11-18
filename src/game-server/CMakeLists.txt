@@ -76,5 +76,5 @@ endforeach(file)
 add_custom_target(config ALL)
 add_custom_command(
         TARGET config
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different config.yml ${PROJECT_BINARY_DIR}/bin/config.yml
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/config.yml ${PROJECT_BINARY_DIR}/bin/config.yml
         )
