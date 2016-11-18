@@ -13,14 +13,21 @@
 
 #include <form.h>
 #include <ncurses.h>
+#include <vector>
 
 
 class ChatWindow {
 public:
+    int const SELECT = '\n';
+    int const PADDING_TOP = 2;
+    int const PADDING_LEFT = 3;
+
     explicit ChatWindow(std::function<void(std::string)> onTextEntry)
             : ChatWindow{onTextEntry, 1} {}
 
     ChatWindow(std::function<void(std::string)> onTextEntry, int updateDelay);
+
+    ChatWindow(const std::string &text, std::vector<std::string> menu);
 
     ~ChatWindow();
 
@@ -33,6 +40,12 @@ public:
     void displayText(const std::string &text);
 
     void setOnTextEntry(std::function<void(std::string)> onTextEntry);
+
+    void displayMenu(const std::string &text, std::vector<std::string> menu);
+
+    void displayMenuItem(std::vector<std::string> menu, int index);
+
+    void displayMenuPrompt(const std::string &text);
 
 private:
     void resizeOnShapeChange();
@@ -61,4 +74,3 @@ private:
 
 
 #endif
-
