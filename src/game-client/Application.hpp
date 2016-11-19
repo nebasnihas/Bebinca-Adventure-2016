@@ -16,11 +16,11 @@ public:
     void update();
     void switchToWindow(const std::string& name);
     void addWindow(const std::string& name, Window *window);
-
+    const std::string& getCurrentWindowName();
 private:
     std::unordered_map<std::string, Window*> windows;
     Window* currentWindow = nullptr;
-
+    std::string currentWindowName;
     int w;
     int h;
 };

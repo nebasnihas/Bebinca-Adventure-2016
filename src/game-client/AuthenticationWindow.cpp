@@ -1,4 +1,4 @@
-#include "LoginWindow.hpp"
+#include "AuthenticationWindow.hpp"
 #include <string>
 #include <glog/logging.h>
 #include <boost/algorithm/string.hpp>
@@ -6,19 +6,17 @@
 namespace {
 const int ENTRY_WIDTH = 30;
 const int ENTRY_HEIGHT = 14;
-const int MESSAGE_WINDOW_HEIGHT = 4;
-const int MESSAGE_WINDOW_OFFSET_Y = ENTRY_HEIGHT + 1;
 const int WINDOW_WIDTH = ENTRY_WIDTH + 6; //padding
-const int WINDOW_HEIGHT = MESSAGE_WINDOW_OFFSET_Y + 6;
-const int ENTRY_OFFSET_Y = 2;
+const int WINDOW_HEIGHT = ENTRY_HEIGHT + 6;
+const int ENTRY_OFFSET_Y = 1;
 const int ENTRY_OFFSET_X = (WINDOW_WIDTH - ENTRY_WIDTH) / 2;
 const int FIELD_OFFSET_X = 0;
 const int FIELD_WIDTH = ENTRY_WIDTH - FIELD_OFFSET_X * 2; // need space after offsetting
 
-FIELD* createTitleField() {
+FIELD* createTitleField(const std::string& title) {
     FIELD* usernameLabelField = new_field(1, FIELD_WIDTH, ENTRY_OFFSET_Y, FIELD_OFFSET_X, 0, 0);
     CHECK(usernameLabelField) << "Error creating title label field";
-    set_field_buffer(usernameLabelField, 0, "LOGIN");
+    set_field_buffer(usernameLabelField, 0, title.c_str());
     set_field_just(usernameLabelField, JUSTIFY_CENTER);
     set_field_opts(usernameLabelField, O_STATIC | O_VISIBLE | O_PUBLIC);
     set_field_type(usernameLabelField, TYPE_ALPHA);
@@ -31,11 +29,9 @@ FIELD* createTitleField() {
 FIELD* createUsernameLabelField() {
     FIELD* usernameLabelField = new_field(1, FIELD_WIDTH, ENTRY_OFFSET_Y + 1, FIELD_OFFSET_X, 0, 0);
     CHECK(usernameLabelField) << "Error creating username label field";
-    set_field_buffer(usernameLabelField, 0, "Username");
-    set_field_just(usernameLabelField, JUSTIFY_CENTER);
+    set_field_buffer(usernameLabelField, 0, "Username:");
     set_field_opts(usernameLabelField, O_STATIC | O_VISIBLE | O_PUBLIC);
     set_field_type(usernameLabelField, TYPE_ALPHA);
-    set_field_fore(usernameLabelField, A_UNDERLINE);
     field_opts_off(usernameLabelField, O_AUTOSKIP | O_EDIT | O_ACTIVE);
 
     return usernameLabelField;
@@ -47,6 +43,7 @@ FIELD* createUsernameField() {
     set_field_buffer(usernameField,0, "");
     set_field_opts(usernameField, O_STATIC | O_VISIBLE | O_PUBLIC | O_EDIT | O_ACTIVE);
     set_field_type(usernameField, TYPE_ALNUM);
+    set_field_back(usernameField, A_UNDERLINE);
     field_opts_off(usernameField, O_AUTOSKIP);
 
     return usernameField;
@@ -55,11 +52,9 @@ FIELD* createUsernameField() {
 FIELD* createPasswordLabelField() {
     FIELD* passwordLabelField = new_field(1, FIELD_WIDTH, ENTRY_OFFSET_Y + 4, FIELD_OFFSET_X, 0, 0);
     CHECK(passwordLabelField) << "Error creating password label field";
-    set_field_buffer(passwordLabelField, 0, "Password");
-    set_field_just(passwordLabelField, JUSTIFY_CENTER);
+    set_field_buffer(passwordLabelField, 0, "Password:");
     set_field_opts(passwordLabelField, O_STATIC | O_VISIBLE | O_PUBLIC);
     set_field_type(passwordLabelField, TYPE_ALPHA);
-    set_field_fore(passwordLabelField, A_UNDERLINE);
     field_opts_off(passwordLabelField, O_AUTOSKIP | O_EDIT | O_ACTIVE);
 
     return passwordLabelField;
@@ -70,6 +65,7 @@ FIELD* createPasswordField() {
     CHECK(passwordField) << "Error creating password field";
     set_field_buffer(passwordField, 0, "");
     set_field_opts(passwordField, O_STATIC | O_VISIBLE | O_EDIT | O_ACTIVE);
+    set_field_back(passwordField, A_UNDERLINE);
     //TODO password stars
     set_field_type(passwordField, TYPE_ALNUM);
     field_opts_off(passwordField, O_AUTOSKIP);
@@ -77,23 +73,21 @@ FIELD* createPasswordField() {
     return passwordField;
 }
 
-FIELD* createSubmitField() {
-    FIELD* passwordLabelField = new_field(1, FIELD_WIDTH, ENTRY_OFFSET_Y + 6, FIELD_OFFSET_X, 0, 0);
-    CHECK(passwordLabelField) << "Error creating password label field";
-    set_field_buffer(passwordLabelField, 0, "SUBMIT");
-//    set_field_just(passwordLabelField, JUSTIFY_CENTER);
-    set_field_opts(passwordLabelField, O_STATIC | O_VISIBLE | O_PUBLIC | O_ACTIVE);
-    set_field_type(passwordLabelField, TYPE_ALPHA);
-    set_field_fore(passwordLabelField, A_BOLD);
-    field_opts_off(passwordLabelField, O_AUTOSKIP);
+FIELD* createMessageField() {
+    FIELD* messageField = new_field(2, FIELD_WIDTH, ENTRY_OFFSET_Y + 7, FIELD_OFFSET_X, 0, 0);
+    CHECK(messageField) << "Error creating message field";
+    set_field_buffer(messageField, 0, "");
+    set_field_opts(messageField, O_STATIC | O_VISIBLE | O_PUBLIC | O_WRAP | O_EDIT);
+    field_opts_off(messageField, O_AUTOSKIP | O_ACTIVE);
 
-    return passwordLabelField;
+    return messageField;
 }
+
 }
 
 namespace gui {
 
-LoginWindow::LoginWindow() {
+AuthenticationWindow::AuthenticationWindow(std::string title) : title{std::move(title)} {
     entryWindow = newwin(WINDOW_HEIGHT, WINDOW_WIDTH, 0, 0);
     CHECK(entryWindow) << "Error creating window";
     keypad(entryWindow, true);
@@ -101,14 +95,11 @@ LoginWindow::LoginWindow() {
     entrySubWindow = derwin(entryWindow, ENTRY_HEIGHT, ENTRY_WIDTH, 1, ENTRY_OFFSET_X);
     CHECK(entrySubWindow) << "Error creating sub window";
 
-    messageWindow = derwin(entryWindow, MESSAGE_WINDOW_HEIGHT, ENTRY_WIDTH,
-                            ENTRY_HEIGHT, ENTRY_OFFSET_X);
     createForm();
-
     resize(Size{COLS, LINES});
 }
 
-void LoginWindow::update(int input) {
+void AuthenticationWindow::update(int input) {
     switch(input) {
         case '\t':
         case KEY_DOWN:
@@ -122,8 +113,11 @@ void LoginWindow::update(int input) {
         case '\n':
         case KEY_ENTER:
             form_driver(form, REQ_VALIDATION);
-            processCredentials();
+            form_driver(form, REQ_NEXT_FIELD);
             form_driver(form, REQ_END_LINE);
+            showMessage("");
+            processCredentials();
+            pos_form_cursor(form);
             break;
         case KEY_BACKSPACE:
         case 127:
@@ -143,23 +137,20 @@ void LoginWindow::update(int input) {
     }
 }
 
-void LoginWindow::resize(const gui::Size& maxSize) {
+void AuthenticationWindow::resize(const gui::Size& maxSize) {
     int x = (maxSize.width - WINDOW_WIDTH) / 2;
     int y = (maxSize.height - WINDOW_HEIGHT) / 2;
     mvwin(entryWindow, y, x);
 
     set_form_win(form, entryWindow);
     set_form_sub(form, entrySubWindow);
-
-    box(entryWindow, 0, 0);
 }
 
-WINDOW* LoginWindow::getCursesWindow() {
+WINDOW* AuthenticationWindow::getCursesWindow() {
     return entryWindow;
 }
 
-LoginWindow::~LoginWindow() {
-    delwin(messageWindow);
+AuthenticationWindow::~AuthenticationWindow() {
     unpost_form(form);
     free_form(form);
     for(const auto& field : fields) {
@@ -167,20 +158,21 @@ LoginWindow::~LoginWindow() {
     }
 }
 
-void LoginWindow::redraw() {
-    curs_set(true);
+void AuthenticationWindow::redraw() {
+    box(entryWindow, 0, 0);
     wrefresh(entryWindow);
 }
 
-void LoginWindow::createForm() {
-    fields.push_back(createTitleField());
+void AuthenticationWindow::createForm() {
+    fields.push_back(createTitleField(title));
     fields.push_back(createUsernameLabelField());
     usernameInputField = createUsernameField();
     fields.push_back(usernameInputField);
     fields.push_back(createPasswordLabelField());
     passwordInputField = createPasswordField();
     fields.push_back(passwordInputField);
-    fields.push_back(createSubmitField());
+    messageField = createMessageField();
+    fields.push_back(messageField);
     fields.push_back(nullptr);
 
     form = new_form(fields.data());
@@ -189,21 +181,20 @@ void LoginWindow::createForm() {
     post_form(form);
 }
 
-void LoginWindow::setOnCancel(std::function<void()> callback) {
+void AuthenticationWindow::setOnCancel(std::function<void()> callback) {
     onCancelCallback = callback;
 }
 
-void LoginWindow::setOnInput(std::function<void(const std::string& username, const std::string& password)> callback) {
+void AuthenticationWindow::setOnInput(std::function<void(const std::string& username, const std::string& password)> callback) {
     onInputCallback = callback;
 }
 
-void LoginWindow::showMessage(const std::string& message) {
-    wclear(messageWindow);
-    mvwprintw(messageWindow, 0, 0, message.c_str());
+void AuthenticationWindow::showMessage(const std::string& message) {
+    set_field_buffer(messageField, 0, message.c_str());
     form_driver(form, REQ_END_LINE);
 }
 
-void LoginWindow::processCredentials() {
+void AuthenticationWindow::processCredentials() {
     if(!onInputCallback) {
         showMessage("error");
         return;
@@ -224,6 +215,12 @@ void LoginWindow::processCredentials() {
     }
 
     onInputCallback(username, password);
+}
+
+void AuthenticationWindow::onEnter() {
+    Window::onEnter();
+    curs_set(true);
+    pos_form_cursor(form);
 }
 
 }

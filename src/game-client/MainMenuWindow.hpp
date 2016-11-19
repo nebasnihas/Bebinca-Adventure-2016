@@ -24,6 +24,7 @@ public:
     virtual WINDOW* getCursesWindow() override;
     virtual void resize(const Size& size) override;
     virtual void redraw() override;
+    virtual void onEnter() override;
 
     void setOnSelection(std::function<void(MainMenuChoice)> callback);
 private:

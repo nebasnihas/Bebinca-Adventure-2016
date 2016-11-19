@@ -1,5 +1,5 @@
-#ifndef ADVENTURE2016_LOGINWINDOW_HPP
-#define ADVENTURE2016_LOGINWINDOW_HPP
+#ifndef ADVENTURE2016_AUTHENTICATIONWINDOW_HPP
+#define ADVENTURE2016_AUTHENTICATIONWINDOW_HPP
 
 #include <form.h>
 #include <vector>
@@ -9,15 +9,16 @@
 
 namespace gui{
 
-class LoginWindow : public Window {
+class AuthenticationWindow : public Window {
 public:
-    LoginWindow();
-    ~LoginWindow();
+    AuthenticationWindow(std::string title);
+    ~AuthenticationWindow();
 
     virtual void update(int input) override;
     virtual void resize(const Size& maxSize) override;
     virtual WINDOW* getCursesWindow() override;
     virtual void redraw() override;
+    virtual void onEnter() override;
 
     void showMessage(const std::string& message);
     void setOnCancel(std::function<void()> callback);
@@ -26,13 +27,14 @@ private:
     void createForm();
     void processCredentials();
 
+    std::string title;
     WINDOW* entryWindow;
     WINDOW* entrySubWindow;
-    WINDOW* messageWindow;
     FORM* form;
     std::vector<FIELD*> fields;
     FIELD* usernameInputField;
     FIELD* passwordInputField;
+    FIELD* messageField;
 
     std::function<void()> onCancelCallback;
     std::function<void(const std::string& username, const std::string& password)> onInputCallback;

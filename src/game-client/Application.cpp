@@ -20,7 +20,7 @@ namespace gui {
 Application::Application() {
     initscr();
     noecho();
-    raw();
+    cbreak();
     halfdelay(1);
 
     for(short i = 0; i < NUM_COLOURS; i++) {
@@ -37,11 +37,19 @@ Application::Application() {
 
 void Application::switchToWindow(const std::string& name) {
     CHECK(windows.count(name) == 1) << "No window with name: " << name;
+
     clear();
     refresh();
+
+    if (currentWindow) {
+        currentWindow->onExit();
+    }
+
     currentWindow = windows.at(name);
-    currentWindow->resize(Size{w, h});
+    currentWindow->onEnter();
     currentWindow->redraw();
+
+    currentWindowName = name;
 }
 
 void Application::update() {
@@ -76,6 +84,10 @@ void Application::addWindow(const std::string& name, Window *window) {
     if (currentWindow == nullptr) {
         switchToWindow(name);
     }
+}
+
+const std::string& Application::getCurrentWindowName() {
+    return currentWindowName;
 }
 
 }

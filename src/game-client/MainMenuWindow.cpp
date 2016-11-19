@@ -90,7 +90,8 @@ MainMenuWindow::~MainMenuWindow() {
 }
 
 void MainMenuWindow::redraw() {
-    curs_set(0);
+    box(menuWindow, 0, 0);
+    mvwprintw(menuWindow, 0, TITLE_OFFSET_X, TITLE.c_str());
     wrefresh(menuWindow);
 }
 
@@ -131,13 +132,15 @@ void MainMenuWindow::recreate() {
 
     set_menu_win(menu, menuWindow);
     set_menu_sub(menu, menuSubWindow);
-
-    box(menuWindow, 0, 0);
-    mvwprintw(menuWindow, 0, TITLE_OFFSET_X, TITLE.c_str());
 }
 
 void MainMenuWindow::setOnSelection(std::function<void(MainMenuChoice)> callback) {
     this->callback = callback;
+}
+
+void MainMenuWindow::onEnter() {
+    Window::onEnter();
+    curs_set(false);
 }
 
 }

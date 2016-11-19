@@ -16,6 +16,8 @@ public:
     virtual void redraw() = 0;
     virtual void resize(const Size& maxSize) = 0;
     virtual WINDOW* getCursesWindow() = 0;
+    virtual void onEnter(){};
+    virtual void onExit(){};
     virtual ~Window(){};
 };
 
