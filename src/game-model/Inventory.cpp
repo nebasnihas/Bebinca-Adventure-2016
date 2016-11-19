@@ -2,15 +2,15 @@
 #include "../../include/game/Inventory.hpp"
 
 Inventory::Inventory() {
-    inventory.reserve(MAX_ITEMS);
+    inventory = std::vector<Object>();
 }
 
 std::string Inventory::getString() const {
     std::string inventoryString = "";
 
     if (!inventory.empty()) {
-        for (const auto& item : inventory) {
-            inventoryString += item.first + " x" + std::to_string(item.second) + "\n";
+        for (const auto& object : inventory) {
+            inventoryString += object.getName() + "\n";
         }
     } else {
         inventoryString = "Your inventory is empty.";
@@ -19,7 +19,7 @@ std::string Inventory::getString() const {
     return inventoryString;
 }
 
-std::unordered_map<std::string, int> Inventory::get() const {
+std::vector<Object> Inventory::get() const {
     return inventory;
 }
 
@@ -27,25 +27,26 @@ int Inventory::getSize() const {
     return inventory.size();
 }
 
-void Inventory::addItem(const std::string &item) {
-    bool inventoryNotFull = getSize() < MAX_ITEMS;
-    bool itemNotFullyStacked = inventory[item] < MAX_PER_STACKED_ITEM;
+int Inventory::getWeight() const {
+    int weight = 0;
 
-    if (inventoryNotFull && itemNotFullyStacked) {
-        inventory[item]++;
+    for (const auto& object : inventory) {
+        weight += object.getWeight();
+    }
+
+    return weight;
+}
+
+void Inventory::addObject(const Object &object) {
+    if ((getWeight() + object.getWeight()) < MAX_WEIGHT) {
+        inventory.push_back(object);
     }
 }
 
-void Inventory::removeItem(const std::string &item) {
-    bool stackedItem = inventory[item] > 1;
+void Inventory::removeObject(const Object &object) {
 
-    if (stackedItem) {
-        inventory[item]--;
-    } else {
-        inventory.erase(item);
-    }
 }
 
-void Inventory::removeAllItems() {
+void Inventory::removeAllObjects() {
     inventory.clear();
 }

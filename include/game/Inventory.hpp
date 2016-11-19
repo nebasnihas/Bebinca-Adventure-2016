@@ -1,23 +1,26 @@
 #ifndef INVENTORY_H
 #define INVENTORY_H
 
+#include "Object.hpp"
 #include <unordered_map>
 
 const int MAX_ITEMS = 30;
 const int MAX_PER_STACKED_ITEM = 20;
+const int MAX_WEIGHT = 20;
 
 class Inventory {
 private:
-    std::unordered_map<std::string, int> inventory;
+    std::vector<Object> inventory;
 
 public:
     Inventory();
     std::string getString() const;
-    std::unordered_map<std::string, int> get() const;
+    std::vector<Object> get() const;
     int getSize() const;
-    void addItem(const std::string &item);
-    void removeItem(const std::string &item);
-    void removeAllItems();
+    int getWeight() const;
+    void addObject(const Object &object);
+    void removeObject(const Object &object);
+    void removeAllObjects();
 };
 
 #endif

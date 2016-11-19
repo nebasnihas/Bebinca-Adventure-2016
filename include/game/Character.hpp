@@ -1,6 +1,7 @@
 #ifndef CHARACTER_H
 #define CHARACTER_H
 
+#include "Object.hpp"
 #include "Attributes.hpp"
 #include "Inventory.hpp"
 #include <game/StatusEffect.hpp>
@@ -34,6 +35,8 @@ protected:
     int maxMana = 100;
     int currentMana = 100;
     Inventory inventory;
+    Object armorObject;
+    Object weaponObject;
     std::string hit;
     int gold;
     CharacterState state = CharacterState::IDLE;
@@ -71,6 +74,8 @@ public:
     int getCurrentMana() const;
     int getGold() const;
     Inventory& getInventory();
+    Object getArmorObject() const;
+    Object getWeaponObject() const;
     CharacterState getState() const;
     std::vector<std::shared_ptr<StatusEffect>>& getStatusEffects();
 	MessageBuffer getOutputBuffer();
@@ -83,6 +88,8 @@ public:
     void setArmor(int armor);
     void setGold(int gold);
     void setInventory(const std::string& objectID);
+    void setArmorObject(const Object object);
+    void setWeaponObject(const Object object);
     void setState(CharacterState state);
     void setLevel(int newLevel);
     void setMaxHealth(int maxHealth);

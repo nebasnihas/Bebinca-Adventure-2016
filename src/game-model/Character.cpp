@@ -24,7 +24,8 @@ Character::Character(const std::string& id,
                     , armor(armor)
                     , gold(gold)
                     , areaID(areaID)
-
+                    , armorObject(Object{})
+                    , weaponObject(Object{})
                     {
                        inventory = Inventory(inventory); //Unsure if this works/keeps consistency (Understatement of the year)
                     }
@@ -88,6 +89,14 @@ Inventory& Character::getInventory() {
     return inventory;
 }
 
+Object Character::getArmorObject() const {
+    return armorObject;
+}
+
+Object Character::getWeaponObject() const {
+    return weaponObject;
+}
+
 std::vector<std::shared_ptr<StatusEffect>>& Character::getStatusEffects() {
     return statusEffects;
 }
@@ -144,7 +153,19 @@ void Character::setCurrentMana(int currentMana) {
 
 void Character::setInventory(const std::string& objectID) {
     Inventory inventoryNew = this->inventory;
-    inventoryNew.addItem(objectID);
+//    inventoryNew.addObject(objectID);
+}
+
+void Character::setArmorObject(const Object object) {
+    if (object.getType() == "armor") {
+        this->armorObject = object;
+    }
+}
+
+void Character::setWeaponObject(const Object object) {
+    if (object.getType() == "weapon") {
+        this->weaponObject = object;
+    }
 }
 
 void Character::increaseLevel() {

@@ -318,7 +318,7 @@ void GameModel::manageDeadCharacters() {
             character.setState(CharacterState::IDLE);
             character.setCurrentHealth(character.getMaxHealth());
             character.setCurrentMana(character.getMaxMana());
-            character.getInventory().removeAllItems();
+            character.getInventory().removeAllObjects();
         }
     }
 }

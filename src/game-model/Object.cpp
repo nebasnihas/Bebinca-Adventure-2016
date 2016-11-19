@@ -4,6 +4,8 @@
 // Constructors
 //---------------*
 
+Object::Object() { }
+
 Object::Object(	const std::vector<std::string>& attributes,
 				int cost,
 				const std::vector<std::string>& extra,
