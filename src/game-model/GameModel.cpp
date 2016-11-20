@@ -256,8 +256,9 @@ bool GameModel::engageCharacterInCombat(const std::string& characterID, const st
     battleInstance.addCharacterToNewTeam(*c2);
     combatManager.loadCombatInstance(battleInstance);
 
-	c1->pushToBuffer((boost::format(GameStrings::get(GameStringKeys::COMBAT_ENGAGE)) % target).str());
-	c2->pushToBuffer((boost::format(GameStrings::get(GameStringKeys::COMBAT_ENGAGED)) % characterID).str());
+	auto stringInfo = StringInfo{characterID, target, 0};
+	c1->pushToBuffer(GameStrings::getFormatted(GameStringKeys::COMBAT_ENGAGE, stringInfo));
+	c2->pushToBuffer(GameStrings::getFormatted(GameStringKeys::COMBAT_ENGAGED, stringInfo));
 
     return true;
 }

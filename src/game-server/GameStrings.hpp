@@ -83,6 +83,16 @@ public:
 
 	static std::string getFormatted(const std::string key, const StringInfo stringInfo) {
 		std::string formatString = StringResourceImporter::getInstance().getString(key);
+		replacePlaceholders(formatString, stringInfo);
+		return formatString;
+	}
+
+	static std::string format(std::string message, const StringInfo stringInfo) {
+		replacePlaceholders(message, stringInfo);
+		return message;
+	}
+
+	static void replacePlaceholders(std::string &formatString, const StringInfo &stringInfo) {
 		std::string::size_type index = 0;
 		if ((index = formatString.find(GameStringKeys::SOURCE_KEY, 0)) != std::string::npos) {
 			formatString.replace(index, GameStringKeys::SOURCE_KEY.size(), stringInfo.sourceName );
@@ -96,12 +106,7 @@ public:
 		if ((index = formatString.find(GameStringKeys::EFFECT_KEY, 0)) != std::string::npos) {
 			formatString.replace(index, GameStringKeys::EFFECT_KEY.size(), std::to_string(stringInfo.effect));
 		}
-
-		return formatString;
 	}
-
-
-
 };
 
 

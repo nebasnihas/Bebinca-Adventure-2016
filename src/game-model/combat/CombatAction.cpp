@@ -36,9 +36,10 @@ void CombatAttack::execute(Character& source, Character& target) {
     // TODO: Move this formula somewhere configurable
     auto damage = 10 * sourceLevel;
     dealDamage(target, damage);
+	auto stringInfo = StringInfo{source.getName(), target.getName(), damage};
 
-	auto sourceMessage = (boost::format(GameStrings::get(GameStringKeys::PLAYER_ATTACKS)) % target.getName() % damage).str();
-	auto targetMessage = GameStrings::getFormatted(GameStringKeys::PLAYER_ATTACKED, StringInfo{source.getName(), target.getName(), damage});
+	auto sourceMessage = GameStrings::getFormatted(GameStringKeys::PLAYER_ATTACKS, stringInfo);
+	auto targetMessage = GameStrings::getFormatted(GameStringKeys::PLAYER_ATTACKED, stringInfo);
 	source.pushToBuffer(sourceMessage);
 	target.pushToBuffer(targetMessage);
 }
