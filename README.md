@@ -1,95 +1,65 @@
 # Bebinca - Text Adventure 2016
 
 The experience of a lifetime awaits! Bebinca offers you a chance to roam through vast regions from the world of Mother Goose to abroad.
-..Add more here
+Interact with different players by shouting words back and forth, or whispering them to a teammate nearby. Level up with the built-in combat system to have a chance battle your friends and foes, cast spells, swap bodies all to become the most powerful being to set foot in the universe.
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+To get started, the player must first run the game server. After that has loaded, up to 8 players will be able to join the adventure
+at once. The usage will be as follows:
 
-### Prerequisites
-
-What things you need to install the software and how to install them
-
-```
-Give examples
-```
-
-### Installing
-
-A step by step series of examples that tell you have to get a development env running
-
-Say what the step will be
+i) Clone the repository
 
 ```
-Give the example
+https://csil-git1.cs.surrey.sfu.ca/373-16-3-bebinca/adventure2016.git
 ```
 
-And repeat
+
+ii) Create a new directory for building and change into it
 
 ```
-until finished
+mkdir build
+cd build
 ```
 
-End with an example of getting some data out of the system or using it for a little demo
-
-## Running the tests
-
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
+iii) Run CMake with the path to the source and run make
 
 ```
-Give an example
+cmake ../adventure2016
+make
 ```
 
-### And coding style tests
-
-Explain what these tests test and why
+iv) Run the game-server executable with the config.yml file
 
 ```
-Give an example
+./game-server config.yaml
 ```
 
-## Deployment
+v) Run the game-client executable and specify the same port and IP as the server
 
-Add additional notes about how to deploy this on a live system
+```
+./game-client localhost 4000
+```
 
-## Built With
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+### Requirements
 
-## Contributing
+You MUST install the following software on your computer:
 
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
+CMake (minimum version 3.5.1)
+libboost-all-dev (Boost libraries)
+libncurses-dev (ncurses library)
 
-## Versioning
+### 
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
 
 ## Authors
 
 * **Brandon Chong**
-* **Joe Tsui**
+* **Yui Hei Tsui**
 * **Melissa Wang**
 * **Aaryaman Girish**
 * **Nihas Nebaskhan**
 * **Zachary Cesaretti**
 * **Paul Madeya**
 * **Josh Arik Miguel Fernandez** 
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
-## Acknowledgments
-
-* Hat tip to anyone who's code was used
-* Inspiration
-* etc
