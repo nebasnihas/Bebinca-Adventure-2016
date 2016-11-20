@@ -65,6 +65,7 @@ const std::string SOURCE_KEY = "$n";
 const std::string TARGET_KEY = "$N";
 const std::string PRONOUN_KEY = "$E";
 const std::string EFFECT_KEY = "$d";
+const std::string ACTION_KEY = "$a";
 
 const std::string GENERIC_PRONOUN = "they";
 }
@@ -73,6 +74,7 @@ struct StringInfo {
 	std::string sourceName;
 	std::string targetName;
 	int effect;
+	std::string actionName;
 };
 
 class GameStrings {
@@ -95,7 +97,7 @@ public:
 	static void replacePlaceholders(std::string &formatString, const StringInfo &stringInfo) {
 		std::string::size_type index = 0;
 		if ((index = formatString.find(GameStringKeys::SOURCE_KEY, 0)) != std::string::npos) {
-			formatString.replace(index, GameStringKeys::SOURCE_KEY.size(), stringInfo.sourceName );
+			formatString.replace(index, GameStringKeys::SOURCE_KEY.size(), stringInfo.sourceName);
 		}
 		if ((index = formatString.find(GameStringKeys::TARGET_KEY, 0)) != std::string::npos) {
 			formatString.replace(index, GameStringKeys::TARGET_KEY.size(), stringInfo.targetName);
@@ -105,6 +107,9 @@ public:
 		}
 		if ((index = formatString.find(GameStringKeys::EFFECT_KEY, 0)) != std::string::npos) {
 			formatString.replace(index, GameStringKeys::EFFECT_KEY.size(), std::to_string(stringInfo.effect));
+		}
+		if ((index = formatString.find(GameStringKeys::ACTION_KEY, 0)) != std::string::npos) {
+			formatString.replace(index, GameStringKeys::ACTION_KEY.size(), stringInfo.actionName);
 		}
 	}
 };

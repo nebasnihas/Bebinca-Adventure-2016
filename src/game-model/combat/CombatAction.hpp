@@ -4,6 +4,7 @@
 #include <string>
 #include "CharacterInstance.hpp"
 #include "game/Spell.hpp"
+#include "../../game-server/GameStrings.hpp"
 
 class CombatAction {
 
@@ -45,7 +46,8 @@ public:
 private:
 
     const Spell& spell;
-
+	void castOffenseSpell(Character &source, Character &target, int power, const StringInfo &stringInfo) const;
+	void castDefenseSpell(Character &source, Character &target, int power, const StringInfo &stringInfo) const;
 };
 
 #endif

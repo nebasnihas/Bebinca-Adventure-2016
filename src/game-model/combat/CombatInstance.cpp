@@ -22,8 +22,10 @@ void CombatInstance::update() {
             auto& action = iter->second;
             action->execute(characterInstance.getCharacterRef(), characterInstance.getTarget().getCharacterRef());
         } else {
-			characterInstance.getCharacterRef().pushToBuffer((boost::format(GameStrings::get(GameStringKeys::SPELL_UNKNOWN))
-															  % characterInstance.getCombatActionID()).str());
+//			characterInstance.getCharacterRef().pushToBuffer((boost::format(GameStrings::get(GameStringKeys::SPELL_UNKNOWN))
+//															  % characterInstance.getCombatActionID()).str());
+			characterInstance.getCharacterRef().pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_UNKNOWN,
+																			   StringInfo{"", "", 0, characterInstance.getCombatActionID()}));
         }
 
 		//TODO: Extract default case

@@ -256,7 +256,7 @@ bool GameModel::engageCharacterInCombat(const std::string& characterID, const st
     battleInstance.addCharacterToNewTeam(*c2);
     combatManager.loadCombatInstance(battleInstance);
 
-	auto stringInfo = StringInfo{characterID, target, 0};
+	auto stringInfo = StringInfo{characterID, target, 0, ""};
 	c1->pushToBuffer(GameStrings::getFormatted(GameStringKeys::COMBAT_ENGAGE, stringInfo));
 	c2->pushToBuffer(GameStrings::getFormatted(GameStringKeys::COMBAT_ENGAGED, stringInfo));
 
@@ -397,6 +397,8 @@ void GameModel::castSpell(const std::string& sourceID, const std::string& target
 			spellCast.execute(*getCharacterByID(sourceID), *getCharacterByID(targetID));
 		}
 	} else {
-		getCharacterByID(sourceID)->pushToBuffer((boost::format(GameStrings::get(GameStringKeys::SPELL_UNKNOWN)) % spellID).str());
+//		getCharacterByID(sourceID)->pushToBuffer((boost::format(GameStrings::get(GameStringKeys::SPELL_UNKNOWN)) % spellID).str());
+		getCharacterByID(sourceID)->pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_UNKNOWN,
+																		   StringInfo{sourceID, targetID, 0, spellID}));
 	}
 }
