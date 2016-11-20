@@ -12,6 +12,11 @@ const int ENTRY_OFFSET_Y = 1;
 const int ENTRY_OFFSET_X = (WINDOW_WIDTH - ENTRY_WIDTH) / 2;
 const int FIELD_OFFSET_X = 0;
 const int FIELD_WIDTH = ENTRY_WIDTH - FIELD_OFFSET_X * 2; // need space after offsetting
+int loadingSpinnerIndex;
+const int NUM_SPINNER_STATES = 4;
+std::string loadingSpinnerStates[NUM_SPINNER_STATES] = {"-", "\\", "|", "/"};
+std::string password;
+std::string passwordFill{"********************************"}; //Fill constructor doesnt work for some reason?
 
 FIELD* createTitleField(const std::string& title) {
     FIELD* usernameLabelField = new_field(1, FIELD_WIDTH, ENTRY_OFFSET_Y, FIELD_OFFSET_X, 0, 0);
@@ -64,10 +69,8 @@ FIELD* createPasswordField() {
     FIELD* passwordField = new_field(1, FIELD_WIDTH, ENTRY_OFFSET_Y + 5, FIELD_OFFSET_X, 0, 0);
     CHECK(passwordField) << "Error creating password field";
     set_field_buffer(passwordField, 0, "");
-    set_field_opts(passwordField, O_STATIC | O_VISIBLE | O_EDIT | O_ACTIVE);
+    set_field_opts(passwordField, O_STATIC | O_VISIBLE | O_PUBLIC | O_EDIT | O_ACTIVE);
     set_field_back(passwordField, A_UNDERLINE);
-    //TODO password stars
-    set_field_type(passwordField, TYPE_ALNUM);
     field_opts_off(passwordField, O_AUTOSKIP);
 
     return passwordField;
@@ -81,6 +84,17 @@ FIELD* createMessageField() {
     field_opts_off(messageField, O_AUTOSKIP | O_ACTIVE);
 
     return messageField;
+}
+
+FIELD* createLoadingField() {
+    FIELD* loadingField = new_field(1, FIELD_WIDTH, ENTRY_OFFSET_Y + 9, FIELD_OFFSET_X, 0, 0);
+    CHECK(loadingField) << "Error creating loading field";
+    set_field_just(loadingField, JUSTIFY_CENTER);
+    set_field_opts(loadingField, O_STATIC | O_VISIBLE | O_PUBLIC);
+    set_field_fore(loadingField, A_BOLD);
+    field_opts_off(loadingField, O_AUTOSKIP | O_EDIT | O_ACTIVE);
+
+    return loadingField;
 }
 
 }
@@ -115,24 +129,27 @@ void AuthenticationWindow::update(int input) {
             form_driver(form, REQ_VALIDATION);
             form_driver(form, REQ_NEXT_FIELD);
             form_driver(form, REQ_END_LINE);
-            showMessage("");
+
             processCredentials();
             pos_form_cursor(form);
-            break;
-        case KEY_BACKSPACE:
-        case 127:
-            form_driver(form, REQ_DEL_PREV);
-            form_driver(form, REQ_END_LINE);
-            break;
-        case KEY_DC:
-            form_driver(form, REQ_DEL_CHAR);
             break;
         case 27:
             if (onCancelCallback) {
                 onCancelCallback();
             }
+        case KEY_BACKSPACE:
+        case 127:
+            form_driver(form, REQ_DEL_PREV);
+            form_driver(form, REQ_END_LINE);
+            if (current_field(form) == passwordInputField) {
+                updatePasswordField(false);
+            }
+            break;
         default:
             form_driver(form, input);
+            if (current_field(form) == passwordInputField) {
+                updatePasswordField(true);
+            }
             break;
     }
 }
@@ -160,6 +177,13 @@ AuthenticationWindow::~AuthenticationWindow() {
 
 void AuthenticationWindow::redraw() {
     box(entryWindow, 0, 0);
+
+    if(isLoading) {
+        loadingSpinnerIndex++;
+        loadingSpinnerIndex %= NUM_SPINNER_STATES;
+        set_field_buffer(loadingField, 0, loadingSpinnerStates[loadingSpinnerIndex].c_str());
+    }
+
     wrefresh(entryWindow);
 }
 
@@ -173,6 +197,8 @@ void AuthenticationWindow::createForm() {
     fields.push_back(passwordInputField);
     messageField = createMessageField();
     fields.push_back(messageField);
+    loadingField = createLoadingField();
+    fields.push_back(loadingField);
     fields.push_back(nullptr);
 
     form = new_form(fields.data());
@@ -191,7 +217,8 @@ void AuthenticationWindow::setOnInput(std::function<void(const std::string& user
 
 void AuthenticationWindow::showMessage(const std::string& message) {
     set_field_buffer(messageField, 0, message.c_str());
-    form_driver(form, REQ_END_LINE);
+    set_field_buffer(loadingField, 0, "");
+    isLoading = false;
 }
 
 void AuthenticationWindow::processCredentials() {
@@ -207,20 +234,52 @@ void AuthenticationWindow::processCredentials() {
         return;
     }
 
-    auto password =  std::string{field_buffer(passwordInputField, 0), FIELD_WIDTH};
-    boost::trim(password);
     if (password.empty()) {
         showMessage("Must enter password");
         return;
     }
 
     onInputCallback(username, password);
+    showMessage("Connecting...");
+    isLoading = true;
 }
 
 void AuthenticationWindow::onEnter() {
     Window::onEnter();
     curs_set(true);
     pos_form_cursor(form);
+}
+
+void AuthenticationWindow::onExit() {
+    Window::onExit();
+    showMessage("");
+    isLoading = false;
+}
+
+void AuthenticationWindow::updatePasswordField(bool characterAdded) {
+    form_driver(form, REQ_VALIDATION);
+    //delete chracter from password
+    if( !(characterAdded || password.empty()) ) {
+        password.pop_back();
+        redrawPasswordField();
+        return;
+    }
+
+    auto fieldBuff = std::string{field_buffer(passwordInputField, 0), FIELD_WIDTH};
+    boost::trim(fieldBuff);
+    if (fieldBuff.empty()) {
+        return;
+    }
+
+    auto lastChar = fieldBuff.back();
+    password += lastChar;
+
+    redrawPasswordField();
+}
+
+void AuthenticationWindow::redrawPasswordField() {
+    set_field_buffer(passwordInputField, 0, passwordFill.substr(0, password.length()).c_str());
+    form_driver(form, REQ_END_FIELD);
 }
 
 }

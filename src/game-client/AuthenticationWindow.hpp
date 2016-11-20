@@ -19,6 +19,7 @@ public:
     virtual WINDOW* getCursesWindow() override;
     virtual void redraw() override;
     virtual void onEnter() override;
+    virtual void onExit() override;
 
     void showMessage(const std::string& message);
     void setOnCancel(std::function<void()> callback);
@@ -26,6 +27,8 @@ public:
 private:
     void createForm();
     void processCredentials();
+    void updatePasswordField(bool characterAdded);
+    void redrawPasswordField();
 
     std::string title;
     WINDOW* entryWindow;
@@ -35,6 +38,8 @@ private:
     FIELD* usernameInputField;
     FIELD* passwordInputField;
     FIELD* messageField;
+    FIELD* loadingField;
+    bool isLoading = false;
 
     std::function<void()> onCancelCallback;
     std::function<void(const std::string& username, const std::string& password)> onInputCallback;
