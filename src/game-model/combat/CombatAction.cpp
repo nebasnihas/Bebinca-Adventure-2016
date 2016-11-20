@@ -38,7 +38,7 @@ void CombatAttack::execute(Character& source, Character& target) {
     dealDamage(target, damage);
 
 	auto sourceMessage = (boost::format(GameStrings::get(GameStringKeys::PLAYER_ATTACKS)) % target.getName() % damage).str();
-	auto targetMessage = (boost::format(GameStrings::get(GameStringKeys::PLAYER_ATTACKED)) % damage % source.getName()).str();
+	auto targetMessage = GameStrings::getFormatted(GameStringKeys::PLAYER_ATTACKED, StringInfo{source.getName(), target.getName(), damage});
 	source.pushToBuffer(sourceMessage);
 	target.pushToBuffer(targetMessage);
 }

@@ -33,7 +33,7 @@ strings:
  combat-engage-issue: 'You engage %s in battle'
  combat-engage-receive: 'You have been engaged in battle by %s'
  combat-attack-issue: 'You attack %s and deal %d damage'
- combat-attack-receive: 'You take %d damage from %s'
+ combat-attack-receive: 'You take %d damage from $n'
  combat-attack-id: 'attack'
  combat-result-victory: 'You won the battle'
  combat-result-loss: 'You were killed and lost the battle'

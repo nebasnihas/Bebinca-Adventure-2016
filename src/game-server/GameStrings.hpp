@@ -36,10 +36,6 @@ const std::string USERNAME_TOO_LONG = "username-too-long";
 const std::string USERNAME_INVALD = "username-invalid";
 
 const std::string PLAYER_KICKED = "player-kicked";
-const std::string GLOBAL_CHANNEL = "global-tag";
-const std::string AREA_CHANNEL = "area-tag";
-const std::string PRIVATE_CHANNEL = "private-tag";
-
 
 const std::string COMBAT_ENGAGE = "combat-engage-issue";
 const std::string COMBAT_ENGAGED = "combat-engage-receive";
@@ -64,13 +60,47 @@ const std::string SPELL_GENERIC_TARGET = "spell-generic-target";
 
 const std::string STATUS_EFFECT_END = "status-effect-expiry";
 const std::string CHAR_STATUS = "character-status";
+
+const std::string SOURCE_KEY = "$n";
+const std::string TARGET_KEY = "$N";
+const std::string PRONOUN_KEY = "$E";
+const std::string EFFECT_KEY = "$d";
+
+const std::string GENERIC_PRONOUN = "they";
 }
+
+struct StringInfo {
+	std::string sourceName;
+	std::string targetName;
+	int effect;
+};
 
 class GameStrings {
 public:
     static std::string get(const std::string& key) {
         return StringResourceImporter::getInstance().getString(key);
     }
+
+	static std::string getFormatted(const std::string key, const StringInfo stringInfo) {
+		std::string formatString = StringResourceImporter::getInstance().getString(key);
+		std::string::size_type index = 0;
+		if ((index = formatString.find(GameStringKeys::SOURCE_KEY, 0)) != std::string::npos) {
+			formatString.replace(index, GameStringKeys::SOURCE_KEY.size(), stringInfo.sourceName );
+		}
+		if ((index = formatString.find(GameStringKeys::TARGET_KEY, 0)) != std::string::npos) {
+			formatString.replace(index, GameStringKeys::TARGET_KEY.size(), stringInfo.targetName);
+		}
+		if ((index = formatString.find(GameStringKeys::PRONOUN_KEY, 0)) != std::string::npos) {
+			formatString.replace(index, GameStringKeys::PRONOUN_KEY.size(), GameStringKeys::GENERIC_PRONOUN);
+		}
+		if ((index = formatString.find(GameStringKeys::EFFECT_KEY, 0)) != std::string::npos) {
+			formatString.replace(index, GameStringKeys::EFFECT_KEY.size(), std::to_string(stringInfo.effect));
+		}
+
+		return formatString;
+	}
+
+
 
 };
 
