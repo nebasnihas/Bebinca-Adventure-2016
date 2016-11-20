@@ -4,10 +4,10 @@
 //
 
 #include "Authenticator.hpp"
+#include "GameStrings.hpp"
+#include <glog/logging.h>
 #include <fstream>
-#include <sys/types.h>
 #include <sys/stat.h>
-#include <unistd.h>
 //#include <boost/filesystem.hpp> does not compile
 
 
@@ -26,55 +26,75 @@
  world
  */
 
+namespace {
+const std::string SAVE_LOCATION = "savefiles/";
+const std::string USERNAME_KEY = "username";
+const std::string PASSWORD_KEY = "password";
+const std::string ROLE_FLAGS_KEY = "roleflags";
+const int DEFAULT_ROLE_FLAGS = (int)PlayerRole::NORMAL;
+}
+
 std::string Authenticator::get_saveloc(const std::string& user){
-    std::string send_loc = "savefiles/" + user + ".yml";
+    std::string send_loc = SAVE_LOCATION + user + ".yml";
     return send_loc;
 }
 
-protocols::LoginResponseCode Authenticator::login(const std::string& username, const std::string& password) {
-    
-    std::string file_user, file_pass; // vars to store file data
-    std::string savefile_name = get_saveloc(username);
-    
+AuthResult<protocols::LoginResponseCode> Authenticator::login(const std::string& username, const std::string& password) {
     if (username.length() > USERNAME_MAX_LENGTH) {
-        return protocols::LoginResponseCode::INVALID_CREDENTIALS;
+        return {protocols::LoginResponseCode::INVALID_CREDENTIALS};
     }
-    
+
+    std::string savefile_name = get_saveloc(username);
     if(!save_file_exists(savefile_name)){
-        //check if the save file exists
-        return protocols::LoginResponseCode::USERNAME_NOT_FOUND;
+        return {protocols::LoginResponseCode::USERNAME_NOT_FOUND};
     }
-        
-    //Load the yml file
+
     YAML::Node user_yaml = YAML::LoadFile(savefile_name);
-        
-    file_user = user_yaml["username"].as<std::string>();
-    file_pass = user_yaml["password"].as<std::string>();
-        
-    //Check if credentials match
-    if(file_user == username && file_pass == password){
-        return protocols::LoginResponseCode::LOGIN_OK;
+    auto file_user = user_yaml[USERNAME_KEY].as<std::string>();
+    auto file_pass = user_yaml[PASSWORD_KEY].as<std::string>();
+    auto roles_node = user_yaml[ROLE_FLAGS_KEY];
+    int roles = DEFAULT_ROLE_FLAGS;
+    if (!roles_node) {
+        //Add versioning?
+        LOG(WARNING) << "User:" << file_user << " is using old save file structure";
+        set_savefilevals(file_user, file_pass);
     } else {
-        return protocols::LoginResponseCode::INVALID_CREDENTIALS;
+        roles = roles_node.as<int>();
+    }
+
+
+    if(file_user == username && file_pass == password){
+        AccountInfo userAccount;
+        userAccount.username = file_user;
+        userAccount.playerRoleFlags = roles;
+        return {protocols::LoginResponseCode::LOGIN_OK, userAccount};
+    } else {
+        return {protocols::LoginResponseCode::INVALID_CREDENTIALS};
     }
 
 }
 
-protocols::RegistrationResponseCode Authenticator::registerAccount(const std::string& username, const std::string& password) {
-    
-    std::string savefile_name = get_saveloc(username);
-    
+AuthResult<protocols::RegistrationResponseCode> Authenticator::registerAccount(const std::string& username,
+                                                                               const std::string& password) {
     if (username.length() > USERNAME_MAX_LENGTH) {
-        return protocols::RegistrationResponseCode::USERNAME_TOO_LONG;
+        return {protocols::RegistrationResponseCode::USERNAME_TOO_LONG};
     }
-    
+
+    if (username == GameStrings::get(GameStringKeys::SERVER_NAME)) {
+        return {protocols::RegistrationResponseCode::USERNAME_INVALID};
+    }
+
+    std::string savefile_name = get_saveloc(username);
     if(save_file_exists(savefile_name)){
-        return protocols::RegistrationResponseCode::USERNAME_EXISTS;
+        return {protocols::RegistrationResponseCode::USERNAME_EXISTS};
     }
     
     set_savefilevals(username, password);
-    
-    return protocols::RegistrationResponseCode::REGISTRATION_OK;
+    AccountInfo userAccount;
+    userAccount.username = username;
+    userAccount.playerRoleFlags = DEFAULT_ROLE_FLAGS;
+
+    return {protocols::RegistrationResponseCode::REGISTRATION_OK, userAccount};
 }
 
 bool Authenticator::save_file_exists(const std::string& user){
@@ -97,7 +117,7 @@ void Authenticator::set_savefilevals(const std::string& user, const std::string&
 
     //Check for directory if does not exist then create it.
     struct stat stct = {0};
-    const char location[] = "savefiles/";
+    auto location = SAVE_LOCATION.c_str();
     if(stat(location, &stct) == -1){
         mkdir(location,0700);
     }
@@ -108,10 +128,12 @@ void Authenticator::set_savefilevals(const std::string& user, const std::string&
     //Create emitter with key:values
     YAML::Emitter credentials_map;
     credentials_map << YAML::BeginMap;
-    credentials_map << YAML::Key << "username";
+    credentials_map << YAML::Key << USERNAME_KEY;
     credentials_map << YAML::Value << user;
-    credentials_map << YAML::Key << "password";
+    credentials_map << YAML::Key << PASSWORD_KEY;
     credentials_map << YAML::Value << pass;
+    credentials_map << YAML::Key << ROLE_FLAGS_KEY;
+    credentials_map << YAML::Value << DEFAULT_ROLE_FLAGS;
     credentials_map << YAML::EndMap;
 
     std::ofstream f;

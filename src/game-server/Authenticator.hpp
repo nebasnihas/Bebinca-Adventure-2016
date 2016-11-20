@@ -1,15 +1,16 @@
-
 #ifndef loginsystem_hpp
 #define loginsystem_hpp
 
-#include <stdio.h>
-#include <iostream>
 #include <string>
 #include <boost/optional.hpp>
-#include "yaml-cpp/yaml.h"
 #include "game/protocols/Authentication.hpp"
+#include "AccountInfo.hpp"
 
-
+template <class T>
+struct AuthResult {
+    T result;
+    boost::optional<AccountInfo> account;
+};
 
 class Authenticator {
 private:
@@ -20,8 +21,9 @@ private:
 public:
     static const int USERNAME_MAX_LENGTH = 10;
     
-    static protocols::LoginResponseCode login(const std::string& username, const std::string& password);
-    static protocols::RegistrationResponseCode registerAccount(const std::string& username, const std::string& password);
+    static AuthResult<protocols::LoginResponseCode> login(const std::string& username, const std::string& password);
+    static AuthResult<protocols::RegistrationResponseCode> registerAccount(const std::string& username,
+                                                                           const std::string& password);
 };
 
 #endif /* loginsystem_hpp */

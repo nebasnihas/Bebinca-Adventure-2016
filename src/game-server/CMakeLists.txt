@@ -1,5 +1,17 @@
-file(GLOB_RECURSE commands_src "commands/*.hpp" "commands/*.cpp")
+add_library(string-resource-importer
+        StringResourceImporter.cpp GameStrings.hpp)
 
+set_target_properties(string-resource-importer
+        PROPERTIES
+        LINKER_LANGUAGE CXX
+        CXX_STANDARD 14
+        )
+
+target_link_libraries(string-resource-importer
+        yaml-cpp
+        )
+
+file(GLOB_RECURSE commands_src "commands/*.hpp" "commands/*.cpp")
 add_library(game-server-lib
         Authenticator.cpp
         Controller.cpp
@@ -8,10 +20,9 @@ add_library(game-server-lib
         ServerLoop.cpp ServerLoop.hpp
         ServerConfig.cpp ServerConfig.hpp
         ${commands_src}
-        StringResourceImporter.cpp GameStrings.hpp
         PigLatinDecorator.cpp PigLatinDecorator.hpp
         MessageIO.hpp
-        ConnectionManager.hpp)
+        ConnectionManager.hpp PlayerRole.hpp AccountInfo.hpp HelpCommand.cpp HelpCommand.hpp)
 
 set_target_properties(game-server-lib
         PROPERTIES
@@ -22,6 +33,7 @@ set_target_properties(game-server-lib
 target_link_libraries(game-server-lib
         networking
         game
+        string-resource-importer
         protocols
         glog
         )
@@ -49,5 +61,20 @@ install(TARGETS game-server
 RUNTIME DESTINATION bin
 )
 
-file(COPY ${CMAKE_SOURCE_DIR}/data DESTINATION ${PROJECT_BINARY_DIR}/bin)
-file(COPY config.yml DESTINATION ${PROJECT_BINARY_DIR}/bin)
+#Copy data
+file(GLOB data RELATIVE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/data/*)
+add_custom_target(data_target ALL)
+foreach(file ${data})
+    set(SRC "${CMAKE_SOURCE_DIR}/${file}")
+    set(DST "${PROJECT_BINARY_DIR}/bin/${file}")
+    add_custom_command(
+            TARGET data_target
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SRC} ${DST}
+            )
+endforeach(file)
+
+add_custom_target(config ALL)
+add_custom_command(
+        TARGET config
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/config.yml ${PROJECT_BINARY_DIR}/bin/config.yml
+        )

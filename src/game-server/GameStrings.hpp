@@ -6,47 +6,64 @@
 #include "StringResourceImporter.hpp"
 
 namespace GameStringKeys {
-    const std::string INVALID_DIR = "invalid-direction";
-    const std::string INVALID_TGT = "invalid-target";
+const std::string INVALID_DIR = "invalid-direction";
+const std::string INVALID_TGT = "invalid-target";
 
-    const std::string PLAYERS_AREA = "players-list-area";
-    const std::string PLAYERS_WORLD = "players-list-world";
-    const std::string EXITS_AREA = "exits-list";
+const std::string PLAYERS_AREA = "players-list-area";
+const std::string PLAYERS_WORLD = "players-list-world";
+const std::string EXITS_AREA = "exits-list";
 
-    const std::string UNSPECIFIED_PLAYER = "unspecified-player";
-    const std::string UNSPECIFIED_TARGET = "unspecified-target";
+const std::string UNSPECIFIED_PLAYER = "unspecified-player";
+const std::string UNSPECIFIED_TARGET = "unspecified-target";
+const std::string UNSPECIFIED_EXIT = "unspecified-exit";
 
-    const std::string PLAYER = "player";
-    const std::string OBJECT = "object";
+const std::string PLAYER = "player";
+const std::string OBJECT = "object";
 
-    const std::string GLOBAL_CHANNEL = "global-tag";
-    const std::string AREA_CHANNEL = "area-tag";
-    const std::string PRIVATE_CHANNEL = "private-tag";
+const std::string GLOBAL_CHANNEL = "global-tag";
+const std::string AREA_CHANNEL = "area-tag";
+const std::string PRIVATE_CHANNEL = "private-tag";
+const std::string SERVER_NAME = "server-name";
+
+const std::string LOGIN_Ok = "login-ok";
+const std::string USER_NOT_FOUND = "user-not-found";
+const std::string INVALID_CREDENTIALS = "invalid-cred";
+const std::string USER_LOGGED_IN = "user-logged-in";
+
+const std::string REG_OK = "reg-ok";
+const std::string USER_EXISTS = "user-exists";
+const std::string USERNAME_TOO_LONG = "username-too-long";
+const std::string USERNAME_INVALD = "username-invalid";
+
+const std::string PLAYER_KICKED = "player-kicked";
+const std::string GLOBAL_CHANNEL = "global-tag";
+const std::string AREA_CHANNEL = "area-tag";
+const std::string PRIVATE_CHANNEL = "private-tag";
 
 
-	const std::string COMBAT_ENGAGE = "combat-engage-issue";
-	const std::string COMBAT_ENGAGED = "combat-engage-receive";
-	const std::string PLAYER_ATTACKS = "combat-attack-issue";
-	const std::string PLAYER_ATTACKED = "combat-attack-receive";
-	const std::string ATTACK_ACTION_ID = "combat-attack-id";
-	const std::string COMBAT_VICTORY = "combat-result-victory";
-	const std::string COMBAT_LOSS = "combat-result-loss";
+const std::string COMBAT_ENGAGE = "combat-engage-issue";
+const std::string COMBAT_ENGAGED = "combat-engage-receive";
+const std::string PLAYER_ATTACKS = "combat-attack-issue";
+const std::string PLAYER_ATTACKED = "combat-attack-receive";
+const std::string ATTACK_ACTION_ID = "combat-attack-id";
+const std::string COMBAT_VICTORY = "combat-result-victory";
+const std::string COMBAT_LOSS = "combat-result-loss";
 
-	const std::string SPELL_LIST = "spell-list-header";
-	const std::string SPELL_NO_MANA = "spell-insufficient-mana";
-	const std::string SPELL_UNKNOWN = "spell-unknown";
-	const std::string SPELL_OFFENSE_SELF = "spell-offense-self";
-	const std::string SPELL_OFFENSE_SOURCE = "spell-offense-source";
-	const std::string SPELL_OFFENSE_TARGET = "spell-offense-target";
-	const std::string SPELL_DEFENSE_SELF = "spell-defense-self";
-	const std::string SPELL_DEFENSE_SOURCE = "spell-defense-source";
-	const std::string SPELL_DEFENSE_TARGET = "spell-defense-target";
-	const std::string SPELL_GENERIC_SELF = "spell-generic-self";
-	const std::string SPELL_GENERIC_SOURCE = "spell-generic-source";
-	const std::string SPELL_GENERIC_TARGET = "spell-generic-target";
+const std::string SPELL_LIST = "spell-list-header";
+const std::string SPELL_NO_MANA = "spell-insufficient-mana";
+const std::string SPELL_UNKNOWN = "spell-unknown";
+const std::string SPELL_OFFENSE_SELF = "spell-offense-self";
+const std::string SPELL_OFFENSE_SOURCE = "spell-offense-source";
+const std::string SPELL_OFFENSE_TARGET = "spell-offense-target";
+const std::string SPELL_DEFENSE_SELF = "spell-defense-self";
+const std::string SPELL_DEFENSE_SOURCE = "spell-defense-source";
+const std::string SPELL_DEFENSE_TARGET = "spell-defense-target";
+const std::string SPELL_GENERIC_SELF = "spell-generic-self";
+const std::string SPELL_GENERIC_SOURCE = "spell-generic-source";
+const std::string SPELL_GENERIC_TARGET = "spell-generic-target";
 
-	const std::string STATUS_EFFECT_END = "status-effect-expiry";
-	const std::string CHAR_STATUS = "character-status";
+const std::string STATUS_EFFECT_END = "status-effect-expiry";
+const std::string CHAR_STATUS = "character-status";
 }
 
 class GameStrings {
