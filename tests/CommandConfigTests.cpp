@@ -1,7 +1,5 @@
 #include <gtest/gtest.h>
 #include <../src/game-server/commands/CommandConfig.hpp>
-#include "yaml-cpp/yaml.h"
-#include <vector>
 
 class TestCommand : public Command {
 public:

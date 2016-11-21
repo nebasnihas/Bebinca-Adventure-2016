@@ -2,7 +2,7 @@
 #define ADVENTURE2016_MESSAGE_H
 
 #include <string>
-#include "yaml-cpp/yaml.h"
+#include <yaml-cpp/yaml.h>
 
 namespace protocols {
 
@@ -12,6 +12,7 @@ enum RequestHeader {
     CHARACTER_LIST_REQUEST,
     CHARACTER_LOAD_REQUEST,
     PLAYER_COMMAND_REQUEST,
+    DATA_REQUEST,
 };
 
 struct RequestMessage {

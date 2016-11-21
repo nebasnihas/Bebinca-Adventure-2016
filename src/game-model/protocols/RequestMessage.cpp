@@ -1,3 +1,4 @@
+#include <yaml-cpp/yaml.h>
 #include "game/protocols/RequestMessage.hpp"
 #include "MessageSerializer.hpp"
 

@@ -4,11 +4,12 @@ add_library(protocols
         DisplayMessage.cpp
         PlayerCommand.cpp
         Authentication.cpp
-        )
+        Data.cpp)
 
 target_link_libraries(protocols
         yaml-cpp
         string-resource-importer
+        glog
         )
 
 set_target_properties(protocols

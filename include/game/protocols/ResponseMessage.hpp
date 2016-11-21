@@ -2,7 +2,7 @@
 #define ADVENTURE2016_RESPONSEMESSAGE_HPP
 
 #include <string>
-#include "yaml-cpp/yaml.h"
+#include <yaml-cpp/yaml.h>
 
 namespace protocols {
 
@@ -11,7 +11,8 @@ enum ResponseHeader {
     REGISTER_RESPONSE,
     CHARACTER_LIST_RESPONSE,
     CHARACTER_LOAD_RESPONSE,
-    DISPLAY_MESSAGE_RESPONSE
+    DISPLAY_MESSAGE_RESPONSE,
+    DATA_RESPONSE
 };
 
 struct ResponseMessage {

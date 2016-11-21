@@ -1,6 +1,4 @@
 #include "game/protocols/DisplayMessage.hpp"
-#include "game/protocols/RequestMessage.hpp"
-#include "game/protocols/ResponseMessage.hpp"
 
 namespace protocols
 {
