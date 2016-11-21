@@ -40,21 +40,22 @@ std::unordered_map<std::string, NPC> GameDataImporter::returnNPCS(const YAML::No
         vector<NPCScripts> NPCScriptings;
         //Scripting Attributes
         if(NPCS["programs"]) {
-            unordered_map<string, string> qualifierCommands;
+            unordered_map<string, std::vector<string>> qualifierCommandsMap;
+
             const YAML::Node programs = NPCS["programs"];
             for (const auto &program : programs) {
-                vector<string> commands = program["commands"] ? program["commands"].as<vector<string>>() : NPCScripts::defaultCommand;
+                vector<string> scriptingCommands = program["commands"] ? program["commands"].as<vector<string>>() : NPCScripts::defaultCommand;
                 vector<string> qualifier = program["qualifier"] ? program["qualifier"].as<vector<string>>() : NPCScripts::defaultQualifier;
                 string scriptingName = program["name"] ? program["name"].as<string>() : NPCScripts::defaultScriptingName;
                 vector<string> scriptingDescription = program["description"] ? program["description"].as<vector<string>>() : NPCScripts::defaultScriptingDescription;
 
-                string scriptingCommands = boost::algorithm::join(commands, " ");
                 string scriptingQualifier = boost::algorithm::join(qualifier, " ");
                 string scriptingDescriptionString = boost::algorithm::join(scriptingDescription, " ");
 
-                std::pair<string, string> qualifierCommandsPair (scriptingQualifier, scriptingCommands);
+                std::pair<string, vector<string>> qualifierCommandsPair (scriptingQualifier, scriptingCommands);
+                qualifierCommandsMap.insert(qualifierCommandsPair);
 
-                NPCScripts newNPCScript = NPCScripts(qualifierCommandsPair, scriptingName, scriptingDescriptionString);
+                NPCScripts newNPCScript = NPCScripts(qualifierCommandsMap, scriptingName, scriptingDescriptionString);
                 NPCScriptings.push_back(newNPCScript);
             }
         }

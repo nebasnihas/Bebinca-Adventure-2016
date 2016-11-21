@@ -6,6 +6,7 @@
 #include <game/NPCScripts.hpp>
 #include <game/StatusEffect.hpp>
 #include <vector>
+#include <unordered_map>
 #include <iostream>
 #include <memory>
 #include <algorithm>

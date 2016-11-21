@@ -4,16 +4,17 @@
 //#include <game/Character.hpp>
 #include <vector>
 #include <string>
+#include <unordered_map>
 
 class NPCScripts {
 public:
 
-    NPCScripts(     const std::pair<std::string, std::string>& qualifierCommandsPair,
+    NPCScripts(     const std::unordered_map<std::string, std::vector<std::string>>& qualifierCommandsMap,
                     const std::string& scriptingName,
                     const std::string& scriptingDescription
     );
 
-    std::pair<std::string, std::string> getQualifierCommandsPair() const;
+    std::unordered_map<std::string, std::vector<std::string>> getQualifierCommandsMap() const;
     std::string getScriptingName() const;
     std::string getScriptingDescription() const;
 
@@ -24,7 +25,7 @@ public:
     static const std::vector<std::string> defaultScriptingDescription;
 
 private:
-    std::pair<std::string, std::string> qualifierCommandsPair;
+    std::unordered_map<std::string, std::vector<std::string>> qualifierCommandsMap;
     std::string scriptingName;
     std::string scriptingDescription;
 };
