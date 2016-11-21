@@ -64,10 +64,12 @@ const std::string CHAR_STATUS = "character-status";
 const std::string SOURCE_KEY = "$n";
 const std::string TARGET_KEY = "$N";
 const std::string PRONOUN_KEY = "$E";
+const std::string POSSESSIVE_PRONOUN_KEY = "$S";
 const std::string EFFECT_KEY = "$d";
 const std::string ACTION_KEY = "$a";
 
 const std::string GENERIC_PRONOUN = "they";
+const std::string GENERIC_POSSESSIVE_PRONOUN = "their";
 }
 
 struct StringInfo {
@@ -101,6 +103,9 @@ public:
 		}
 		if ((index = formatString.find(GameStringKeys::TARGET_KEY, 0)) != std::string::npos) {
 			formatString.replace(index, GameStringKeys::TARGET_KEY.size(), stringInfo.targetName);
+		}
+		if ((index = formatString.find(GameStringKeys::POSSESSIVE_PRONOUN_KEY, 0)) != std::string::npos) {
+			formatString.replace(index, GameStringKeys::POSSESSIVE_PRONOUN_KEY.size(), GameStringKeys::GENERIC_POSSESSIVE_PRONOUN);
 		}
 		if ((index = formatString.find(GameStringKeys::PRONOUN_KEY, 0)) != std::string::npos) {
 			formatString.replace(index, GameStringKeys::PRONOUN_KEY.size(), GameStringKeys::GENERIC_PRONOUN);

@@ -1,6 +1,5 @@
 #include <boost/regex/v4/match_flags.hpp>
 #include "CombatAction.hpp"
-#include "../../game-server/GameStrings.hpp"
 #include <boost/format.hpp>
 
 CombatCast::CombatCast(const Spell &spell) : spell(spell) {}
@@ -51,7 +50,6 @@ void CombatCast::execute(Character& source, Character& target) {
 	auto power = spell.getPower(source);
 	auto stringInfo = StringInfo{source.getName(), target.getName(), power, spell.getName()};
     if (currentMana < manaCost) {
-//		source.pushToBuffer((boost::format(GameStrings::get(GameStringKeys::SPELL_NO_MANA)) % spell.getName()).str());
 		source.pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_NO_MANA, stringInfo));
         return;
     } else {
@@ -68,14 +66,10 @@ void CombatCast::execute(Character& source, Character& target) {
 		case SpellType::BODY_SWAP:
 			//TODO: determine duration of body swap based on player level
 			auto sourceStatus = std::make_shared<BodySwapStatus>(10, target.getID());
-//			target.pushToBuffer((boost::format(GameStrings::get(GameStringKeys::SPELL_GENERIC_SOURCE))
-//								 % spell.getName() % target.getName()).str());
 			target.pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_GENERIC_SOURCE, stringInfo));
 			source.addStatusEffect(sourceStatus);
 
 			auto targetStatus = std::make_shared<BodySwapStatus>(10, source.getID());
-//			source.pushToBuffer((boost::format(GameStrings::get(GameStringKeys::SPELL_GENERIC_SOURCE))
-//								 % source.getName() % spell.getName()).str());
 			source.pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_GENERIC_TARGET, stringInfo));
 			target.addStatusEffect(targetStatus);
     }

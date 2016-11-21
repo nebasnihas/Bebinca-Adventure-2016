@@ -397,7 +397,6 @@ void GameModel::castSpell(const std::string& sourceID, const std::string& target
 			spellCast.execute(*getCharacterByID(sourceID), *getCharacterByID(targetID));
 		}
 	} else {
-//		getCharacterByID(sourceID)->pushToBuffer((boost::format(GameStrings::get(GameStringKeys::SPELL_UNKNOWN)) % spellID).str());
 		getCharacterByID(sourceID)->pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_UNKNOWN,
 																		   StringInfo{sourceID, targetID, 0, spellID}));
 	}
