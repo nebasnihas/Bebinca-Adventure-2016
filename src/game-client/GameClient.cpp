@@ -6,41 +6,147 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-#include "chatWindow.h"
 #include "networking/client.h"
-#include "game/protocols/RequestMessage.hpp"
-
-#include <string>
 #include "StringUtils.hpp"
+#include "game/protocols/RequestMessage.hpp"
 #include "game/protocols/Authentication.hpp"
-#include <algorithm>
 #include "game/protocols/PlayerCommand.hpp"
 #include "game/protocols/DisplayMessage.hpp"
-
+#include "Application.hpp"
+#include "MainMenuWindow.hpp"
+#include "AuthenticationWindow.hpp"
+#include "ChatWindow.hpp"
+#include <glog/logging.h>
 
 using namespace networking;
 
-protocols::UserCredentials extractCredentials(const std::string text)
-{
-    auto userAndPass = splitString(text);
-    if (userAndPass.size() != 2) {
-        throw std::exception{};
-    }
+static const std::string MAIN_MENU_WINDOW_ID = "auth";
+static const std::string LOGIN_WINDOW_ID = "login";
+static const std::string REGISTER_WINDOW_ID = "register";
+static const std::string CHAT_WINDOW_ID = "chat";
+bool running = true;
 
-    auto username = userAndPass[0];
-    auto password = userAndPass[1];
+std::unique_ptr<Client> networkingClient;
+std::unique_ptr<gui::Application> gameClient;
+std::unique_ptr<gui::MainMenuWindow> authWindow;
+std::unique_ptr<gui::AuthenticationWindow> loginWindow;
+std::unique_ptr<gui::AuthenticationWindow> registerWindow;
+std::unique_ptr<gui::ChatWindow> chatWindow;
 
-    return protocols::UserCredentials{username, password};
+void setupAuthWindow() {
+    authWindow = std::make_unique<gui::MainMenuWindow>();
+    authWindow->setOnSelection([](auto selection){
+        switch(selection) {
+            case gui::MainMenuChoice::LOGIN:
+                gameClient->switchToWindow(LOGIN_WINDOW_ID);
+                break;
+            case gui::MainMenuChoice::REGISTER:
+                gameClient->switchToWindow(REGISTER_WINDOW_ID);
+                break;
+            case gui::MainMenuChoice::EXIT:
+                running = false;
+                break;
+            default:
+                LOG(FATAL) << "No case for choice";
+        }
+    });
+
+    gameClient->addWindow(MAIN_MENU_WINDOW_ID, authWindow.get());
 }
 
-enum class ClientState {
-    INITIAL,
-    LOGIN,
-    REGISTER,
-    IN_GAME,
-};
+void setupLoginWindow() {
+    loginWindow = std::make_unique<gui::AuthenticationWindow>("LOGIN");
+    loginWindow->setOnCancel([](){
+        gameClient->switchToWindow(MAIN_MENU_WINDOW_ID);
+    });
+    loginWindow->setOnInput([](auto user, auto password) {
+        auto requestMessage = protocols::createLoginRequestMessage({user, password});
+        networkingClient->send(protocols::serializeRequestMessage(requestMessage));
+    });
 
-ClientState currentState = ClientState::INITIAL;
+    gameClient->addWindow(LOGIN_WINDOW_ID, loginWindow.get());
+}
+
+void setupRegisterWindow() {
+    registerWindow = std::make_unique<gui::AuthenticationWindow>("REGISTER");
+    registerWindow->setOnCancel([](){
+        gameClient->switchToWindow(MAIN_MENU_WINDOW_ID);
+    });
+    registerWindow->setOnInput([](auto username, auto password) {
+        auto requestMessage = protocols::createRegistrationRequestMessage({username, password});
+        networkingClient->send(protocols::serializeRequestMessage(requestMessage));
+    });
+
+    gameClient->addWindow(REGISTER_WINDOW_ID, registerWindow.get());
+}
+
+void setupChatWindow() {
+    chatWindow = std::make_unique<gui::ChatWindow>();
+    chatWindow->setOnInput([](auto inputText){
+        auto separated = separateFirstWord(inputText);
+        auto request = protocols::createPlayerCommandRequestMessage({separated.first, separated.second});
+        networkingClient->send(protocols::serializeRequestMessage(request));
+    });
+
+    gameClient->addWindow(CHAT_WINDOW_ID, chatWindow.get());
+}
+
+void handleAuthResponse(const protocols::ResponseMessage& response) {
+    auto authResponse = protocols::readAuthenticationResponseMessage(response);
+    if(authResponse.success) {
+        gameClient->switchToWindow(CHAT_WINDOW_ID);
+        chatWindow->showText("Welcome!");
+        return;
+    }
+
+    auto currentWindowName = gameClient->getCurrentWindowName();
+    if (currentWindowName == LOGIN_WINDOW_ID) {
+        loginWindow->showMessage(authResponse.msg);
+    } else {
+        registerWindow->showMessage(authResponse.msg);
+    }
+}
+
+void handleDisplayResponse(const protocols::ResponseMessage& responseMessage) {
+    auto displayMessage = protocols::readDisplayResponseMessage(responseMessage);
+    chatWindow->showText(displayMessage);
+}
+
+void updateFromServer() {
+    try {
+        networkingClient->update();
+    } catch (std::exception& e) {
+        LOG(FATAL) << e.what();
+    }
+
+    auto incomingMessages = networkingClient->receive();
+    if (incomingMessages.empty()) {
+        return;
+    }
+
+    //convert text back to response messages
+    std::vector<protocols::ResponseMessage> incomingResponses;
+    incomingResponses.reserve(incomingMessages.size());
+    std::transform(incomingMessages.begin(), incomingMessages.end(), std::back_inserter(incomingResponses),
+                   [](auto& message) {
+                       return protocols::deserializeResponseMessage(message);
+                   });
+
+    for(const auto& response : incomingResponses) {
+        switch(response.header){
+            case protocols::ResponseHeader::LOGIN_RESPONSE:
+            case protocols::ResponseHeader::REGISTER_RESPONSE:
+                handleAuthResponse(response);
+                break;
+            case protocols::ResponseHeader::DISPLAY_MESSAGE_RESPONSE:
+                handleDisplayResponse(response);
+                break;
+            default:
+                break;
+        }
+    }
+}
+
 int main(int argc, char *argv[]) {
     if (argc < 3) {
         printf("Usage:\n%s <ip address> <port>\ne.g. %s localhost 4002\n",
@@ -48,132 +154,20 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    Client client{argv[1], argv[2]};
-    ChatWindow chatWindow{[](std::string){}};
+    FLAGS_log_dir = "./";
+    google::InitGoogleLogging("GameClientLogs");
 
-    //TODO placeholder states, transitions, text
-    bool done = false;
-    auto onTextEntry = [&done, &client, &chatWindow](std::string text) {
-        if ("exit" == text || "quit" == text) {
-            done = true;
-        }
+    gameClient = std::make_unique<gui::Application>();
+    setupAuthWindow();
+    setupLoginWindow();
+    setupRegisterWindow();
+    setupChatWindow();
 
-        switch(currentState) {
-            case ClientState::INITIAL:
-                //TODO separate inputs for username and password. use space separation for now
-                if (text == "register") {
-                    currentState = ClientState::REGISTER;
-                    chatWindow.displayText("Enter the username you want and your password separated by space. Type cancel to go back"); //TODO ask to confirm password
-                } else if (text == "login") {
-                    chatWindow.displayText("Enter you username and password separated by a space. Type cancel go back");
-                    currentState = ClientState::LOGIN;
-                } else {
-                    chatWindow.displayText("type 'login' or 'register'");
-                }
-                break;
-            case ClientState::LOGIN:
-                if (text == "cancel") {
-                    currentState = ClientState::INITIAL;
-                    chatWindow.displayText("Type register or login to begin");
-                    break;
-                }
-
-                try {
-                    auto creds = extractCredentials(text);
-                    auto requestMessage = protocols::createLoginRequestMessage(creds);
-                    client.send(protocols::serializeRequestMessage(requestMessage));
-                } catch (const std::exception&) {
-                    chatWindow.displayText("Can you read the instructions");
-                }
-                break;
-            case ClientState::REGISTER:
-                if (text == "cancel") {
-                    currentState = ClientState::INITIAL;
-                    chatWindow.displayText("Type register or login to begin");
-                    break;
-                }
-
-                try {
-                    auto creds = extractCredentials(text);
-                    auto requestMessage = protocols::createRegistrationRequestMessage(creds);
-                    client.send(protocols::serializeRequestMessage(requestMessage));
-                } catch (const std::exception&) {
-                    chatWindow.displayText("NOPE\n");
-                }
-                break;
-            case ClientState::IN_GAME:
-                auto separated = separateFirstWord(text);
-                protocols::PlayerCommand command{separated.first, separated.second};
-
-                auto requestMessage = protocols::createPlayerCommandRequestMessage(command);
-                client.send(protocols::serializeRequestMessage(requestMessage));
-        }
-
-        chatWindow.update();
-    };
-
-
-    chatWindow.displayText("Type register or login to begin");
-    chatWindow.setOnTextEntry(onTextEntry);
-    chatWindow.update();
-
-    while (!done && !client.isDisconnected()) {
-        chatWindow.update();
-        try {
-            client.update();
-        } catch (std::exception &e) {
-            chatWindow.displayText("Exception from Client update:");
-            chatWindow.displayText(e.what());
-            done = true;
-        }
-
-        auto incomingMessages = client.receive();
-        if (incomingMessages.empty()) {
-            continue;
-        }
-
-        //convert text back to response messages
-        std::vector<protocols::ResponseMessage> incomingResponses;
-        incomingResponses.reserve(incomingMessages.size());
-        std::transform(incomingMessages.begin(), incomingMessages.end(), std::back_inserter(incomingResponses), [](auto& message) {
-            return protocols::deserializeResponseMessage(message);
-        });
-
-        switch (currentState) {
-            case ClientState::REGISTER:
-            case ClientState::LOGIN: {
-                auto authResponseMessage = std::find_if(incomingResponses.begin(), incomingResponses.end(),
-                                                         [](auto& msg) {
-                                                             return msg.header == protocols::ResponseHeader::LOGIN_RESPONSE ||
-                                                                    msg.header == protocols::ResponseHeader::REGISTER_RESPONSE;
-                                                         });
-
-                if (authResponseMessage == incomingResponses.end()) {
-                    break;
-                }
-
-                auto loginResponse = protocols::readAuthenticationResponseMessage(*authResponseMessage);
-                chatWindow.displayText(loginResponse.msg);
-
-                if (loginResponse.success) {
-                    currentState = ClientState::IN_GAME; //TODO go to character select
-                }
-                break;
-            }
-            case ClientState::IN_GAME: {
-                for (const auto& responseMessage : incomingResponses) {
-                    if (responseMessage.header == protocols::ResponseHeader::DISPLAY_MESSAGE_RESPONSE) {
-                        auto displayMessage = protocols::readDisplayResponseMessage(responseMessage);
-                        chatWindow.displayText(displayMessage);
-                    }
-                }
-                break;
-            }
-            default:
-                break;
-        }
+    networkingClient = std::make_unique<Client>(argv[1], argv[2]);
+    while(running) {
+        gameClient->update();
+        updateFromServer();
     }
 
     return 0;
 }
-
