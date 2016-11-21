@@ -31,6 +31,7 @@ private:
     void redrawPasswordField();
 
     std::string title;
+    std::string password;
     WINDOW* entryWindow;
     WINDOW* entrySubWindow;
     FORM* form;

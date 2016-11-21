@@ -12,14 +12,22 @@ const int ENTRY_OFFSET_Y = 1;
 const int ENTRY_OFFSET_X = (WINDOW_WIDTH - ENTRY_WIDTH) / 2;
 const int FIELD_OFFSET_X = 0;
 const int FIELD_WIDTH = ENTRY_WIDTH - FIELD_OFFSET_X * 2; // need space after offsetting
-int loadingSpinnerIndex;
+const int TITLE_OFFSET_Y = ENTRY_OFFSET_Y;
+const int USERNAME_LABEL_OFFSET_Y = ENTRY_OFFSET_Y + 1;
+const int USERNAME_INPUT_OFFSET_Y = ENTRY_OFFSET_Y + 2;
+const int PASSWORD_LABEL_OFFSET_Y = ENTRY_OFFSET_Y + 3;
+const int PASSWORD_INPUT_OFFSET_Y = ENTRY_OFFSET_Y + 4;
+const int MESSAGE_FIELD_OFFSET_Y = ENTRY_OFFSET_Y + 7;
+const int LOADING_FIELD_OFFSET_Y = ENTRY_OFFSET_Y + 9;
+
+int loadingSpinnerIndex = 0;
 const int NUM_SPINNER_STATES = 4;
 std::string loadingSpinnerStates[NUM_SPINNER_STATES] = {"-", "\\", "|", "/"};
-std::string password;
+
 std::string passwordFill{"********************************"}; //Fill constructor doesnt work for some reason?
 
 FIELD* createTitleField(const std::string& title) {
-    FIELD* usernameLabelField = new_field(1, FIELD_WIDTH, ENTRY_OFFSET_Y, FIELD_OFFSET_X, 0, 0);
+    FIELD* usernameLabelField = new_field(1, FIELD_WIDTH, TITLE_OFFSET_Y, FIELD_OFFSET_X, 0, 0);
     CHECK(usernameLabelField) << "Error creating title label field";
     set_field_buffer(usernameLabelField, 0, title.c_str());
     set_field_just(usernameLabelField, JUSTIFY_CENTER);
@@ -31,10 +39,10 @@ FIELD* createTitleField(const std::string& title) {
     return usernameLabelField;
 }
 
-FIELD* createUsernameLabelField() {
-    FIELD* usernameLabelField = new_field(1, FIELD_WIDTH, ENTRY_OFFSET_Y + 1, FIELD_OFFSET_X, 0, 0);
-    CHECK(usernameLabelField) << "Error creating username label field";
-    set_field_buffer(usernameLabelField, 0, "Username:");
+FIELD* createLabelField(const std::string label, int position) {
+    FIELD* usernameLabelField = new_field(1, FIELD_WIDTH, position, FIELD_OFFSET_X, 0, 0);
+    CHECK(usernameLabelField) << "Error creating  label field";
+    set_field_buffer(usernameLabelField, 0, label.c_str());
     set_field_opts(usernameLabelField, O_STATIC | O_VISIBLE | O_PUBLIC);
     set_field_type(usernameLabelField, TYPE_ALPHA);
     field_opts_off(usernameLabelField, O_AUTOSKIP | O_EDIT | O_ACTIVE);
@@ -42,42 +50,20 @@ FIELD* createUsernameLabelField() {
     return usernameLabelField;
 }
 
-FIELD* createUsernameField() {
-    FIELD* usernameField = new_field(1, FIELD_WIDTH, ENTRY_OFFSET_Y + 2, FIELD_OFFSET_X, 0, 0);
-    CHECK(usernameField) << "Error creating username field";
+
+FIELD* createInputField(int position) {
+    FIELD* usernameField = new_field(1, FIELD_WIDTH, position, FIELD_OFFSET_X, 0, 0);
+    CHECK(usernameField) << "Error creating input field";
     set_field_buffer(usernameField,0, "");
     set_field_opts(usernameField, O_STATIC | O_VISIBLE | O_PUBLIC | O_EDIT | O_ACTIVE);
-    set_field_type(usernameField, TYPE_ALNUM);
     set_field_back(usernameField, A_UNDERLINE);
     field_opts_off(usernameField, O_AUTOSKIP);
 
     return usernameField;
 }
 
-FIELD* createPasswordLabelField() {
-    FIELD* passwordLabelField = new_field(1, FIELD_WIDTH, ENTRY_OFFSET_Y + 4, FIELD_OFFSET_X, 0, 0);
-    CHECK(passwordLabelField) << "Error creating password label field";
-    set_field_buffer(passwordLabelField, 0, "Password:");
-    set_field_opts(passwordLabelField, O_STATIC | O_VISIBLE | O_PUBLIC);
-    set_field_type(passwordLabelField, TYPE_ALPHA);
-    field_opts_off(passwordLabelField, O_AUTOSKIP | O_EDIT | O_ACTIVE);
-
-    return passwordLabelField;
-}
-
-FIELD* createPasswordField() {
-    FIELD* passwordField = new_field(1, FIELD_WIDTH, ENTRY_OFFSET_Y + 5, FIELD_OFFSET_X, 0, 0);
-    CHECK(passwordField) << "Error creating password field";
-    set_field_buffer(passwordField, 0, "");
-    set_field_opts(passwordField, O_STATIC | O_VISIBLE | O_PUBLIC | O_EDIT | O_ACTIVE);
-    set_field_back(passwordField, A_UNDERLINE);
-    field_opts_off(passwordField, O_AUTOSKIP);
-
-    return passwordField;
-}
-
 FIELD* createMessageField() {
-    FIELD* messageField = new_field(2, FIELD_WIDTH, ENTRY_OFFSET_Y + 7, FIELD_OFFSET_X, 0, 0);
+    FIELD* messageField = new_field(2, FIELD_WIDTH, MESSAGE_FIELD_OFFSET_Y, FIELD_OFFSET_X, 0, 0);
     CHECK(messageField) << "Error creating message field";
     set_field_buffer(messageField, 0, "");
     set_field_opts(messageField, O_STATIC | O_VISIBLE | O_PUBLIC | O_WRAP | O_EDIT);
@@ -87,7 +73,7 @@ FIELD* createMessageField() {
 }
 
 FIELD* createLoadingField() {
-    FIELD* loadingField = new_field(1, FIELD_WIDTH, ENTRY_OFFSET_Y + 9, FIELD_OFFSET_X, 0, 0);
+    FIELD* loadingField = new_field(1, FIELD_WIDTH, LOADING_FIELD_OFFSET_Y, FIELD_OFFSET_X, 0, 0);
     CHECK(loadingField) << "Error creating loading field";
     set_field_just(loadingField, JUSTIFY_CENTER);
     set_field_opts(loadingField, O_STATIC | O_VISIBLE | O_PUBLIC);
@@ -127,7 +113,6 @@ void AuthenticationWindow::update(int input) {
         case '\n':
         case KEY_ENTER:
             form_driver(form, REQ_VALIDATION);
-            form_driver(form, REQ_NEXT_FIELD);
             form_driver(form, REQ_END_LINE);
 
             processCredentials();
@@ -189,11 +174,11 @@ void AuthenticationWindow::redraw() {
 
 void AuthenticationWindow::createForm() {
     fields.push_back(createTitleField(title));
-    fields.push_back(createUsernameLabelField());
-    usernameInputField = createUsernameField();
+    fields.push_back(createLabelField("Username:", USERNAME_LABEL_OFFSET_Y));
+    usernameInputField = createInputField(USERNAME_INPUT_OFFSET_Y);
     fields.push_back(usernameInputField);
-    fields.push_back(createPasswordLabelField());
-    passwordInputField = createPasswordField();
+    fields.push_back(createLabelField("Password:", PASSWORD_LABEL_OFFSET_Y));
+    passwordInputField = createInputField(PASSWORD_INPUT_OFFSET_Y);
     fields.push_back(passwordInputField);
     messageField = createMessageField();
     fields.push_back(messageField);
