@@ -76,6 +76,10 @@ GameModel& Controller::getGameModel() const {
 }
 
 void Controller::removePlayer(const networking::Connection& clientID) {
+    if(playerMap.right.count(clientID) == 0) {
+        return;
+    }
+
     auto player = getPlayerID(clientID);
 
     playerMap.right.erase(clientID);
