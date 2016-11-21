@@ -3,6 +3,7 @@
 
 #include "Attributes.hpp"
 #include "Inventory.hpp"
+#include <game/NPCScripts.hpp>
 #include <game/StatusEffect.hpp>
 #include <vector>
 #include <iostream>
@@ -128,13 +129,15 @@ public:
                 int thac0,
                 const std::string& description,
                 const std::string& keywords,
-                const std::string& longDesc
+                const std::string& longDesc,
+                std::vector<NPCScripts>& scripts
                 );
 
     std::string getDescription() const;
     std::string getKeywords() const;
     std::string getlongDesc() const;
     int getThac0() const;
+    std::vector<NPCScripts> getScripts() const;
 
     int getCounter() const;
     void increaseCounter();
@@ -152,6 +155,7 @@ private:
     std::string keywords;
     std::string longDesc;
     int thac0;
+    std::vector<NPCScripts> scripts;
     int counter;
 
 };
