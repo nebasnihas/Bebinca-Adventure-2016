@@ -6,8 +6,8 @@
 //}
 
 YAML::Node YamlAreaBuilder::populateAreasNode(const std::vector<std::string>& desc, const std::vector<std::string>& extended_descriptions,
-                                              const std::string& id, const std::string& name, const std::vector<std::string>& doorDesc,
-                                              const std::vector<std::string>& keywords, const std::string& doorDir, const std::string& doorTo)
+                                              const std::string& id, const std::string& name, const std::vector<std::string>& doorDir,
+                                              const std::vector<std::string>& doorTo)
 {
     //top level rooms node
     YAML::Node ROOMS;
@@ -17,12 +17,24 @@ YAML::Node YamlAreaBuilder::populateAreasNode(const std::vector<std::string>& de
       //ERROR:invalid node; this may result from using a map iterator as a sequence iterator, or vice-versa"
     ROOM["desc"].push_back(desc[0]);
 
-    doors["desc"].push_back(doorDesc[0]);
-    doors["dir"] = doorDir[0];
-    doors["keywords"].push_back(keywords[0]);
-    doors["to"] = doorTo;
-    ROOM["doors"].push_back(doors);
+    //may need a for loop for this all to populate
+//
+//    for (const auto &door : doorDir){
+//        doors["dir"] = door;
+//        doors["to"] = doorTo;
+//
+//    }
 
+    for (int i = 0; i < doorDir.size(); i++) {
+        YAML::Node temp;
+        temp["dir"] = doorDir[i];
+        temp["to"] = doorTo[i];
+        ROOM["doors"].push_back(temp);
+    }
+
+
+
+    //ROOM["doors"].push_back(doors);
     ROOM["extended_descriptions"].push_back(extended_descriptions[0]);
     ROOM["id"] = id;
     ROOM["name"] = name;

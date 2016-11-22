@@ -37,6 +37,7 @@ public:
 
 	//std::string getAreaDescription() const;
 
+
 private:
     // Id of the area object, may not be needed depending on networking implementation
 

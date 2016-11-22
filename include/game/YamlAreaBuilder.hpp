@@ -12,11 +12,20 @@
 
 class YamlAreaBuilder
 {
+    //using Doors =  std::unordered_map<std::string, std::string>;
+
 public:
 
+    //Doors
+
+    //description: vector of vector of strings
+    //dir : vector of strings
+    //to - vector strings
+    //keywords: vector of vector of strings
+
     static YAML::Node populateAreasNode(const std::vector<std::string>& desc, const std::vector<std::string>& extended_descriptions,
-                                        const std::string& id, const std::string& name, const std::vector<std::string>& doorDesc,
-                                        const std::vector<std::string>& keywords, const std::string& doorDir, const std::string& doorTo);
+                                        const std::string& id, const std::string& name, const std::vector<std::string>& doorDir,
+                                        const std::vector<std::string>& doorTo);
 
 private:
 
