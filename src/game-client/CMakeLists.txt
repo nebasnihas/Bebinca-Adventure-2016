@@ -2,6 +2,8 @@
 add_executable(game-client
         GameClient.cpp
         chatWindow.cpp
+        StrColorizer.cpp
+        StrColorizer.hpp
         )
 
 set_target_properties(game-client
