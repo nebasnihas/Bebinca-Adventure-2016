@@ -30,22 +30,28 @@ void StrColorizer::print_color(WINDOW *win, int ypos, int xpos, const std::strin
 
 }
 
-void StrColorizer::colortoken_print(WINDOW *win, int ypos, int xpos, const attribute_string &att_str) {
+void StrColorizer::colortoken_print(WINDOW *win, int ypos, int xpos, const attribute_string &att_str){
 
     int y,x;
 
     if (win == NULL){
+
         win = stdscr;
+
     }
 
     getyx(win, y, x);
 
     if(ypos != 0){
+
         y = ypos;
+
     }
 
     if(xpos != 0){
+
         x = xpos;
+
     }
 
     //Initialise all standard color pairs
@@ -119,7 +125,7 @@ void StrColorizer::colortoken_print(WINDOW *win, int ypos, int xpos, const attri
 
 }
 
-
+/*
 std::ostream& operator<<(std::ostream& os, const color_token& ct){
 
 
@@ -136,14 +142,17 @@ std::ostream& operator<<(std::ostream& os, const color_token& ct){
             << std::endl;
         }
     }
-    
+
+
+
     return os;
 }
-
+*/
 
 color_type StrColorizer::get_color(char c){
 
-    switch (c) {
+    switch (c){
+
         case 'l':
             return color_type::BLACK;
             break;
@@ -183,22 +192,18 @@ attribute_string StrColorizer::str_to_colortoken(const std::string &text){
 
     attribute_string att_str_vector;
 
-    for (int i=0; i < text.size(); i++) {
+    for (int i=0; i < text.size(); i++){
 
         if(!is_tag(text[i])){
             att_str_vector.push_back(color_token{text[i], color_type::WHITE});
-        }else {
+
+        } else{
 
             i++;
             color_type c_type = get_color(text[i]);
             i++;
 
-            while (!is_tag(text[i]) && i< text.size()){
-
-                att_str_vector.push_back(color_token { text[i], c_type});
-                i++;
-
-            }
+            i = process_tagged_str(i,c_type,text,att_str_vector);
 
         }
 
@@ -207,3 +212,15 @@ attribute_string StrColorizer::str_to_colortoken(const std::string &text){
     return att_str_vector;
 }
 
+
+int StrColorizer::process_tagged_str(int i, color_type& c_type, const std::string &text, attribute_string &att_str) {
+
+    while (!is_tag(text[i]) && i< text.size()){
+
+        att_str.push_back(color_token { text[i], c_type});
+        i++;
+
+    }
+
+    return i;
+}
