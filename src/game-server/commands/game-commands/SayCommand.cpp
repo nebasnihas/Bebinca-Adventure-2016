@@ -2,7 +2,6 @@
 #include "commands/DisplayMessageBuilder.hpp"
 #include <boost/algorithm/string.hpp>
 #include <GameStrings.hpp>
-
 SayCommand::SayCommand(GameModel& gameModel, Controller& controller) : gameModel{gameModel}, controller{controller} {}
 
 std::unique_ptr<MessageBuilder> SayCommand::execute(const gsl::span<std::string, -1> arguments,
@@ -11,8 +10,8 @@ std::unique_ptr<MessageBuilder> SayCommand::execute(const gsl::span<std::string,
 
     auto clientList = controller.getAllClients();
 	for (auto& client: clientList) {
-		auto playerID = controller.getPlayerID(client);
-		gameModel.getCharacterByID(playerID)->pushToBuffer(message);
+		auto characterID = controller.getPlayerID(client);
+		gameModel.getCharacterByID(characterID)->pushToBuffer(message, player.playerID, 0);
 	}
 	return DisplayMessageBuilder{message};
 }

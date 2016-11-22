@@ -4,7 +4,7 @@
 #include <string>
 #include "CharacterInstance.hpp"
 #include "game/Spell.hpp"
-#include "../../game-server/GameStrings.hpp"
+#include "GameStrings.hpp"
 
 class CombatAction {
 

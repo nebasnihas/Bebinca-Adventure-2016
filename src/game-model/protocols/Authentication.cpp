@@ -2,7 +2,7 @@
 #include "game/protocols/RequestMessage.hpp"
 #include "game/protocols/ResponseMessage.hpp"
 #include "yaml-cpp/yaml.h"
-#include "../../game-server/GameStrings.hpp"
+#include "GameStrings.hpp"
 #include <string>
 
 namespace protocols {

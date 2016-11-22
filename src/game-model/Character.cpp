@@ -1,6 +1,6 @@
 #include <game/Character.hpp>
 #include <boost/format.hpp>
-#include "../game-server/GameStrings.hpp"
+#include "GameStrings.hpp"
 
 Character::Character() {}
 
@@ -171,8 +171,8 @@ void Character::setOutputBuffer(MessageBuffer outputBuffer) {
 	this->outputBuffer = std::move(outputBuffer);
 }
 
-void Character::pushToBuffer(const std::string message) {
-	outputBuffer->push_back(message);
+void Character::pushToBuffer(const std::string message, const std::string sender, int color) {
+	outputBuffer->push_back(PlayerMessage{message, sender, color});
 }
 
 std::string Character::getStatus() {
