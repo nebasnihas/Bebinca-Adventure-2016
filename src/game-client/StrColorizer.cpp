@@ -65,56 +65,48 @@ void StrColorizer::colortoken_print(WINDOW *win, int ypos, int xpos, const attri
             case color_type::RED:
                 attron(COLOR_PAIR(1));
                 mvwaddch(win,y,x,ct.character);
-                refresh();
                 attroff(COLOR_PAIR(1));
                 break;
 
             case color_type::GREEN:
                 attron(COLOR_PAIR(2));
                 mvwaddch(win,y,x,ct.character);
-                refresh();
                 attroff(COLOR_PAIR(2));
                 break;
 
             case color_type::YELLOW:
                 attron(COLOR_PAIR(3));
                 mvwaddch(win,y,x,ct.character);
-                refresh();
                 attroff(COLOR_PAIR(3));
                 break;
 
             case color_type::BLUE:
                 attron(COLOR_PAIR(4));
                 mvwaddch(win,y,x,ct.character);
-                refresh();
                 attroff(COLOR_PAIR(4));
                 break;
 
             case color_type::MAGENTA:
                 attron(COLOR_PAIR(5));
                 mvwaddch(win,y,x,ct.character);
-                refresh();
                 attroff(COLOR_PAIR(5));
                 break;
 
             case color_type::CYAN:
                 attron(COLOR_PAIR(6));
                 mvwaddch(win,y,x,ct.character);
-                refresh();
                 attroff(COLOR_PAIR(6));
                 break;
 
             case color_type::WHITE:
                 attron(COLOR_PAIR(7));
                 mvwaddch(win,y,x,ct.character);
-                refresh();
                 attroff(COLOR_PAIR(7));
                 break;
 
             default:
                 attron(COLOR_PAIR(7));
                 mvwaddch(win,y,x,ct.character);
-                refresh();
                 attroff(COLOR_PAIR(7));
                 break;
         }
@@ -123,6 +115,7 @@ void StrColorizer::colortoken_print(WINDOW *win, int ypos, int xpos, const attri
 
     }
 
+    refresh();
 
 }
 
