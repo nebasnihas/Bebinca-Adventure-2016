@@ -31,6 +31,7 @@ public:
 	bool createCharacter(const std::string& characterID, const std::string& characterName);
 	bool moveCharacter(const std::string& characterID, const std::string& areaTag);
 	Character* getCharacterByID(const std::string& characterID) const;
+	NPC* getNPCByID(const std::string& npcID) const;
 
 	/*
 	 *	OBJECT FUNCTIONS
@@ -46,6 +47,7 @@ public:
   	std::string getAreaDescription(const std::string& areaID) const;
   	std::unordered_map<std::string, std::string>* getConnectedAreas(const std::string& areaID) const;
 	std::vector<std::string> getCharacterIDsInArea(const std::string& areaID) const;
+	std::vector<std::string> getNPCIDsInArea(const std::string& areaID) const;
 
 	/*
 	 *	LOCATION FUNCTIONS
@@ -82,6 +84,7 @@ public:
 
     void loadActions(const std::unordered_map<std::string, std::shared_ptr<CombatAction>>& actionLookup);
 	void addSpell(Spell spell);
+	void setResets(const std::vector<Resets> resets);
 
     bool engageCharacterInCombat(const std::string& characterID, const std::string& target);
     bool setCombatAction(const std::string& characterID, const std::string& actionName);

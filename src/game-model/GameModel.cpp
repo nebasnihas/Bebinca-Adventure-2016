@@ -166,14 +166,23 @@ std::vector<std::string> GameModel::getCharacterIDsInArea(const std::string& are
 
 	//TODO consider keep track of character inside area class
 	for (const auto& pair : characters) {
-
 		auto character = pair.second;
 		if (character.getAreaID() == areaID) {
 			charactersInArea.push_back(character.getID());
 		}
 	}
-
 	return charactersInArea;
+}
+
+std::vector<std::string> GameModel::getNPCIDsInArea(const std::string &areaID) const {
+	std::vector<std::string>NPCsInArea;
+	for (const auto& pair : npcs) {
+		auto character = pair.second;
+		if (character.getAreaID() == areaID) {
+			NPCsInArea.push_back(character.getID());
+		}
+	}
+	return NPCsInArea;
 }
 
 /*
@@ -193,7 +202,16 @@ Character* GameModel::getCharacterByID(const std::string& characterID) const {
         auto character = (Character*)&(characters.at(characterID));
         return getBodySwappedCharacter(character);
     }
+	else if (npcs.count(characterID) > 0) {
+		return (NPC*)&(npcs.at(characterID));
+	}
+	return nullptr;
+}
 
+NPC* GameModel::getNPCByID(const std::string& npcID) const {
+	if (npcs.count(npcID) > 0) {
+		return (NPC*)&(npcs.at(npcID));
+	}
 	return nullptr;
 }
 
@@ -218,14 +236,14 @@ void GameModel::addNPCsToAreas() {
             try {
 
                 auto& npc = npcTemplates.at(reset.getActionID());
-
                 for (int i = 0; i < reset.getLimit(); i++) {
                     std::string newNpcID = npc.getID();
-                    newNpcID = newNpcID.append(std::to_string(npc.getCounter()));
+//                    newNpcID = newNpcID.append(std::to_string(npc.getCounter()));
+					newNpcID = npc.getName() + "-" + newNpcID.append(std::to_string(npc.getCounter()));
 
                     auto newNPC = NPC(npc);
-                    npc.setID(newNpcID);
-                    npc.setAreaID(reset.getAreaID());
+                    newNPC.setID(newNpcID);
+                    newNPC.setAreaID(reset.getAreaID());
                     npcs.insert(std::pair<std::string, NPC>(newNPC.getID(), newNPC));
                     npc.increaseCounter();
                 }
@@ -238,7 +256,11 @@ void GameModel::addNPCsToAreas() {
 }
 
 void GameModel::setNPCs(const std::unordered_map<std::string, NPC> npcs) {
-    this->npcs = npcs;
+    this->npcTemplates = npcs;
+}
+
+void GameModel::setResets(const std::vector<Resets> resets) {
+	this->resets = resets;
 }
 
 bool GameModel::engageCharacterInCombat(const std::string& characterID, const std::string& target) {

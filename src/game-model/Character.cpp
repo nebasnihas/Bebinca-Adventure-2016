@@ -170,7 +170,9 @@ void Character::setOutputBuffer(MessageBuffer outputBuffer) {
 }
 
 void Character::pushToBuffer(const std::string message) {
-	outputBuffer->push_back(message);
+	if (outputBuffer != nullptr) {
+		outputBuffer->push_back(message);
+	}
 }
 
 std::string Character::getStatus() {
