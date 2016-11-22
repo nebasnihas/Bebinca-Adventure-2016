@@ -59,6 +59,7 @@ private:
 
 public:
 
+    //Set xpos and ypos to zero if you dont want custom positions.
     static void print_color(WINDOW *win, int ypos, int xpos, const std::string& text);
 
 
