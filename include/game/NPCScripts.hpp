@@ -9,12 +9,14 @@
 class NPCScripts {
 public:
 
-    NPCScripts(     const std::unordered_map<std::string, std::vector<std::string>>& qualifierCommandsMap,
+    NPCScripts(     const std::string& scriptingQualifier,
+                    const std::vector<std::string>& scriptingCommands,
                     const std::string& scriptingName,
                     const std::string& scriptingDescription
     );
 
-    std::unordered_map<std::string, std::vector<std::string>> getQualifierCommandsMap() const;
+    std::string getScriptingQualifier() const;
+    std::vector<std::string> getScriptingCommands() const;
     std::string getScriptingName() const;
     std::string getScriptingDescription() const;
 
@@ -25,7 +27,8 @@ public:
     static const std::vector<std::string> defaultScriptingDescription;
 
 private:
-    std::unordered_map<std::string, std::vector<std::string>> qualifierCommandsMap;
+    std::string scriptingQualifier;
+    std::vector<std::string> scriptingCommands;
     std::string scriptingName;
     std::string scriptingDescription;
 };

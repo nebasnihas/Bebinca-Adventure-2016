@@ -131,14 +131,14 @@ public:
                 const std::string& description,
                 const std::string& keywords,
                 const std::string& longDesc,
-                std::vector<NPCScripts>& scripts
+                std::unordered_map<std::string, NPCScripts>& scripts
                 );
 
     std::string getDescription() const;
     std::string getKeywords() const;
     std::string getlongDesc() const;
     int getThac0() const;
-    std::vector<NPCScripts> getScripts() const;
+    std::unordered_map<std::string, NPCScripts> getScripts() const;
 
     int getCounter() const;
     void increaseCounter();
@@ -156,7 +156,7 @@ private:
     std::string keywords;
     std::string longDesc;
     int thac0;
-    std::vector<NPCScripts> scripts;
+    std::unordered_map<std::string, NPCScripts> scripts;
     int counter;
 
 };

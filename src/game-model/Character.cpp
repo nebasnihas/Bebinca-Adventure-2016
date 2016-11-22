@@ -198,7 +198,7 @@ NPC::NPC(const std::string& id,
                    const std::string& description,
                    const std::string& keywords,
                    const std::string& longDesc,
-                   std::vector<NPCScripts>& scripts
+                   std::unordered_map<std::string, NPCScripts>& scripts
                     )
 
                     : Character(id,
@@ -244,7 +244,7 @@ int NPC::getThac0() const {
     return thac0;
 }
 
-std::vector<NPCScripts> NPC::getScripts() const {
+std::unordered_map<std::string, NPCScripts> NPC::getScripts() const {
     return scripts;
 }
 

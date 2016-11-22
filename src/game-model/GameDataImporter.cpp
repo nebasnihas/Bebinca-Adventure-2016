@@ -37,10 +37,9 @@ std::unordered_map<std::string, NPC> GameDataImporter::returnNPCS(const YAML::No
         Inventory inventory;
         std::string areaID;
 
-        vector<NPCScripts> NPCScriptings;
+        unordered_map<string, NPCScripts> NPCScriptings;
         //Scripting Attributes
         if(NPCS["programs"]) {
-            unordered_map<string, std::vector<string>> qualifierCommandsMap;
 
             const YAML::Node programs = NPCS["programs"];
             for (const auto &program : programs) {
@@ -53,10 +52,10 @@ std::unordered_map<std::string, NPC> GameDataImporter::returnNPCS(const YAML::No
                 string scriptingDescriptionString = boost::algorithm::join(scriptingDescription, " ");
 
                 std::pair<string, vector<string>> qualifierCommandsPair (scriptingQualifier, scriptingCommands);
-                qualifierCommandsMap.insert(qualifierCommandsPair);
 
-                NPCScripts newNPCScript = NPCScripts(qualifierCommandsMap, scriptingName, scriptingDescriptionString);
-                NPCScriptings.push_back(newNPCScript);
+                NPCScripts newNPCScript = NPCScripts(scriptingQualifier, scriptingCommands, scriptingName, scriptingDescriptionString);
+
+                NPCScriptings.insert(std::pair<string, NPCScripts>(scriptingQualifier,newNPCScript));
             }
         }
 
