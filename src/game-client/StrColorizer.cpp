@@ -126,7 +126,7 @@ void StrColorizer::colortoken_print(WINDOW *win, int ypos, int xpos, const attri
 
 }
 
-/*
+
 std::ostream& operator<<(std::ostream& os, const color_token& ct){
 
 
@@ -143,12 +143,10 @@ std::ostream& operator<<(std::ostream& os, const color_token& ct){
             << std::endl;
         }
     }
-
-
-
+    
     return os;
 }
-*/
+
 
 color_type StrColorizer::get_color(char c){
 
