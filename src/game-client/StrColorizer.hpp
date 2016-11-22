@@ -45,6 +45,7 @@ private:
     static bool is_tag(char c);
     static color_type get_color(char c);
     static bool is_space(char c);
+    static int process_tagged_str(int i, color_type& c_type, const std::string& text, attribute_string& att_str);
 
     friend std::ostream& operator<<(std::ostream& os, const attribute_string& att_str);
 
@@ -59,7 +60,8 @@ private:
 
 public:
 
-    //Set xpos and ypos to zero if you dont want custom positions.
+    //Set xpos and ypos to zero if you dont want custom positions
+    //Pasing null win would set win to stdscr (dont pass in null win)
     static void print_color(WINDOW *win, int ypos, int xpos, const std::string& text);
 
 
