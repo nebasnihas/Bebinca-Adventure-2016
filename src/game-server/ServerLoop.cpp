@@ -106,6 +106,9 @@ void ServerLoop::initGameModel(GameModel& gameModel) {
     const YAML::Node OBJECTS = dataFile["OBJECTS"];
 
     const YAML::Node RESETS = dataFile["RESETS"];
+	auto resets = GameDataImporter::returnResets(RESETS);
+	gameModel.setResets(resets);
+	gameModel.addNPCsToAreas();
 
     const YAML::Node SHOPS = dataFile["SHOPS"];
 
