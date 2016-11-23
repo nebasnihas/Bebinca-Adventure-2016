@@ -1,7 +1,7 @@
 
 add_executable(game-client
         GameClient.cpp
-        MainMenuWindow.cpp MainMenuWindow.hpp Window.hpp Application.cpp Application.hpp AuthenticationWindow.cpp AuthenticationWindow.hpp ChatWindow.cpp ChatWindow.hpp)
+        MainMenuWindow.cpp MainMenuWindow.hpp Window.hpp Application.cpp Application.hpp AuthenticationWindow.cpp AuthenticationWindow.hpp ChatWindow.cpp ChatWindow.hpp CombatWindow.hpp CombatWindow.cpp)
 
 set_target_properties(game-client
         PROPERTIES

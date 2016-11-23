@@ -16,6 +16,7 @@
 #include "MainMenuWindow.hpp"
 #include "AuthenticationWindow.hpp"
 #include "ChatWindow.hpp"
+#include "CombatWindow.hpp"
 #include <glog/logging.h>
 
 using namespace networking;
@@ -24,6 +25,7 @@ static const std::string MAIN_MENU_WINDOW_ID = "auth";
 static const std::string LOGIN_WINDOW_ID = "login";
 static const std::string REGISTER_WINDOW_ID = "register";
 static const std::string CHAT_WINDOW_ID = "chat";
+static const std::string COMBAT_WINDOW_ID = "combat";
 bool running = true;
 
 std::unique_ptr<Client> networkingClient;
@@ -32,6 +34,7 @@ std::unique_ptr<gui::MainMenuWindow> authWindow;
 std::unique_ptr<gui::AuthenticationWindow> loginWindow;
 std::unique_ptr<gui::AuthenticationWindow> registerWindow;
 std::unique_ptr<gui::ChatWindow> chatWindow;
+std::unique_ptr<gui::CombatWindow> combatWindow;
 
 void setupAuthWindow() {
     authWindow = std::make_unique<gui::MainMenuWindow>();
@@ -89,6 +92,19 @@ void setupChatWindow() {
     });
 
     gameClient->addWindow(CHAT_WINDOW_ID, chatWindow.get());
+}
+
+void setupCombatWindow() {
+    combatWindow = std::make_unique<gui::CombatWindow>();
+//    combatWindow->setOnTODO([](){
+//        gameClient->switchToWindow(CHAT_WINDOW_ID);
+//    });
+//    combatWindow->setOnTODO2([](auto inputText){
+//        auto request = protocols:: ??? ;
+//        networkingClient->send(protocols::serializeRequestMessage(request));
+//    });
+
+    gameClient->addWindow(COMBAT_WINDOW_ID, combatWindow.get());
 }
 
 void handleAuthResponse(const protocols::ResponseMessage& response) {
@@ -162,6 +178,8 @@ int main(int argc, char *argv[]) {
     setupLoginWindow();
     setupRegisterWindow();
     setupChatWindow();
+    setupCombatWindow();
+    gameClient->switchToWindow(COMBAT_WINDOW_ID);
 
     networkingClient = std::make_unique<Client>(argv[1], argv[2]);
     while(running) {
