@@ -29,3 +29,33 @@ strings:
  username-invalid: "You cannot use that username"
 
  player-kicked: "has been kicked out"
+
+ combat-engage-issue: 'You engage $N in battle'
+ combat-engage-receive: 'You have been engaged in battle by $n'
+ combat-attack-issue: 'You attack $N and deal $d damage'
+ combat-attack-receive: 'You take $d damage from $n'
+ combat-attack-id: 'attack'
+ combat-result-victory: 'You won the battle'
+ combat-result-loss: 'You were killed and lost the battle'
+
+ spell-list-header: 'List of Spells: '
+ spell-insufficient-mana: 'Not enough mana to cast $a'
+ spell-unknown: 'You do not know the spell ''$a'''
+ spell-offense-self: 'You cast $a on yourself for $d damage'
+ spell-offense-source: 'You cast $a on $N for $d damage'
+ spell-offense-target: '$n casts $a on you for $d damage'
+ spell-defense-self: 'You cast $a on yourself and heal $d'
+ spell-defense-source: 'You cast $a on $N and heal $d'
+ spell-defense-target: '$n casts $a on you and heals you for $d'
+ spell-generic-self: 'You cast $a on yourself'
+ spell-generic-source: 'You cast $a on $N'
+ spell-generic-target: '$n casts $a on you'
+
+ status-effect-expiry: 'Your status effect wears off'
+
+ character-status: '%s\nLevel: %d\nHealth: %d\nMana: %d\n'
+
+
+
+
+

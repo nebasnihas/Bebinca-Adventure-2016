@@ -2,6 +2,7 @@
 #define ADVENTURE2016_STRINGUTILS_HPP
 
 #include <string>
+#include <vector>
 #include "boost/algorithm/string.hpp"
 
 static inline std::pair<std::string, std::string> separateFirstWord(const std::string text) noexcept
