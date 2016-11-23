@@ -17,7 +17,8 @@ Controller::Controller(GameModel& gameModel, MessageIO& messageIO, ConnectionMan
           messageIO{messageIO},
           commandConfig{commandCreator},
           connectionManager{connectionManager},
-          helpCommand{std::make_unique<HelpCommand>(*this)} {
+          helpCommand{std::make_unique<HelpCommand>(*this)},
+          dataRequestHandler{messageIO, commandConfig} {
     registerCommand(COMMAND_HELP, *helpCommand);
 }
 
@@ -133,7 +134,6 @@ const AccountInfo& Controller::getAccountInfo(const networking::Connection& clie
     return playerAccountMap.find(id)->second;
 }
 
-
-
-
-
+void Controller::processCommandInfoRequest(protocols::CommandName cmdInfoRequest, const networking::Connection& client) {
+    dataRequestHandler.handleDataRequest(cmdInfoRequest, client);
+}

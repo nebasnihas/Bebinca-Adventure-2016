@@ -12,7 +12,7 @@ enum RequestHeader {
     CHARACTER_LIST_REQUEST,
     CHARACTER_LOAD_REQUEST,
     PLAYER_COMMAND_REQUEST,
-    DATA_REQUEST,
+    COMMAND_INFO_REQUEST,
 };
 
 struct RequestMessage {

@@ -69,8 +69,8 @@ std::string GameModel::getObjectDescription(const std::string& areaID, const std
  */
 
 bool GameModel::addArea(const Area area) {
-
-	locations.insert(std::pair<std::string, Area>(area.getID(), std::move(area)));
+    locations.erase(area.getID());
+	locations.emplace(area.getID(), std::move(area));
 
 	// No failure case yet...
 	return true;

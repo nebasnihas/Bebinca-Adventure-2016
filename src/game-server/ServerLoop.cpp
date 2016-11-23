@@ -40,6 +40,11 @@ void ServerLoop::update() {
                 controller.processCommand(playerCommand, clientMessage.connection);
                 break;
             }
+            case protocols::RequestHeader::COMMAND_INFO_REQUEST: {
+                auto req = protocols::readCommandInfoRequest(requestMessage);
+                controller.processCommandInfoRequest(req, clientMessage.connection);
+                break;
+            }
             default:
                 break;
         }
@@ -122,10 +127,7 @@ void ServerLoop::initGameModel(GameModel& gameModel) {
 
 void ServerLoop::send(const MessageBuilder& messageBuilder) {
     for (const auto& msg : messageBuilder.buildMessages()) {
-        auto messageForClient = protocols::DisplayMessage{msg.message, msg.sender};
-        auto responseMessage = protocols::createDisplayResponseMessage(messageForClient);
-        auto serializedResponseMessage = protocols::serializeResponseMessage(responseMessage);
-
+        auto serializedResponseMessage = protocols::serializeResponseMessage(msg.message);
         server.send(networking::Message{msg.client, serializedResponseMessage});
     }
 }
@@ -133,4 +135,10 @@ void ServerLoop::send(const MessageBuilder& messageBuilder) {
 void ServerLoop::disconnectClient(const Connection& connection) {
     LOG(INFO) << "Disconnecting player: " << connection.id;
     server.disconnect(connection);
+}
+
+void ServerLoop::send(const protocols::CommandInfo& info, const Connection& receiver) {
+    auto message = protocols::createCommandInfoResponse(info);
+    auto responseMessage = protocols::serializeResponseMessage(message);
+    server.send(Message{receiver, responseMessage});
 }

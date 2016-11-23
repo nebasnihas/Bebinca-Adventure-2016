@@ -1,16 +1,15 @@
 #ifndef ADVENTURE2016_MESSAGEBUILDER_HPP
 #define ADVENTURE2016_MESSAGEBUILDER_HPP
 
-#include "gsl/gsl"
+#include "game/protocols/ResponseMessage.hpp"
 #include "networking/server.h"
 #include <vector>
 #include <string>
 #include <boost/optional.hpp>
 
 struct MessageInfo {
-    std::string message;
     networking::Connection client;
-    boost::optional<std::string> sender;
+    protocols::ResponseMessage message;
 };
 
 class MessageBuilder {

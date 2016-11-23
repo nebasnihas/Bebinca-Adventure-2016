@@ -51,21 +51,23 @@ Area::Area(const std::string &id, const std::string &title)
         }
 }
 
+Area::Area(std::string id) :id{std::move(id)} {}
+
 //*---------------
 // Getters
 //---------------*
 
 
 //Accessors
-std::string Area::getTitle() const {
+const std::string& Area::getTitle() const {
     return title;
 }
 
-std::string Area::getID() const {
+const std::string& Area::getID() const {
     return id;
 }
 
-std::string Area::getDescription() const {
+const std::string& Area::getDescription() const {
     return description;
 }
 
@@ -73,32 +75,34 @@ Area::Doors* Area::getConnectedAreas() const{
     return (Doors*) &connectedAreas;
 }
 
-std::vector<Object> Area::getObjectList() const {
+const std::vector<Object>& Area::getObjectList() const {
     return objectList;
 }
 
-std::vector<std::string> Area::getExtendedDescriptions() const {
+const std::vector<std::string>& Area::getExtendedDescriptions() const {
     return extendedDescriptions;
 }
 
+void Area::setTitle(const std::string& title) {
+    this->title = title;
+}
 
-//TODO : explain this function
+void Area::setDescription(const std::string& description) {
+    this->description = description;
+}
 
-/*
- std::string Area::getAreaDescription() const {
- 	// Placeholder function
- 	std::string description = "";
- 	description += "Temporary description for " + this->getTitle() + ".";
- 	if (entityList.size() > 0) {
-         description += "\nIn this area:\n";
-         for (Entity entity : entityList) {
-             description += entity.getDisplayName() + "\n";
-         }
-         description += "\nConnected to the:\n";
-         for (auto pair : connectedAreas) {
-             description += pair.first + "\n";
-         }
-     }
-     return description;
- }
-*/
+void Area::addConnectedArea(const std::string& exit, const std::string& areaID) {
+    if (connectedAreas.count(exit) == 1) {
+        connectedAreas.erase(exit);
+    }
+
+    connectedAreas.emplace(exit, areaID);
+}
+
+void Area::removeConnectedArea(const std::string& exit) {
+    connectedAreas.erase(exit);
+}
+
+void Area::addObject(const Object& object) {
+    objectList.emplace_back(object);
+}

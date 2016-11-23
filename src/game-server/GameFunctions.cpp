@@ -14,7 +14,8 @@ GameFunctions::GameFunctions(Controller& controller)
           attackCommand{gameModel, controller},
           castCommand{gameModel, controller},
           statusCommand{gameModel},
-          kickCommand{controller} {
+          kickCommand{controller},
+          editCommand{gameModel} {
     registerCommands();
 }
 
@@ -30,6 +31,7 @@ void GameFunctions::registerCommands() {
     controller.registerCommand(COMMAND_CAST, castCommand);
     controller.registerCommand(COMMAND_STATUS, statusCommand);
     controller.registerCommand(COMMAND_KICK, kickCommand);
+    controller.registerCommand(COMMAND_EDIT, editCommand);
 }
 
 

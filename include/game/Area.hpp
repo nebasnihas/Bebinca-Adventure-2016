@@ -23,19 +23,24 @@ public:
 
 	Area(const std::string &id, const std::string &title, const Doors& connectedAreas, const std::string &description, const std::vector<std::string>& extendedDescriptions);
 	Area(const std::string &id, const std::string &title); //For testing
+    Area(std::string id);
 
 	//*---------------
 	// Getters
 	//---------------*
 
-	std::string getID() const;
-	std::string getTitle() const;
-	std::string getDescription() const;
-	Doors* getConnectedAreas() const;
-    std::vector<Object> getObjectList() const;
-    std::vector<std::string> getExtendedDescriptions() const;
+	const std::string& getID() const;
+	const std::string& getTitle() const;
+	const std::string& getDescription() const;
+    const std::vector<Object>& getObjectList() const;
+    const std::vector<std::string>& getExtendedDescriptions() const;
+    Doors* getConnectedAreas() const;
 
-	//std::string getAreaDescription() const;
+    void setTitle(const std::string& title);
+    void setDescription(const std::string& description);
+    void addConnectedArea(const std::string& exit, const std::string& areaID);
+	void removeConnectedArea(const std::string& exit);
+    void addObject(const Object& object);
 
 private:
     // Id of the area object, may not be needed depending on networking implementation

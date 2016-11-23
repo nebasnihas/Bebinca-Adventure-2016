@@ -24,6 +24,8 @@ public:
 
     virtual void disconnectClient(const networking::Connection& connection) override;
 
+    virtual void send(const protocols::CommandInfo& info, const networking::Connection& receiver) override;
+
 private:
     networking::Server server;
     GameModel gameModel;

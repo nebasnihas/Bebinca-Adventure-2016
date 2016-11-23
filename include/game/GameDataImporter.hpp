@@ -43,4 +43,34 @@ public:
 
 };
 
+namespace YAML {
+template<>
+struct convert<Area> {
+	static Node encode(const Area& area) {
+		const static std::string ID_KEY = "id";
+		const static std::string NAME_KEY = "name";
+		const static std::string DESC_KEY = "desc";
+		const static std::string EXTENDED_DESC_KEY = "extended_descriptions";
+		const static std::string DOORS_KEY = "doors";
+		const static std::string DOOR_DIR_KEY = "dir";
+		const static std::string DOOR_TO_KEY = "to";
+
+		Node node;
+		node[ID_KEY] = area.getID();
+		node[NAME_KEY] = area.getTitle();
+		node[DESC_KEY].push_back(area.getDescription());
+		node[EXTENDED_DESC_KEY] = area.getExtendedDescriptions();
+		for (const auto& door : *area.getConnectedAreas()) {
+			YAML::Node doorNode;
+			doorNode[DOOR_DIR_KEY] = door.first;
+			doorNode[DOOR_TO_KEY] = door.second;
+
+			node[DOORS_KEY].push_back(doorNode);
+		}
+
+		return node;
+	}
+};
+}
+
 #endif

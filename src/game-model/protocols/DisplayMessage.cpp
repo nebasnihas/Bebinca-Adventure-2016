@@ -1,3 +1,4 @@
+#include <glog/logging.h>
 #include "game/protocols/DisplayMessage.hpp"
 
 namespace protocols
@@ -19,18 +20,19 @@ ResponseMessage createDisplayResponseMessage(const DisplayMessage& message)
 }
 
 
-std::string readDisplayResponseMessage(const ResponseMessage& responseMessage)
+DisplayMessage readDisplayResponseMessage(const ResponseMessage& responseMessage)
 {
-    std::string output;
+    CHECK(responseMessage.header == ResponseHeader::DISPLAY_MESSAGE_RESPONSE) << "Invalid response header type";
 
+    DisplayMessage msg;
     if (responseMessage.body[SENDER_KEY]) {
         auto sender = responseMessage.body[SENDER_KEY].as<std::string>();
-        output += "[" + sender + "] - ";
+        msg.sender = sender;
     }
 
-    output += responseMessage.body[MESSAGE_KEY].as<std::string>();
+    msg.message = responseMessage.body[MESSAGE_KEY].as<std::string>();
 
-    return output;
+    return msg;
 }
 
 

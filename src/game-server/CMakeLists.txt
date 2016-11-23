@@ -22,7 +22,10 @@ add_library(game-server-lib
         ${commands_src}
         PigLatinDecorator.cpp PigLatinDecorator.hpp
         MessageIO.hpp
-        ConnectionManager.hpp PlayerRole.hpp AccountInfo.hpp HelpCommand.cpp HelpCommand.hpp YmlSerializer.cpp YmlSerializer.hpp)
+        ConnectionManager.hpp PlayerRole.hpp AccountInfo.hpp
+        HelpCommand.cpp HelpCommand.hpp
+        CommandInfoRequestHandler.cpp CommandInfoRequestHandler.hpp
+        YmlSerializer.cpp YmlSerializer.hpp)
 
 set_target_properties(game-server-lib
         PROPERTIES

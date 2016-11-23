@@ -105,6 +105,13 @@ void ChatWindow::update(int input) {
         }
         case 27:
             clearEntryText();
+            break;
+        case KEY_F(1):
+            onSoftKeyPressed(SoftKey::F1);
+            break;
+        case KEY_F(2):
+            onSoftKeyPressed(SoftKey::F2);
+            break;
         default:
             form_driver(entryForm, input);
             break;
@@ -158,6 +165,16 @@ void ChatWindow::onEnter() {
 
 void ChatWindow::showText(const std::string& text) {
     StrColorizer::print_color(displayWindow, 0, 0, text + "\n");
+}
+
+void ChatWindow::setOnSoftKeyPressed(std::function<void(SoftKey)> callback) {
+    softkeyPressed = callback;
+}
+
+void ChatWindow::onSoftKeyPressed(SoftKey key) {
+    if (softkeyPressed) {
+        softkeyPressed(key);
+    }
 }
 
 }
