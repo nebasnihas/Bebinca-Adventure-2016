@@ -257,8 +257,8 @@ bool GameModel::engageCharacterInCombat(const std::string& characterID, const st
     combatManager.loadCombatInstance(battleInstance);
 
 	auto stringInfo = StringInfo{characterID, target, 0, ""};
-	c1->pushToBuffer(GameStrings::getFormatted(GameStringKeys::COMBAT_ENGAGE, stringInfo), GameStringKeys::MESSAGE_SENDER_BATTLE, 0);
-	c2->pushToBuffer(GameStrings::getFormatted(GameStringKeys::COMBAT_ENGAGED, stringInfo), GameStringKeys::MESSAGE_SENDER_BATTLE, 0);
+	c1->pushToBuffer(GameStrings::getFormatted(GameStringKeys::COMBAT_ENGAGE, stringInfo), GameStringKeys::MESSAGE_SENDER_BATTLE, ColorTag::WHITE);
+	c2->pushToBuffer(GameStrings::getFormatted(GameStringKeys::COMBAT_ENGAGED, stringInfo), GameStringKeys::MESSAGE_SENDER_BATTLE, ColorTag::WHITE);
 
     return true;
 }
@@ -354,13 +354,13 @@ void GameModel::updateStatusEffects() {
                                         }
         );
 		if (eraseIter != statusEffects.end()) {
-			character.pushToBuffer(GameStrings::get(GameStringKeys::STATUS_EFFECT_END), GameStringKeys::MESSAGE_SENDER_SERVER, 0);
+			character.pushToBuffer(GameStrings::get(GameStringKeys::STATUS_EFFECT_END), GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
 		}
         statusEffects.erase(eraseIter, statusEffects.end());
     }
 }
 
-void GameModel::pushToOutputBuffer(const std::string& characterID, std::string message, std::string sender, int color) {
+void GameModel::pushToOutputBuffer(const std::string& characterID, std::string message, std::string sender, std::string color) {
 	getCharacterByID(characterID)->pushToBuffer(message, sender, color);
 }
 
@@ -370,7 +370,7 @@ void GameModel::listValidSpells(const std::string& characterID) {
 	for (auto& spellPairs: spells) {
 		message += spellPairs.first + ", ";
 	}
-	character->pushToBuffer(message, GameStringKeys::MESSAGE_SENDER_SERVER, 0);
+	character->pushToBuffer(message, GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
 }
 
 void GameModel::loadDefaultSpells() {
@@ -398,6 +398,6 @@ void GameModel::castSpell(const std::string& sourceID, const std::string& target
 		}
 	} else {
 		auto unknownSpellMessage = GameStrings::getFormatted(GameStringKeys::SPELL_UNKNOWN, StringInfo{sourceID, targetID, 0, spellID});
-		getCharacterByID(sourceID)->pushToBuffer(unknownSpellMessage, GameStringKeys::MESSAGE_SENDER_SERVER, 0);
+		getCharacterByID(sourceID)->pushToBuffer(unknownSpellMessage, GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
 	}
 }

@@ -77,10 +77,21 @@ const std::string MESSAGE_SENDER_BATTLE = "Battle";
 
 }
 
+namespace ColorTag {
+	const std::string BLACK   = "&l";
+	const std::string RED     = "&r";
+	const std::string GREEN   = "&g";
+	const std::string YELLOW  = "&y";
+	const std::string BLUE    = "&b";
+	const std::string MAGENTA = "&m";
+	const std::string CYAN    = "&c";
+	const std::string WHITE   = "&w";
+};
+
 struct PlayerMessage {
 	std::string text;
 	std::string senderID;
-	int color;
+	std::string color;
 };
 
 struct StringInfo {

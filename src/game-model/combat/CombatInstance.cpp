@@ -19,7 +19,7 @@ void CombatInstance::update() {
             action->execute(characterInstance.getCharacterRef(), characterInstance.getTarget().getCharacterRef());
         } else {
 			auto unknownSpellMessage = GameStrings::getFormatted(GameStringKeys::SPELL_UNKNOWN, StringInfo{"", "", 0, characterInstance.getCombatActionID()});
-			characterInstance.getCharacterRef().pushToBuffer(unknownSpellMessage, GameStringKeys::MESSAGE_SENDER_SERVER, 0);
+			characterInstance.getCharacterRef().pushToBuffer(unknownSpellMessage, GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
         }
 
 		//TODO: Extract default case
@@ -65,11 +65,11 @@ void CombatInstance::battleCleanup() {
             // TODO: Add actual exp tracking
             character.increaseLevel();
             character.setState(CharacterState::IDLE);
-			character.pushToBuffer(GameStrings::get(GameStringKeys::COMBAT_VICTORY), GameStringKeys::MESSAGE_SENDER_BATTLE, 0);
+			character.pushToBuffer(GameStrings::get(GameStringKeys::COMBAT_VICTORY), GameStringKeys::MESSAGE_SENDER_BATTLE, ColorTag::WHITE);
         } else {
             // Character is dead. Set to dead state, GameModel will clean up later.
             character.setState(CharacterState::DEAD);
-			character.pushToBuffer(GameStrings::get(GameStringKeys::COMBAT_LOSS), GameStringKeys::MESSAGE_SENDER_BATTLE, 0);
+			character.pushToBuffer(GameStrings::get(GameStringKeys::COMBAT_LOSS), GameStringKeys::MESSAGE_SENDER_BATTLE, ColorTag::WHITE);
         }
     }
 }

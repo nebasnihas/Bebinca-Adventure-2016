@@ -171,7 +171,7 @@ void Character::setOutputBuffer(MessageBuffer outputBuffer) {
 	this->outputBuffer = std::move(outputBuffer);
 }
 
-void Character::pushToBuffer(const std::string message, const std::string sender, int color) {
+void Character::pushToBuffer(const std::string message, const std::string sender, std::string color) {
 	outputBuffer->push_back(PlayerMessage{message, sender, color});
 }
 

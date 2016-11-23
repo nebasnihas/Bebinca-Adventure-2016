@@ -36,8 +36,8 @@ void CombatAttack::execute(Character& source, Character& target) {
 
 	auto sourceMessage = GameStrings::getFormatted(GameStringKeys::PLAYER_ATTACKS, stringInfo);
 	auto targetMessage = GameStrings::getFormatted(GameStringKeys::PLAYER_ATTACKED, stringInfo);
-	source.pushToBuffer(sourceMessage, GameStringKeys::MESSAGE_SENDER_BATTLE, 0);
-	target.pushToBuffer(targetMessage, GameStringKeys::MESSAGE_SENDER_BATTLE, 0);
+	source.pushToBuffer(sourceMessage, GameStringKeys::MESSAGE_SENDER_BATTLE, ColorTag::WHITE);
+	target.pushToBuffer(targetMessage, GameStringKeys::MESSAGE_SENDER_BATTLE, ColorTag::WHITE);
 }
 
 std::string CombatAttack::getID() {
@@ -50,7 +50,7 @@ void CombatCast::execute(Character& source, Character& target) {
 	auto power = spell.getPower(source);
 	auto stringInfo = StringInfo{source.getName(), target.getName(), power, spell.getName()};
     if (currentMana < manaCost) {
-		source.pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_NO_MANA, stringInfo), GameStringKeys::MESSAGE_SENDER_SERVER, 0);
+		source.pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_NO_MANA, stringInfo), GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
         return;
     } else {
         source.setCurrentMana(currentMana - manaCost);
@@ -66,11 +66,11 @@ void CombatCast::execute(Character& source, Character& target) {
 		case SpellType::BODY_SWAP:
 			//TODO: determine duration of body swap based on player level
 			auto sourceStatus = std::make_shared<BodySwapStatus>(10, target.getID());
-			target.pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_GENERIC_SOURCE, stringInfo), GameStringKeys::MESSAGE_SENDER_SERVER, 0);
+			target.pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_GENERIC_SOURCE, stringInfo), GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
 			source.addStatusEffect(sourceStatus);
 
 			auto targetStatus = std::make_shared<BodySwapStatus>(10, source.getID());
-			source.pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_GENERIC_TARGET, stringInfo), GameStringKeys::MESSAGE_SENDER_SERVER, 0);
+			source.pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_GENERIC_TARGET, stringInfo), GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
 			target.addStatusEffect(targetStatus);
     }
 }
@@ -81,23 +81,23 @@ void CombatCast::castDefenseSpell(Character &source, Character &target, int powe
 		senderID = GameStringKeys::MESSAGE_SENDER_BATTLE;
 	}
 	if (source.getName() == target.getName() || source.getState() == BATTLE) {
-		source.pushToBuffer(GameStrings::format(spell.getHitvict(), stringInfo), senderID, 0);
+		source.pushToBuffer(GameStrings::format(spell.getHitvict(), stringInfo), senderID, ColorTag::WHITE);
 		healDamage(source, power);
 	}
 	else {
-		source.pushToBuffer(GameStrings::format(spell.getHitchar(), stringInfo), senderID, 0);
-		target.pushToBuffer(GameStrings::format(spell.getHitvict(), stringInfo), senderID, 0);
+		source.pushToBuffer(GameStrings::format(spell.getHitchar(), stringInfo), senderID, ColorTag::WHITE);
+		target.pushToBuffer(GameStrings::format(spell.getHitvict(), stringInfo), senderID, ColorTag::WHITE);
 		healDamage(target, power);
 	}
 }
 
 void CombatCast::castOffenseSpell(Character &source, Character &target, int power, const StringInfo &stringInfo) const {
 	if (source.getName() == target.getName()) {
-		source.pushToBuffer(GameStrings::format(spell.getHitvict(), stringInfo), GameStringKeys::MESSAGE_SENDER_SERVER, 0);
+		source.pushToBuffer(GameStrings::format(spell.getHitvict(), stringInfo), GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
 	}
 	else {
-		source.pushToBuffer(GameStrings::format(spell.getHitchar(), stringInfo), GameStringKeys::MESSAGE_SENDER_BATTLE, 0);
-		target.pushToBuffer(GameStrings::format(spell.getHitvict(), stringInfo), GameStringKeys::MESSAGE_SENDER_BATTLE, 0);
+		source.pushToBuffer(GameStrings::format(spell.getHitchar(), stringInfo), GameStringKeys::MESSAGE_SENDER_BATTLE, ColorTag::WHITE);
+		target.pushToBuffer(GameStrings::format(spell.getHitvict(), stringInfo), GameStringKeys::MESSAGE_SENDER_BATTLE, ColorTag::WHITE);
 	}
 	dealDamage(target, power);
 }

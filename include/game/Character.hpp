@@ -94,7 +94,7 @@ public:
     void increaseExp(int expToAdd);
 	void setOutputBuffer(MessageBuffer outputBuffer);
 
-	void pushToBuffer(const std::string message, const std::string sender, int color);
+	void pushToBuffer(const std::string message, const std::string sender, std::string color);
     void addStatusEffect(std::shared_ptr<StatusEffect> statusEffect);
 
     //Defaults

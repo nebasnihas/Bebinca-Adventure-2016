@@ -27,6 +27,6 @@ std::unique_ptr<MessageBuilder> WhisperCommand::execute(const gsl::span<std::str
     auto message = GameStrings::get(GameStringKeys::PRIVATE_CHANNEL) + " "
                    + boost::algorithm::join(arguments.subspan(1, arguments.length() - 1), " ");
 
-	gameModel.getCharacterByID(targetPlayerID)->pushToBuffer(message, player.playerID, 0);
+	gameModel.getCharacterByID(targetPlayerID)->pushToBuffer(message, player.playerID, ColorTag::WHITE);
     return DisplayMessageBuilder{message};
 }

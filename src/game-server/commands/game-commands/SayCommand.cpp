@@ -11,7 +11,7 @@ std::unique_ptr<MessageBuilder> SayCommand::execute(const gsl::span<std::string,
     auto clientList = controller.getAllClients();
 	for (auto& client: clientList) {
 		auto characterID = controller.getPlayerID(client);
-		gameModel.getCharacterByID(characterID)->pushToBuffer(message, player.playerID, 0);
+		gameModel.getCharacterByID(characterID)->pushToBuffer(message, player.playerID, ColorTag::WHITE);
 	}
 	return DisplayMessageBuilder{message};
 }

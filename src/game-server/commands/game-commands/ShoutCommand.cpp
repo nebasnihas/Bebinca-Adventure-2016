@@ -15,7 +15,7 @@ std::unique_ptr<MessageBuilder> ShoutCommand::execute(const gsl::span<std::strin
     std::vector<networking::Connection> localClients;
     for (const auto &character: gameModel.getCharacterIDsInArea(areaID)) {
         localClients.push_back(controller.getClientID(character).get());
-		gameModel.getCharacterByID(character)->pushToBuffer(message, player.playerID, 0);
+		gameModel.getCharacterByID(character)->pushToBuffer(message, player.playerID, ColorTag::WHITE);
     }
 
 
