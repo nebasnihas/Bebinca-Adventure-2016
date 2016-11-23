@@ -70,7 +70,18 @@ const std::string ACTION_KEY = "$a";
 
 const std::string GENERIC_PRONOUN = "they";
 const std::string GENERIC_POSSESSIVE_PRONOUN = "their";
+
+const std::string MESSAGE_SENDER_SERVER = "Server";
+const std::string MESSAGE_SENDER_BATTLE = "Battle";
+
+
 }
+
+struct PlayerMessage {
+	std::string text;
+	std::string senderID;
+	int color;
+};
 
 struct StringInfo {
 	std::string sourceName;
@@ -78,6 +89,7 @@ struct StringInfo {
 	int effect;
 	std::string actionName;
 };
+
 
 class GameStrings {
 public:
@@ -118,6 +130,8 @@ public:
 		}
 	}
 };
+
+
 
 
 #endif //ADVENTURE2016_GAMESTRINGS_H

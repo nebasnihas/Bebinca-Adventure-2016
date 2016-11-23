@@ -1,9 +1,9 @@
 #include <commands/DisplayMessageBuilder.hpp>
 #include "WhisperCommand.hpp"
 #include <boost/algorithm/string.hpp>
-#include <GameStrings.hpp>
+#include "GameStrings.hpp"
 
-WhisperCommand::WhisperCommand(Controller& controller) : controller{controller} {}
+WhisperCommand::WhisperCommand(GameModel& gameModel, Controller& controller) : gameModel{gameModel}, controller{controller} {}
 
 std::unique_ptr<MessageBuilder> WhisperCommand::execute(const gsl::span<std::string, -1> arguments,
                                                         const PlayerInfo& player) {
@@ -26,7 +26,7 @@ std::unique_ptr<MessageBuilder> WhisperCommand::execute(const gsl::span<std::str
 
     auto message = GameStrings::get(GameStringKeys::PRIVATE_CHANNEL) + " "
                    + boost::algorithm::join(arguments.subspan(1, arguments.length() - 1), " ");
-    return DisplayMessageBuilder{message}
-            .addClient(targetClient.get())
-            .setSender(player.playerID);
+
+	gameModel.getCharacterByID(targetPlayerID)->pushToBuffer(message, player.playerID, 0);
+    return DisplayMessageBuilder{message};
 }

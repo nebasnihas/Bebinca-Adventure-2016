@@ -1,5 +1,5 @@
 #include <commands/DisplayMessageBuilder.hpp>
-#include <GameStrings.hpp>
+#include "GameStrings.hpp"
 #include "ShoutCommand.hpp"
 
 ShoutCommand::ShoutCommand(GameModel& gameModel, Controller& controller) : gameModel{gameModel}, controller{controller} {}
@@ -15,9 +15,10 @@ std::unique_ptr<MessageBuilder> ShoutCommand::execute(const gsl::span<std::strin
     std::vector<networking::Connection> localClients;
     for (const auto &character: gameModel.getCharacterIDsInArea(areaID)) {
         localClients.push_back(controller.getClientID(character).get());
+		gameModel.getCharacterByID(character)->pushToBuffer(message, player.playerID, 0);
     }
 
-    return DisplayMessageBuilder{message}
-            .addClients(localClients)
-            .setSender(player.playerID);
+
+
+    return DisplayMessageBuilder{message};
 }

@@ -36,8 +36,8 @@ void CombatAttack::execute(Character& source, Character& target) {
 
 	auto sourceMessage = GameStrings::getFormatted(GameStringKeys::PLAYER_ATTACKS, stringInfo);
 	auto targetMessage = GameStrings::getFormatted(GameStringKeys::PLAYER_ATTACKED, stringInfo);
-	source.pushToBuffer(sourceMessage);
-	target.pushToBuffer(targetMessage);
+	source.pushToBuffer(sourceMessage, GameStringKeys::MESSAGE_SENDER_BATTLE, 0);
+	target.pushToBuffer(targetMessage, GameStringKeys::MESSAGE_SENDER_BATTLE, 0);
 }
 
 std::string CombatAttack::getID() {
@@ -50,7 +50,7 @@ void CombatCast::execute(Character& source, Character& target) {
 	auto power = spell.getPower(source);
 	auto stringInfo = StringInfo{source.getName(), target.getName(), power, spell.getName()};
     if (currentMana < manaCost) {
-		source.pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_NO_MANA, stringInfo));
+		source.pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_NO_MANA, stringInfo), GameStringKeys::MESSAGE_SENDER_SERVER, 0);
         return;
     } else {
         source.setCurrentMana(currentMana - manaCost);
@@ -66,34 +66,38 @@ void CombatCast::execute(Character& source, Character& target) {
 		case SpellType::BODY_SWAP:
 			//TODO: determine duration of body swap based on player level
 			auto sourceStatus = std::make_shared<BodySwapStatus>(10, target.getID());
-			target.pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_GENERIC_SOURCE, stringInfo));
+			target.pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_GENERIC_SOURCE, stringInfo), GameStringKeys::MESSAGE_SENDER_SERVER, 0);
 			source.addStatusEffect(sourceStatus);
 
 			auto targetStatus = std::make_shared<BodySwapStatus>(10, source.getID());
-			source.pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_GENERIC_TARGET, stringInfo));
+			source.pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_GENERIC_TARGET, stringInfo), GameStringKeys::MESSAGE_SENDER_SERVER, 0);
 			target.addStatusEffect(targetStatus);
     }
 }
 
 void CombatCast::castDefenseSpell(Character &source, Character &target, int power, const StringInfo &stringInfo) const {
+	auto senderID = GameStringKeys::MESSAGE_SENDER_SERVER;
+	if (source.getState() == BATTLE) {
+		senderID = GameStringKeys::MESSAGE_SENDER_BATTLE;
+	}
 	if (source.getName() == target.getName() || source.getState() == BATTLE) {
-		source.pushToBuffer(GameStrings::format(spell.getHitvict(), stringInfo));
+		source.pushToBuffer(GameStrings::format(spell.getHitvict(), stringInfo), senderID, 0);
 		healDamage(source, power);
 	}
 	else {
-		source.pushToBuffer(GameStrings::format(spell.getHitchar(), stringInfo));
-		target.pushToBuffer(GameStrings::format(spell.getHitvict(), stringInfo));
+		source.pushToBuffer(GameStrings::format(spell.getHitchar(), stringInfo), senderID, 0);
+		target.pushToBuffer(GameStrings::format(spell.getHitvict(), stringInfo), senderID, 0);
 		healDamage(target, power);
 	}
 }
 
 void CombatCast::castOffenseSpell(Character &source, Character &target, int power, const StringInfo &stringInfo) const {
 	if (source.getName() == target.getName()) {
-		source.pushToBuffer(GameStrings::format(spell.getHitvict(), stringInfo));
+		source.pushToBuffer(GameStrings::format(spell.getHitvict(), stringInfo), GameStringKeys::MESSAGE_SENDER_SERVER, 0);
 	}
 	else {
-		source.pushToBuffer(GameStrings::format(spell.getHitchar(), stringInfo));
-		target.pushToBuffer(GameStrings::format(spell.getHitvict(), stringInfo));
+		source.pushToBuffer(GameStrings::format(spell.getHitchar(), stringInfo), GameStringKeys::MESSAGE_SENDER_BATTLE, 0);
+		target.pushToBuffer(GameStrings::format(spell.getHitvict(), stringInfo), GameStringKeys::MESSAGE_SENDER_BATTLE, 0);
 	}
 	dealDamage(target, power);
 }

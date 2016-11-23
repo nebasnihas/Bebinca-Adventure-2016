@@ -1,5 +1,5 @@
 #include <commands/DisplayMessageBuilder.hpp>
-#include <GameStrings.hpp>
+#include "GameStrings.hpp"
 #include "MoveCommand.hpp"
 
 MoveCommand::MoveCommand(GameModel& gameModel) : gameModel{gameModel} {}

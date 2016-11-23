@@ -1,6 +1,6 @@
 #include <boost/format.hpp>
 #include "CombatInstance.hpp"
-#include "../../game-server/GameStrings.hpp"
+#include "GameStrings.hpp"
 
 CombatInstance::CombatInstance(std::unordered_map<std::string, std::shared_ptr<CombatAction>>* actionLookup, std::string defaultActionID)
         : actionLookup(actionLookup), defaultActionID(defaultActionID) {}
@@ -18,8 +18,8 @@ void CombatInstance::update() {
             auto& action = iter->second;
             action->execute(characterInstance.getCharacterRef(), characterInstance.getTarget().getCharacterRef());
         } else {
-			characterInstance.getCharacterRef().pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_UNKNOWN,
-																			   StringInfo{"", "", 0, characterInstance.getCombatActionID()}));
+			auto unknownSpellMessage = GameStrings::getFormatted(GameStringKeys::SPELL_UNKNOWN, StringInfo{"", "", 0, characterInstance.getCombatActionID()});
+			characterInstance.getCharacterRef().pushToBuffer(unknownSpellMessage, GameStringKeys::MESSAGE_SENDER_SERVER, 0);
         }
 
 		//TODO: Extract default case
@@ -65,11 +65,11 @@ void CombatInstance::battleCleanup() {
             // TODO: Add actual exp tracking
             character.increaseLevel();
             character.setState(CharacterState::IDLE);
-			character.pushToBuffer(GameStrings::get(GameStringKeys::COMBAT_VICTORY));
+			character.pushToBuffer(GameStrings::get(GameStringKeys::COMBAT_VICTORY), GameStringKeys::MESSAGE_SENDER_BATTLE, 0);
         } else {
             // Character is dead. Set to dead state, GameModel will clean up later.
             character.setState(CharacterState::DEAD);
-			character.pushToBuffer(GameStrings::get(GameStringKeys::COMBAT_LOSS));
+			character.pushToBuffer(GameStrings::get(GameStringKeys::COMBAT_LOSS), GameStringKeys::MESSAGE_SENDER_BATTLE, 0);
         }
     }
 }

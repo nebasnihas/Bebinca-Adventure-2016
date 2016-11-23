@@ -3,6 +3,7 @@
 
 #include "Attributes.hpp"
 #include "Inventory.hpp"
+#include "GameStrings.hpp"
 #include <game/StatusEffect.hpp>
 #include <vector>
 #include <iostream>
@@ -11,7 +12,7 @@
 #include <deque>
 #include <memory>
 
-typedef std::shared_ptr<std::deque<std::string>> MessageBuffer;
+typedef std::shared_ptr<std::deque<PlayerMessage>> MessageBuffer;
 
 enum CharacterState {
     IDLE,
@@ -93,7 +94,7 @@ public:
     void increaseExp(int expToAdd);
 	void setOutputBuffer(MessageBuffer outputBuffer);
 
-	void pushToBuffer(const std::string message);
+	void pushToBuffer(const std::string message, const std::string sender, int color);
     void addStatusEffect(std::shared_ptr<StatusEffect> statusEffect);
 
     //Defaults
