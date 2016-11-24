@@ -49,6 +49,7 @@ std::unordered_map<std::string, NPC> GameDataImporter::returnNPCS(const YAML::No
                 vector<string> scriptingDescription = program["description"] ? program["description"].as<vector<string>>() : NPCScripts::defaultScriptingDescription;
 
                 string scriptingQualifier = boost::algorithm::join(qualifier, " ");
+                boost::replace_all(scriptingQualifier, "~", "");
                 string scriptingDescriptionString = boost::algorithm::join(scriptingDescription, " ");
 
                 std::pair<string, vector<string>> qualifierCommandsPair (scriptingQualifier, scriptingCommands);
@@ -82,7 +83,8 @@ std::vector<Area> GameDataImporter::getRooms(const YAML::Node& ROOMS) {
     for(const auto& ROOM : ROOMS){
         vector<string> desc = ROOM["desc"].as<vector<string>>();
         string description = boost::algorithm::join(desc, " ");
-        vector<string> extended_descriptions = ROOM["extended_descriptions"].as<vector<string>>();
+        //vector<string> extended_descriptions = ROOM["extended_descriptions"].as<vector<string>>();
+        vector<string> extended_descriptions;
         string id = ROOM["id"].as<string>();
         string name = ROOM["name"].as<string>();
 

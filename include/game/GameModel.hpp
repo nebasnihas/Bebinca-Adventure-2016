@@ -25,6 +25,7 @@ public:
 
     // TODO: Make this configurable
     static const int GAME_TICKS_PER_COMBAT_TICK = 30;
+	static const int GAME_TICKS_PER_NPC_TICK = 30;
 
 	GameModel();
 
@@ -106,6 +107,8 @@ private:
     Character* getBodySwappedCharacter(Character* character) const;
 	void updateStatusEffects();
 	void loadDefaultSpells();
+	void runNPCScripts();
+	void executeNPCCommand(const std::string& npcID, const std::string& command);
 
 	CombatManager combatManager;
     std::unordered_map<std::string, Character> characters;

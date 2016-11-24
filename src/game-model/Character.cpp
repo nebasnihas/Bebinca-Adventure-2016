@@ -1,5 +1,6 @@
 #include <game/Character.hpp>
 #include <boost/format.hpp>
+#include <game/NPCScripts.hpp>
 #include "GameStrings.hpp"
 
 Character::Character() {}
@@ -13,7 +14,8 @@ Character::Character(const std::string& id,
                      int armor,
                      int gold,
                      Inventory inventory,
-                     std::string& areaID
+                     std::string& areaID,
+                     MessageBuffer outputBuffer
                     )
 
                     :
@@ -26,7 +28,7 @@ Character::Character(const std::string& id,
                     , armor(armor)
                     , gold(gold)
                     , areaID(areaID)
-
+                    , outputBuffer(outputBuffer)
                     {
                        inventory = Inventory(inventory); //Unsure if this works/keeps consistency (Understatement of the year)
                     }
@@ -214,7 +216,8 @@ NPC::NPC(const std::string& id,
                         armor,
                         gold,
                         inventory,
-                        areaID
+                        areaID,
+                        std::make_shared<std::deque<PlayerMessage>>()
                         )
 
                     , thac0(thac0)
@@ -262,4 +265,40 @@ void NPC::increaseCounter() {
 
 void NPC::setCounter(int newCount) {
     this->counter = newCount;
+}
+
+std::vector<std::string> NPC::getCommandsToExecute()
+{
+    std::vector<std::string> commandsToExecute;
+    for (auto& message : *outputBuffer ) {
+
+        // We only read messages that are sent by the server
+        if (message.senderID != GameStringKeys::MESSAGE_SENDER_SERVER) {
+            continue;
+        }
+
+        for (auto& pair : scripts) {
+            auto& script = pair.second;
+
+            // Capture the name of the player that triggered this
+            std::string qualifierPattern = "(\\w+) " + script.getScriptingQualifier();
+            boost::regex effectsRegex{qualifierPattern};
+            boost::smatch matches;
+
+            // If this isn't a match, move on
+            if (!boost::regex_match(message.text, matches, effectsRegex)) {
+                continue;
+            }
+
+            // Substitute the "$n" string for the userID, then add it to the vector of commands
+            std::string userID = matches.str(2);
+            const auto& commands = script.getScriptingCommands();
+            for (auto command : commands) {
+                boost::replace_all(command, "$n", userID);
+                commandsToExecute.push_back(command);
+            }
+        }
+    }
+    outputBuffer->clear();
+    return commandsToExecute;
 }

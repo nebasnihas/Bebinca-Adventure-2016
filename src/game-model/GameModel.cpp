@@ -26,8 +26,9 @@ bool GameModel::createCharacter(const std::string& characterID,
     int experience = NPC::defaultExp;
     Inventory inventory;
     std::string areaID = this->getDefaultLocationID();
+    auto outputBuffer = std::make_shared<std::deque<PlayerMessage>>();
 
-	Character character(      characterID,
+    Character character(      characterID,
 							  characterName,
 							  hit,
 							  damage,
@@ -36,10 +37,9 @@ bool GameModel::createCharacter(const std::string& characterID,
 							  armor,
 							  gold,
 							  inventory,
-							  areaID
+							  areaID,
+                              outputBuffer
 	);
-	auto outputBuffer = std::make_shared<std::deque<PlayerMessage>>();
-	character.setOutputBuffer(outputBuffer);
 
 	characters.insert(std::pair<std::string, Character>(characterID, character));
 
@@ -331,6 +331,10 @@ void GameModel::update() {
     // Consider not calling this every tick
     updateStatusEffects();
 
+    if (gameTicks % GameModel::GAME_TICKS_PER_NPC_TICK == 0) {
+        runNPCScripts();
+    }
+
     gameTicks++;
 }
 
@@ -443,4 +447,50 @@ void GameModel::castSpell(const std::string& sourceID, const std::string& target
 		auto unknownSpellMessage = GameStrings::getFormatted(GameStringKeys::SPELL_UNKNOWN, StringInfo{sourceID, targetID, 0, spellID});
 		getCharacterByID(sourceID)->pushToBuffer(unknownSpellMessage, GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
 	}
+}
+
+void GameModel::runNPCScripts() {
+
+    for (auto& pair : npcs) {
+        auto& npc = pair.second;
+        auto commands = npc.getCommandsToExecute();
+
+        for (const auto& command : commands) {
+            executeNPCCommand(npc.getID(), command);
+        }
+    }
+}
+
+void GameModel::executeNPCCommand(const std::string &npcID, const std::string &command) {
+    std::stringstream ss;
+    ss.str(command);
+    std::string token;
+    std::getline(ss, token, ' ');
+
+    if (token == "say") {
+
+        std::string message;
+        std::getline(ss, message, ' ');
+        sendLocalMessage(npcID, message);
+
+        if (message == "") {
+            return;
+        }
+
+        sendLocalMessage(npcID, message);
+
+    } else if (token == "mpechoat") {
+
+        std::string target;
+        std::getline(ss, target, ' ');
+
+        std::string message;
+        std::getline(ss, message, ' ');
+
+        if (target == "" || message == "") {
+            return;
+        }
+
+        sendPrivateMessage(npcID, message, target);
+    }
 }

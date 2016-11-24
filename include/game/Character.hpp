@@ -4,8 +4,10 @@
 #include "Attributes.hpp"
 #include "Inventory.hpp"
 #include "GameStrings.hpp"
-#include <game/NPCScripts.hpp>
 #include <game/StatusEffect.hpp>
+#include <game/NPCScripts.hpp>
+#include <boost/regex.hpp>
+#include <boost/algorithm/string.hpp>
 #include <vector>
 #include <unordered_map>
 #include <iostream>
@@ -57,7 +59,8 @@ public:
                     int armor,
                     int gold,
                     Inventory inventory,
-                    std::string& areaID
+                    std::string& areaID,
+                    MessageBuffer outputBuffer
                     );
 
     std::string getName() const;
@@ -144,6 +147,8 @@ public:
     int getCounter() const;
     void increaseCounter();
     void setCounter(int newCount);
+
+    std::vector<std::string> getCommandsToExecute();
 
     //Defaults
     static const std::vector<std::string> defaultDescription;
