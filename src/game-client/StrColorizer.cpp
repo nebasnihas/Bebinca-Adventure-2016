@@ -204,5 +204,5 @@ int StrColorizer::process_tagged_str(int i, color_type& c_type, const std::strin
 
     }
 
-    return i;
+    return --i; //We return the last char before a tag
 }
