@@ -201,7 +201,8 @@ NPC::NPC(const std::string& id,
                    int thac0,
                    const std::string& description,
                    const std::string& keywords,
-                   const std::string& longDesc
+                   const std::string& longDesc,
+                   std::unordered_map<std::string, NPCScripts>& scripts
                     )
 
                     : Character(id,
@@ -220,6 +221,8 @@ NPC::NPC(const std::string& id,
                     , description(description)
                     , keywords(keywords)
                     , longDesc(longDesc)
+                    , scripts(scripts)
+
                     {
                     }
 
@@ -243,6 +246,10 @@ std::string NPC::getlongDesc() const {
 
 int NPC::getThac0() const {
     return thac0;
+}
+
+std::unordered_map<std::string, NPCScripts> NPC::getScripts() const {
+    return scripts;
 }
 
 int NPC::getCounter() const {

@@ -4,8 +4,10 @@
 #include "Attributes.hpp"
 #include "Inventory.hpp"
 #include "GameStrings.hpp"
+#include <game/NPCScripts.hpp>
 #include <game/StatusEffect.hpp>
 #include <vector>
+#include <unordered_map>
 #include <iostream>
 #include <memory>
 #include <algorithm>
@@ -129,13 +131,15 @@ public:
                 int thac0,
                 const std::string& description,
                 const std::string& keywords,
-                const std::string& longDesc
+                const std::string& longDesc,
+                std::unordered_map<std::string, NPCScripts>& scripts
                 );
 
     std::string getDescription() const;
     std::string getKeywords() const;
     std::string getlongDesc() const;
     int getThac0() const;
+    std::unordered_map<std::string, NPCScripts> getScripts() const;
 
     int getCounter() const;
     void increaseCounter();
@@ -153,6 +157,7 @@ private:
     std::string keywords;
     std::string longDesc;
     int thac0;
+    std::unordered_map<std::string, NPCScripts> scripts;
     int counter;
 
 };
