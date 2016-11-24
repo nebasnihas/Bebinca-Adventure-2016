@@ -96,6 +96,9 @@ public:
 	void castSpell(const std::string& sourceID, const std::string& targetID, const std::string& spellID);
 
 	void pushToOutputBuffer(const std::string& characterID, std::string message, std::string sender, std::string color);
+	void sendGlobalMessage(const std::string& senderID, std::string message);
+	void sendLocalMessage(const std::string& senderID, std::string message);
+	void sendPrivateMessage(const std::string& senderID, std::string message, const std::string& target);
 
 private:
     void manageDeadCharacters();

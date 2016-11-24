@@ -116,7 +116,7 @@ void Controller::update() {
 		for (auto& message: *outputBuffer ) {
 			auto displayMessage = DisplayMessageBuilder{message.text}.
 					addClient(client).
-					setSender(message.color + message.senderID + ColorTag::CYAN);
+					setSender(message.color + message.senderID + ColorTag::WHITE);
 			sendOutput(displayMessage);
 		}
 		outputBuffer->clear();

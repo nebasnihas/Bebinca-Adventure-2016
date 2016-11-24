@@ -172,7 +172,9 @@ void Character::setOutputBuffer(MessageBuffer outputBuffer) {
 }
 
 void Character::pushToBuffer(const std::string message, const std::string sender, std::string color) {
-	outputBuffer->push_back(PlayerMessage{message, sender, color});
+	if (outputBuffer != nullptr) {
+		outputBuffer->push_back(PlayerMessage{message, sender, color});
+	}
 }
 
 std::string Character::getStatus() {

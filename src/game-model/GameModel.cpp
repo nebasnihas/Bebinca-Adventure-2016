@@ -386,6 +386,27 @@ void GameModel::pushToOutputBuffer(const std::string& characterID, std::string m
 	getCharacterByID(characterID)->pushToBuffer(message, sender, color);
 }
 
+void GameModel::sendGlobalMessage(const std::string& senderID, std::string message) {
+	for (const auto& pair : characters) {
+		auto character = pair.second;
+		character.pushToBuffer(message, senderID, ColorTag::WHITE);
+	}
+}
+
+void GameModel::sendLocalMessage(const std::string& senderID, std::string message) {
+	auto areaID = getCharacterByID(senderID)->getAreaID();
+	for (const auto &character: getCharacterIDsInArea(areaID)) {
+		getCharacterByID(character)->pushToBuffer(message, senderID, ColorTag::WHITE);
+	}
+}
+
+void GameModel::sendPrivateMessage(const std::string& senderID, std::string message, const std::string& target) {
+	auto targetCharacter = getCharacterByID(target);
+	if (targetCharacter != nullptr) {
+		targetCharacter->pushToBuffer(message, senderID, ColorTag::WHITE);
+	}
+}
+
 void GameModel::listValidSpells(const std::string& characterID) {
 	auto character = getCharacterByID(characterID);
 	std::string message = GameStrings::get(GameStringKeys::SPELL_LIST) + "\n";
