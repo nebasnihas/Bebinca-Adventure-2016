@@ -1,6 +1,6 @@
 #include <commands/DisplayMessageBuilder.hpp>
 #include <boost/algorithm/string.hpp>
-#include <GameStrings.hpp>
+#include "GameStrings.hpp"
 #include "ListPlayersCommand.hpp"
 
 ListPlayersCommand::ListPlayersCommand(GameModel& gameModel) : gameModel{gameModel} {}

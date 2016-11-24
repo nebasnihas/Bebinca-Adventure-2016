@@ -1,4 +1,4 @@
-#include <GameStrings.hpp>
+#include "GameStrings.hpp"
 #include <Controller.hpp>
 #include "KickCommand.hpp"
 

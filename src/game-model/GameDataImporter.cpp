@@ -227,7 +227,7 @@ bool GameDataImporter::tryParseSpell(const YAML::Node &SPELL, SpellType spellTyp
         duration = SPELL["Duration"].as<int>();
     }
 
-    retSpell = Spell(name, mana, spellType, effect);
+    retSpell = Spell(name, mana, spellType, effect, hitchar, hitroom, hitvict);
     return true;
 }
 

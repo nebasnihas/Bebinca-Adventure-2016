@@ -76,6 +76,10 @@ GameModel& Controller::getGameModel() const {
 }
 
 void Controller::removePlayer(const networking::Connection& clientID) {
+    if(playerMap.right.count(clientID) == 0) {
+        return;
+    }
+
     auto player = getPlayerID(clientID);
 
     playerMap.right.erase(clientID);
@@ -110,9 +114,9 @@ void Controller::update() {
 		auto targetChar = gameModel.getCharacterByID(getPlayerID(client));
 		auto outputBuffer = targetChar->getOutputBuffer();
 		for (auto& message: *outputBuffer ) {
-			auto displayMessage = DisplayMessageBuilder{message}.
+			auto displayMessage = DisplayMessageBuilder{message.text}.
 					addClient(client).
-					setSender(DisplayMessageBuilder::SENDER_SERVER);
+					setSender(message.color + message.senderID + ColorTag::CYAN);
 			sendOutput(displayMessage);
 		}
 		outputBuffer->clear();

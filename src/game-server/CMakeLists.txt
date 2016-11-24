@@ -1,5 +1,5 @@
 add_library(string-resource-importer
-        StringResourceImporter.cpp GameStrings.hpp)
+        StringResourceImporter.cpp ../../include/GameStrings.hpp)
 
 set_target_properties(string-resource-importer
         PROPERTIES
