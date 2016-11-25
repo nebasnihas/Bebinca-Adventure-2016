@@ -129,7 +129,8 @@ bool GameModel::moveCharacter(const std::string& characterID, const std::string&
         return false;
     }
 
-    auto area = getAreaByID(character->getAreaID());
+    auto currAreaID = character->getAreaID();
+    auto area = getAreaByID(currAreaID);
     if (area == nullptr) {
         return false;
     }
@@ -143,8 +144,32 @@ bool GameModel::moveCharacter(const std::string& characterID, const std::string&
     }
 
     character->setAreaID(connectedArea->second);
+    sendMoveUpdateMessages(character->getID(), currAreaID, areaTag, character->getAreaID(), findDirectionByAreaID(connectedArea->second, currAreaID));
+
     return true;
 
+}
+
+std::string GameModel::findDirectionByAreaID(const std::string& sourceID, const std::string& destID) {
+    auto connectedAreas = *(getAreaByID(sourceID)->getConnectedAreas());
+    return std::find_if(connectedAreas.begin(), connectedAreas.end(), [&destID] (const auto& pair) { return pair.second == destID; })->first;
+}
+
+void GameModel::sendMoveUpdateMessages(const std::string& playerID,
+                                       const std::string& prevAreaID, const std::string& prevDir,
+                                       const std::string& newAreaID, const std::string& newDir) {
+
+    auto prevStrInfo = StringInfo{playerID, "", 0, prevDir};
+    for (const auto& characterID : getCharacterIDsInArea(prevAreaID)) {
+        auto character = getCharacterByID(characterID, false);
+        character->pushToBuffer(GameStrings::getFormatted(GameStringKeys::PLAYER_LEAVE, prevStrInfo), GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
+    }
+
+    auto newStrInfo = StringInfo{playerID, "", 0, newDir};
+    for (const auto& characterID : getCharacterIDsInArea(newAreaID)) {
+        auto character = getCharacterByID(characterID, false);
+        character->pushToBuffer(GameStrings::getFormatted(GameStringKeys::PLAYER_ENTER, newStrInfo), GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
+    }
 }
 
 bool GameModel::characterCanMove(const Character& character) {
@@ -161,7 +186,7 @@ bool GameModel::characterIsDead(const std::string& characterID) {
     return character->getState() == CharacterState::DEAD;
 }
 
-std::vector<std::string> GameModel::getCharacterIDsInArea(const std::string& areaID) const {
+std::vector<std::string> GameModel::getPlayerIDsInArea(const std::string &areaID) const {
 	Area* area = getAreaByID(areaID);
 
 	std::vector<std::string> charactersInArea;
@@ -185,6 +210,17 @@ std::vector<std::string> GameModel::getNPCIDsInArea(const std::string &areaID) c
 		}
 	}
 	return NPCsInArea;
+}
+
+std::vector<std::string> GameModel::getCharacterIDsInArea(const std::string &areaID) const {
+    std::vector<std::string> charactersInArea;
+    auto playersIDs = getPlayerIDsInArea(areaID);
+    auto npcsIDs = getNPCIDsInArea(areaID);
+
+    charactersInArea.reserve(playersIDs.size() + npcsIDs.size());
+    charactersInArea.insert(charactersInArea.end(), playersIDs.begin(), playersIDs.end());
+    charactersInArea.insert(charactersInArea.end(), npcsIDs.begin(), npcsIDs.end());
+    return charactersInArea;
 }
 
 /*
@@ -418,11 +454,13 @@ void GameModel::sendGlobalMessage(const std::string& senderID, std::string messa
 	}
 	for (const auto& pair : npcs) {
 		auto character = pair.second;
-		character.pushToBuffer(message, getCharacterByID(senderID)->getName(), ColorTag::WHITE);
+        if (character.getID() == senderID) {
+            character.pushToBuffer(message, getCharacterByID(senderID)->getName(), ColorTag::WHITE);
+        }
 	}
 }
 
-void GameModel::sendLocalMessage(const std::string& senderID, std::string message) {
+void GameModel::sendLocalMessageFromCharacter(const std::string& senderID, std::string message) {
 	auto areaID = getCharacterByID(senderID)->getAreaID();
 	for (const auto &character: getCharacterIDsInArea(areaID)) {
 		getCharacterByID(character)->pushToBuffer(message, getCharacterByID(senderID)->getName(), ColorTag::WHITE);
@@ -495,14 +533,13 @@ void GameModel::executeNPCCommand(const std::string &npcID, const std::string &c
     if (token == "say") {
 
         std::string message;
-        std::getline(ss, message, ' ');
-        sendLocalMessage(npcID, message);
+        std::getline(ss, message);
 
         if (message == "") {
             return;
         }
 
-        sendLocalMessage(npcID, message);
+        sendLocalMessageFromCharacter(npcID, message);
 
     } else if (token == "mpechoat") {
 
@@ -510,7 +547,7 @@ void GameModel::executeNPCCommand(const std::string &npcID, const std::string &c
         std::getline(ss, target, ' ');
 
         std::string message;
-        std::getline(ss, message, ' ');
+        std::getline(ss, message);
 
         if (target == "" || message == "") {
             return;

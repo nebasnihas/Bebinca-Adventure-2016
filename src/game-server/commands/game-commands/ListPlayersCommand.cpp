@@ -9,7 +9,7 @@ std::unique_ptr<MessageBuilder> ListPlayersCommand::execute(const gsl::span<std:
                                                             const PlayerInfo& player) {
     auto areaID = gameModel.getCharacterByID(player.playerID)->getAreaID();
     std::string message = GameStrings::get(GameStringKeys::PLAYERS_AREA) + "\n";
-    for (const auto& playerID: gameModel.getCharacterIDsInArea(areaID)) {
+    for (const auto& playerID: gameModel.getPlayerIDsInArea(areaID)) {
         message += gameModel.getCharacterByID(playerID)->getName() + " \n";
     }
 	for (const auto& NPCID: gameModel.getNPCIDsInArea(areaID)) {

@@ -30,6 +30,9 @@ strings:
 
  player-kicked: "has been kicked out"
 
+ game-player-enter-area: '$n arrives from the $a.'
+ game-player-leave-area: '$n leaves to the $a.'
+
  combat-engage-issue: 'You engage $N in battle'
  combat-engage-receive: 'You have been engaged in battle by $n'
  combat-attack-issue: 'You attack $N and deal $d damage'

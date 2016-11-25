@@ -291,7 +291,7 @@ std::vector<std::string> NPC::getCommandsToExecute()
             }
 
             // Substitute the "$n" string for the userID, then add it to the vector of commands
-            std::string userID = matches.str(2);
+            std::string userID = matches.str(1);
             const auto& commands = script.getScriptingCommands();
             for (auto command : commands) {
                 boost::replace_all(command, "$n", userID);

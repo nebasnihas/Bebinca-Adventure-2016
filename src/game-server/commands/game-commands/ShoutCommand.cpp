@@ -10,6 +10,6 @@ std::unique_ptr<MessageBuilder> ShoutCommand::execute(const gsl::span<std::strin
     for (const auto& target : arguments) {
         message += target + " ";
     }
-	gameModel.sendLocalMessage(player.playerID, message);
+    gameModel.sendLocalMessageFromCharacter(player.playerID, message);
     return DisplayMessageBuilder{message};
 }

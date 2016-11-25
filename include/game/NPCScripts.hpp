@@ -22,7 +22,7 @@ public:
 
     //Defaults
     static const std::vector<std::string> defaultCommand;
-    static const std::vector<std::string> defaultQualifier;
+    static const std::string defaultQualifier;
     static const std::string defaultScriptingName;
     static const std::vector<std::string> defaultScriptingDescription;
 

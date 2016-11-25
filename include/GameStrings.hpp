@@ -37,6 +37,9 @@ const std::string USERNAME_INVALD = "username-invalid";
 
 const std::string PLAYER_KICKED = "player-kicked";
 
+const std::string PLAYER_ENTER = "game-player-enter-area";
+const std::string PLAYER_LEAVE = "game-player-leave-area";
+
 const std::string COMBAT_ENGAGE = "combat-engage-issue";
 const std::string COMBAT_ENGAGED = "combat-engage-receive";
 const std::string PLAYER_ATTACKS = "combat-attack-issue";

@@ -17,7 +17,7 @@ NPCScripts::NPCScripts(const std::string &scriptingQualifier,
                       }
 
 const std::vector<std::string> NPCScripts::defaultCommand = {" ", " "};
-const std::vector<std::string> NPCScripts::defaultQualifier = {" ", " "};
+const std::string NPCScripts::defaultQualifier = " ";
 const std::string NPCScripts::defaultScriptingName = {" ", " "};
 const std::vector<std::string> NPCScripts::defaultScriptingDescription = {" ", " "};
 

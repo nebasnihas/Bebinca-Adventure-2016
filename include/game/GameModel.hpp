@@ -47,8 +47,9 @@ public:
   	Area* getAreaByID(const std::string& areaID) const;
   	std::string getAreaDescription(const std::string& areaID) const;
   	std::unordered_map<std::string, std::string>* getConnectedAreas(const std::string& areaID) const;
-	std::vector<std::string> getCharacterIDsInArea(const std::string& areaID) const;
+	std::vector<std::string> getPlayerIDsInArea(const std::string &areaID) const;
 	std::vector<std::string> getNPCIDsInArea(const std::string& areaID) const;
+    std::vector<std::string> getCharacterIDsInArea(const std::string& areaID) const;
 
 	/*
 	 *	LOCATION FUNCTIONS
@@ -98,7 +99,7 @@ public:
 
 	void pushToOutputBuffer(const std::string& characterID, std::string message, std::string sender, std::string color);
 	void sendGlobalMessage(const std::string& senderID, std::string message);
-	void sendLocalMessage(const std::string& senderID, std::string message);
+	void sendLocalMessageFromCharacter(const std::string &senderID, std::string message);
 	void sendPrivateMessage(const std::string& senderID, std::string message, const std::string& target);
 
 private:
@@ -112,6 +113,8 @@ private:
 	void loadDefaultSpells();
 	void runNPCScripts();
 	void executeNPCCommand(const std::string& npcID, const std::string& command);
+	void sendMoveUpdateMessages(const std::string& playerID, const std::string& prevAreaID, const std::string& prevDir, const std::string& newAreaID, const std::string& newDir);
+	std::string findDirectionByAreaID(const std::string& sourceID, const std::string& destID);
 
 	CombatManager combatManager;
     std::unordered_map<std::string, Character> characters;

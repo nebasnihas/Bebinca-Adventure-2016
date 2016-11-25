@@ -39,24 +39,23 @@ std::unordered_map<std::string, NPC> GameDataImporter::returnNPCS(const YAML::No
 
         unordered_map<string, NPCScripts> NPCScriptings;
         //Scripting Attributes
-        if(NPCS["programs"]) {
+        if(nodeNPC["programs"]) {
 
-            const YAML::Node programs = NPCS["programs"];
+            const YAML::Node programs = nodeNPC["programs"];
             for (const auto &program : programs) {
                 vector<string> scriptingCommands = program["commands"] ? program["commands"].as<vector<string>>() : NPCScripts::defaultCommand;
-                vector<string> qualifier = program["qualifier"] ? program["qualifier"].as<vector<string>>() : NPCScripts::defaultQualifier;
+                string qualifier = program["qualifier"] ? program["qualifier"].as<string>() : NPCScripts::defaultQualifier;
                 string scriptingName = program["name"] ? program["name"].as<string>() : NPCScripts::defaultScriptingName;
                 vector<string> scriptingDescription = program["description"] ? program["description"].as<vector<string>>() : NPCScripts::defaultScriptingDescription;
 
-                string scriptingQualifier = boost::algorithm::join(qualifier, " ");
-                boost::replace_all(scriptingQualifier, "~", "");
+                boost::replace_all(qualifier, "~", "");
                 string scriptingDescriptionString = boost::algorithm::join(scriptingDescription, " ");
 
-                std::pair<string, vector<string>> qualifierCommandsPair (scriptingQualifier, scriptingCommands);
+                std::pair<string, vector<string>> qualifierCommandsPair (qualifier, scriptingCommands);
 
-                NPCScripts newNPCScript = NPCScripts(scriptingQualifier, scriptingCommands, scriptingName, scriptingDescriptionString);
+                NPCScripts newNPCScript = NPCScripts(qualifier, scriptingCommands, scriptingName, scriptingDescriptionString);
 
-                NPCScriptings.insert(std::pair<string, NPCScripts>(scriptingQualifier,newNPCScript));
+                NPCScriptings.insert(std::pair<string, NPCScripts>(qualifier,newNPCScript));
             }
         }
 
