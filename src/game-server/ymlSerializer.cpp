@@ -54,7 +54,50 @@ Character ymlSerializer::load_from_file(const std::string &username) {
     c.setName(name);
     c.setGold(gold);
 
+    //Change as needed
+
     return c;
+
+
+}
+
+std::map<std::string, std::string> ymlSerializer::update_savefiledata(const Character& c) {
+
+    std::map<std::string,std::string> ret_map = {
+            {ID, c.getID()},
+            {NAME, c.getName()},
+            {AREAID, c.getAreaID()},
+            {DAMAGE, c.getDamage()},
+          //  {ARMOR, std::to_string(c.getArmor())}, causing compile issues check
+            {GOLD, std::to_string(c.getGold())},
+            {LEVEL, std::to_string(c.getLevel())},
+            {CURRENTMANA, std::to_string(c.getCurrentMana())},
+            {CURRENTHEALTH, std::to_string(c.getCurrentHealth())},
+            {EXPERIENCE, std::to_string(c.getExp())}
+    };
+
+    return ret_map;
+
+
+}
+
+void ymlSerializer::save_to_file(const Character &c) {
+
+    YAML::Node user_update_file = YAML::LoadFile(get_saveloc(c.getName()));
+    std::map<std::string,std::string> savefile_update_map = update_savefiledata(c);
+
+    //Create emitter with key:values
+
+    for (std::map<std::string, std::string>::iterator it = savefile_update_map.begin(); it!= savefile_update_map.end(); it++){
+       user_update_file[it->first] = it->second;
+    }
+
+
+    std::ofstream f;
+    f.open(get_saveloc(c.getName()));
+    f <<user_update_file; //Dump contents as string
+    f.close();
+
 
 
 }
