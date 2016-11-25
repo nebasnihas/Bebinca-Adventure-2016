@@ -115,6 +115,7 @@ private:
 	void executeNPCCommand(const std::string& npcID, const std::string& command);
 	void sendMoveUpdateMessages(const std::string& playerID, const std::string& prevAreaID, const std::string& prevDir, const std::string& newAreaID, const std::string& newDir);
 	std::string findDirectionByAreaID(const std::string& sourceID, const std::string& destID);
+	std::string getRelativeDirection(const std::string& direction);
 
 	CombatManager combatManager;
     std::unordered_map<std::string, Character> characters;

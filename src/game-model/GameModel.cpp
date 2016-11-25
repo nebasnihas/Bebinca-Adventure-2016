@@ -144,7 +144,8 @@ bool GameModel::moveCharacter(const std::string& characterID, const std::string&
     }
 
     character->setAreaID(connectedArea->second);
-    sendMoveUpdateMessages(character->getID(), currAreaID, areaTag, character->getAreaID(), findDirectionByAreaID(connectedArea->second, currAreaID));
+    auto newDir = getRelativeDirection(findDirectionByAreaID(connectedArea->second, currAreaID));
+    sendMoveUpdateMessages(character->getID(), currAreaID, getRelativeDirection(areaTag), character->getAreaID(), newDir);
 
     return true;
 
@@ -153,6 +154,23 @@ bool GameModel::moveCharacter(const std::string& characterID, const std::string&
 std::string GameModel::findDirectionByAreaID(const std::string& sourceID, const std::string& destID) {
     auto connectedAreas = *(getAreaByID(sourceID)->getConnectedAreas());
     return std::find_if(connectedAreas.begin(), connectedAreas.end(), [&destID] (const auto& pair) { return pair.second == destID; })->first;
+}
+
+std::string GameModel::getRelativeDirection(const std::string& direction) {
+    if (direction == GameStringKeys::UP_DIRECTION) {
+        return GameStrings::get(GameStringKeys::UP_RELATIVE_DIRECTION);
+    } else if (direction == GameStringKeys::DOWN_DIRECTION) {
+        return GameStrings::get(GameStringKeys::DOWN_RELATIVE_DIRECTION);
+    } else if (direction == GameStringKeys::NORTH_DIRECTION) {
+        return GameStrings::get(GameStringKeys::NORTH_RELATIVE_DIRECTION);
+    } else if (direction == GameStringKeys::SOUTH_DIRECTION) {
+        return GameStrings::get(GameStringKeys::SOUTH_RELATIVE_DIRECTION);
+    } else if (direction == GameStringKeys::EAST_DIRECTION) {
+        return GameStrings::get(GameStringKeys::EAST_RELATIVE_DIRECTION);
+    } else if (direction == GameStringKeys::WEST_DIRECTION) {
+        return GameStrings::get(GameStringKeys::WEST_RELATIVE_DIRECTION);
+    }
+    return direction;
 }
 
 void GameModel::sendMoveUpdateMessages(const std::string& playerID,
@@ -167,8 +185,10 @@ void GameModel::sendMoveUpdateMessages(const std::string& playerID,
 
     auto newStrInfo = StringInfo{playerID, "", 0, newDir};
     for (const auto& characterID : getCharacterIDsInArea(newAreaID)) {
-        auto character = getCharacterByID(characterID, false);
-        character->pushToBuffer(GameStrings::getFormatted(GameStringKeys::PLAYER_ENTER, newStrInfo), GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
+        if (playerID != characterID) {
+            auto character = getCharacterByID(characterID, false);
+            character->pushToBuffer(GameStrings::getFormatted(GameStringKeys::PLAYER_ENTER, newStrInfo), GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
+        }
     }
 }
 

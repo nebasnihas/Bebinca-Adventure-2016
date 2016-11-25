@@ -30,8 +30,14 @@ strings:
 
  player-kicked: "has been kicked out"
 
- game-player-enter-area: '$n arrives from the $a.'
- game-player-leave-area: '$n leaves to the $a.'
+ game-player-enter-area: '$n arrives from $a.'
+ game-player-leave-area: '$n leaves to $a.'
+ up-relative-direction: 'above'
+ down-relative-direction: 'below'
+ north-relative-direction: 'the north'
+ south-relative-direction: 'the south'
+ east-relative-direction: 'the east'
+ west-relative-direction: 'the west'
 
  combat-engage-issue: 'You engage $N in battle'
  combat-engage-receive: 'You have been engaged in battle by $n'
