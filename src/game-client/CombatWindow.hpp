@@ -33,9 +33,12 @@ private:
     void appendText(const std::string& text);
 
     WINDOW* combatWindow;
-    WINDOW* player1Window;
-    WINDOW* player2Window;
+    WINDOW* character1Window;
+    WINDOW* character2Window;
+    WINDOW* character1AsciiWindow;
+    WINDOW* character2AsciiWindow;
     WINDOW* messageWindow;
+    WINDOW* messageSubWindow;
     WINDOW* menuWindow;
     std::vector<ITEM*> menuItems;
     MENU* menu;
