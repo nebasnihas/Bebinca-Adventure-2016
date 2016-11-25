@@ -377,20 +377,27 @@ void GameModel::updateStatusEffects() {
     time(&currentTime);
 
     for (auto& pair : characters) {
-        auto& character = pair.second;
-        auto& statusEffects = character.getStatusEffects();
+		auto& character = pair.second;
+		auto& statusEffects = character.getStatusEffects();
+		removeExpiredStatus(currentTime, character, statusEffects);
+	}
+	for (auto& pair: npcs) {
+		auto& npc = pair.second;
+		auto& statusEffects = npc.getStatusEffects();
+		removeExpiredStatus(currentTime, npc, statusEffects);
+	}
+}
 
-        // Remove if we have passed the end time
-        auto eraseIter = std::remove_if(statusEffects.begin(), statusEffects.end(),
-                                        [&currentTime] (const auto& se) {
-                                            return se->getEndTime() < currentTime;
-                                        }
-        );
-		if (eraseIter != statusEffects.end()) {
+void GameModel::removeExpiredStatus(time_t currentTime, Character &character,
+									std::vector<std::shared_ptr<StatusEffect>> &statusEffects) const {
+	auto eraseIter = remove_if(statusEffects.begin(), statusEffects.end(),
+							   [&currentTime] (const auto& se) {
+									   return se->getEndTime() < currentTime;
+								   });
+	if (eraseIter != statusEffects.end()) {
 			character.pushToBuffer(GameStrings::get(GameStringKeys::STATUS_EFFECT_END), GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
 		}
-        statusEffects.erase(eraseIter, statusEffects.end());
-    }
+	statusEffects.erase(eraseIter, statusEffects.end());
 }
 
 void GameModel::pushToOutputBuffer(const std::string& characterID, std::string message, std::string sender, std::string color) {
@@ -400,21 +407,25 @@ void GameModel::pushToOutputBuffer(const std::string& characterID, std::string m
 void GameModel::sendGlobalMessage(const std::string& senderID, std::string message) {
 	for (const auto& pair : characters) {
 		auto character = pair.second;
-		character.pushToBuffer(message, senderID, ColorTag::WHITE);
+		character.pushToBuffer(message, getCharacterByID(senderID)->getName(), ColorTag::WHITE);
+	}
+	for (const auto& pair : npcs) {
+		auto character = pair.second;
+		character.pushToBuffer(message, getCharacterByID(senderID)->getName(), ColorTag::WHITE);
 	}
 }
 
 void GameModel::sendLocalMessage(const std::string& senderID, std::string message) {
 	auto areaID = getCharacterByID(senderID)->getAreaID();
 	for (const auto &character: getCharacterIDsInArea(areaID)) {
-		getCharacterByID(character)->pushToBuffer(message, senderID, ColorTag::WHITE);
+		getCharacterByID(character)->pushToBuffer(message, getCharacterByID(senderID)->getName(), ColorTag::WHITE);
 	}
 }
 
 void GameModel::sendPrivateMessage(const std::string& senderID, std::string message, const std::string& target) {
 	auto targetCharacter = getCharacterByID(target);
 	if (targetCharacter != nullptr) {
-		targetCharacter->pushToBuffer(message, senderID, ColorTag::WHITE);
+		targetCharacter->pushToBuffer(message, getCharacterByID(senderID)->getName(), ColorTag::WHITE);
 	}
 }
 

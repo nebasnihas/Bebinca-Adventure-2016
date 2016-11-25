@@ -106,6 +106,8 @@ private:
     bool characterCanMove(const Character& character);
     Character* getBodySwappedCharacter(Character* character) const;
 	void updateStatusEffects();
+	void removeExpiredStatus(time_t currentTime, Character &character,
+										std::vector<std::shared_ptr<StatusEffect>> &statusEffects) const;
 	void loadDefaultSpells();
 	void runNPCScripts();
 	void executeNPCCommand(const std::string& npcID, const std::string& command);
