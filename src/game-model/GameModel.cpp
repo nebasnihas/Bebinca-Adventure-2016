@@ -205,7 +205,8 @@ Character* GameModel::getCharacterByID(const std::string& characterID) const {
         return getBodySwappedCharacter(character);
     }
 	else if (npcs.count(characterID) > 0) {
-		return (NPC*)&(npcs.at(characterID));
+		auto npc = (NPC*)&(npcs.at(characterID));
+		return getBodySwappedCharacter(npc);
 	}
 	return nullptr;
 }
@@ -227,7 +228,13 @@ Character* GameModel::getBodySwappedCharacter(Character* character) const {
     } else {
         // TODO: print bodyswapped message
         auto characterID = std::static_pointer_cast<BodySwapStatus>(*statusEffect)->getSwappedID();
-		return (Character*)&(characters.at(characterID));
+		if (characters.find(characterID) != characters.end()) {
+			return (Character*)&(characters.at(characterID));
+		}
+		else if (npcs.find(characterID) != npcs.end()) {
+			return (NPC*)&(npcs.at(characterID));
+		}
+		else return character;
     }
 }
 

@@ -46,6 +46,7 @@ const std::string COMBAT_VICTORY = "combat-result-victory";
 const std::string COMBAT_LOSS = "combat-result-loss";
 
 const std::string SPELL_LIST = "spell-list-header";
+const std::string SPELL_INVALID_USAGE = "spell-invalid-usage";
 const std::string SPELL_NO_MANA = "spell-insufficient-mana";
 const std::string SPELL_UNKNOWN = "spell-unknown";
 const std::string SPELL_OFFENSE_SELF = "spell-offense-self";

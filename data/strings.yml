@@ -39,8 +39,9 @@ strings:
  combat-result-loss: 'You were killed and lost the battle'
 
  spell-list-header: 'List of Spells: '
+ spell-usage-invalid: 'Invalid usage of cast. Type \"help\" cast'
  spell-insufficient-mana: 'Not enough mana to cast $a'
- spell-unknown: 'You do not know the spell ''$a'''
+ spell-unknown: 'You do not know the spell \"$a\"'
  spell-offense-self: 'You cast $a on yourself for $d damage'
  spell-offense-source: 'You cast $a on $N for $d damage'
  spell-offense-target: '$n casts $a on you for $d damage'
