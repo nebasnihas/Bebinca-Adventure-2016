@@ -1,6 +1,7 @@
 #include "DisplayMessageBuilder.hpp"
+#include <GameStrings.hpp>
 
-const std::string DisplayMessageBuilder::SENDER_SERVER = "Server"; //TODO reserve default name
+const std::string DisplayMessageBuilder::SENDER_SERVER = GameStrings::get(GameStringKeys::SERVER_NAME);
 
 DisplayMessageBuilder& DisplayMessageBuilder::addClient(const networking::Connection& client)
 {

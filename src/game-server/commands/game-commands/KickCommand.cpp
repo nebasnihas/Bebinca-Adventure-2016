@@ -22,7 +22,8 @@ std::unique_ptr<MessageBuilder> KickCommand::execute(const gsl::span<std::string
 
     controller.disconnectPlayer(targetPlayer);
     auto clients = controller.getAllClients();
-    return DisplayMessageBuilder{"<" + targetPlayer + "> " + GameStrings::get(GameStringKeys::PLAYER_KICKED)}
+    return DisplayMessageBuilder{"<" + ColorTag::MAGENTA +  targetPlayer + "> "
+                                 + ColorTag::WHITE + GameStrings::get(GameStringKeys::PLAYER_KICKED)}
             .addClients(clients)
             .setSender(GameStrings::get(GameStringKeys::SERVER_NAME));
 }
