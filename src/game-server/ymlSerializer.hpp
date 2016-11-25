@@ -9,9 +9,13 @@
 #include "yaml-cpp/yaml.h"
 #include "../../include/game/Character.hpp"
 #include <string>
-
+#include <glog/logging.h>
+#include <fstream>
 
 class ymlSerializer {
+
+private:
+    static std::string get_saveloc(const std::string& username);
 
 public:
     static Character load_from_file(const std::string& username);
