@@ -200,15 +200,22 @@ void GameModel::setDefaultLocationID(const std::string& locationID) {
 }
 
 Character* GameModel::getCharacterByID(const std::string& characterID) const {
+	return getCharacterByID(characterID, true);
+}
+
+Character* GameModel::getCharacterByID(const std::string& characterID, bool considerStatusEffect) const {
+	Character* character;
 	if (characters.count(characterID) == 1) {
-        auto character = (Character*)&(characters.at(characterID));
-        return getBodySwappedCharacter(character);
-    }
-	else if (npcs.count(characterID) > 0) {
-		auto npc = (NPC*)&(npcs.at(characterID));
-		return getBodySwappedCharacter(npc);
+		character = (Character*)&(characters.at(characterID));
 	}
-	return nullptr;
+	else if (npcs.count(characterID) > 0) {
+		character = (NPC*)&(npcs.at(characterID));
+	}
+	else {
+		return nullptr;
+	}
+
+	return (considerStatusEffect) ? getBodySwappedCharacter(character) : character;
 }
 
 NPC* GameModel::getNPCByID(const std::string& npcID) const {
@@ -274,7 +281,7 @@ void GameModel::setResets(const std::vector<Resets> resets) {
 
 bool GameModel::engageCharacterInCombat(const std::string& characterID, const std::string& target) {
     auto c1 = getCharacterByID(characterID);
-    auto c2 = getCharacterByID(target);
+    auto c2 = getCharacterByID(target, true);
 
     if (c1 == nullptr || c2 == nullptr) {
         return false;
@@ -459,7 +466,7 @@ void GameModel::castSpell(const std::string& sourceID, const std::string& target
 		}
 		else {
 			CombatCast spellCast{spell};
-			spellCast.execute(*getCharacterByID(sourceID), *getCharacterByID(targetID));
+			spellCast.execute(*getCharacterByID(sourceID), *getCharacterByID(targetID, false));
 		}
 	} else {
 		auto unknownSpellMessage = GameStrings::getFormatted(GameStringKeys::SPELL_UNKNOWN, StringInfo{sourceID, targetID, 0, spellID});

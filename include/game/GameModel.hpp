@@ -104,6 +104,7 @@ public:
 private:
     void manageDeadCharacters();
     bool characterCanMove(const Character& character);
+	Character* getCharacterByID(const std::string& characterID, bool considerStatusEffect) const;
     Character* getBodySwappedCharacter(Character* character) const;
 	void updateStatusEffects();
 	void removeExpiredStatus(time_t currentTime, Character &character,
