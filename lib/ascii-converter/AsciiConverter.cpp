@@ -5,6 +5,7 @@
 #define MAX_SHADES 10
 #define MAX_WORD_COUNT 10
 #define DEBUG 1
+#define MAX_SEQ 48
 
 typedef unsigned short uint16;
 typedef unsigned int uint32;
@@ -725,7 +726,7 @@ string AsciiConverter::convertWord0(const string &font_type, const string &word)
  }
  */
 
-string AsciiConverter::animation_helper(const string &objname, char anim_frame[MAX_SHADES]){
+string AsciiConverter::animation_helper(const string &objname, char anim_frame[MAX_SHADES], const string& file){
     
     int width, height;
     unsigned char *image;
@@ -738,7 +739,7 @@ string AsciiConverter::animation_helper(const string &objname, char anim_frame[M
     ifstream bmpfile;
     BMPFileHeader header;
     
-    const string filepath = "assets/bmpimgs/" + move(objname) + ".bmp";
+    string filepath = file;
     
     // Open the image file
     bmpfile.open (filepath, ios::in | ios::binary);
@@ -809,6 +810,8 @@ vector<string> AsciiConverter::animateObject(const string &objname){
     vector<string> string_animation_frames;
     vector<animation_type> char_types;
     const int frames = 11;
+    const string filepath = "assets/bmpimgs/" + move(objname) + ".bmp";
+    
     //vector<animation_frame> anim_frames[framespersec];
     
     // vector<animation_array> anim_arr;
@@ -833,13 +836,42 @@ vector<string> AsciiConverter::animateObject(const string &objname){
     int splitter = 1;
     for (int i=0; i < frames-1; i++){
         
-        string_animation_frames.push_back(animation_helper(objname, char_types[splitter].anim_type));
+        string_animation_frames.push_back(animation_helper(objname, char_types[splitter].anim_type, filepath));
         
         splitter++;
         set_anim_splitter(i, splitter);
     }
     
-    string_animation_frames.push_back(animation_helper(objname, char_types[10].anim_type));
+    string_animation_frames.push_back(animation_helper(objname, char_types[10].anim_type, filepath));
+    
+    
+    return string_animation_frames;
+    
+}
+
+void AsciiConverter::set_sequence_filepath(vector<string> &filepath_seq, const string& objname){
+    
+    for(int i=0; i< MAX_SEQ; i++){
+        string sq = to_string(i);
+        string push = "assets/bmpimgs/sequences/" + move(objname) +
+        "/" + sq + ".bmp";
+        filepath_seq.push_back(push);
+    }
+    
+}
+
+vector<string> AsciiConverter::animateSequence(const string &objname){
+    
+    vector<string> string_animation_frames;
+    
+    vector<string> filepath_sequence;
+    set_sequence_filepath(filepath_sequence, move(objname));
+    
+    char def_shades[MAX_SHADES] = {'#','$','O','=','+','|','-','^','.',' '};
+    
+    for(int i=0; i< MAX_SEQ; i++){
+        string_animation_frames.push_back(animation_helper(objname, def_shades, filepath_sequence[i]));
+    }
     
     
     return string_animation_frames;
