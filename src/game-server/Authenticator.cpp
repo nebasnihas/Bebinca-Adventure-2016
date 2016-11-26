@@ -43,6 +43,9 @@ const std::string LEVEL = "level";
 const std::string CURRENTMANA = "current_mana";
 const std::string CURRENTHEALTH = "current_health";
 const std::string EXPERIENCE = "exp";
+const std::string MAXHEALTH = "max_health";
+const std::string MAXMANA = "max_mana";
+
 }
 
 std::string Authenticator::get_saveloc(const std::string& user){
@@ -136,7 +139,7 @@ std::map<std::string, std::string> Authenticator::create_savefiledata(const std:
     std::map<std::string,std::string> ret_map = {
             {USERNAME_KEY,user},
             {PASSWORD_KEY, pass},
-            {ID, "0"},
+            {ID, user},
             {NAME, user},
             {AREAID, "-1"},
             {DAMAGE, "1d7+2"},
@@ -145,7 +148,9 @@ std::map<std::string, std::string> Authenticator::create_savefiledata(const std:
             {LEVEL, "1"},
             {CURRENTMANA, "100"},
             {CURRENTHEALTH, "100"},
-            {EXPERIENCE, "0"}
+            {EXPERIENCE, "0"},
+            {MAXHEALTH, "100"},
+            {MAXMANA, "100"}
     };
 
     return ret_map;
