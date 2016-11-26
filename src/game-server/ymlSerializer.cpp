@@ -19,6 +19,8 @@ namespace {
     const std::string CURRENTMANA = "current_mana";
     const std::string CURRENTHEALTH = "current_health";
     const std::string EXPERIENCE = "exp";
+    const std::string MAXHEALTH = "max_health";
+    const std::string MAXMANA = "max_mana";
 }
 
 
@@ -43,6 +45,8 @@ Character ymlSerializer::load_from_file(const std::string &username) {
     auto id = user_yaml_file[ID].as<std::string>();
     auto level = user_yaml_file[LEVEL].as<int>();
     auto name = user_yaml_file[NAME].as<std::string>();
+    auto max_health = user_yaml_file[MAXHEALTH].as<int>();
+    auto max_mana = user_yaml_file[MAXMANA].as<int>();
 
     c.setID(id);
     c.setAreaID(area_id);
@@ -53,6 +57,8 @@ Character ymlSerializer::load_from_file(const std::string &username) {
     c.setLevel(level);
     c.setName(name);
     c.setGold(gold);
+    c.setMaxHealth(max_health);
+    c.setMaxMana(max_mana);
 
     //Change as needed
 
@@ -73,7 +79,9 @@ std::map<std::string, std::string> ymlSerializer::update_savefiledata(const Char
             {LEVEL, std::to_string(c.getLevel())},
             {CURRENTMANA, std::to_string(c.getCurrentMana())},
             {CURRENTHEALTH, std::to_string(c.getCurrentHealth())},
-            {EXPERIENCE, std::to_string(c.getExp())}
+            {EXPERIENCE, std::to_string(c.getExp())},
+            {MAXHEALTH, std::to_string(c.getMaxHealth())},
+            {MAXMANA, std::to_string(c.getMaxMana())}
     };
 
     return ret_map;
