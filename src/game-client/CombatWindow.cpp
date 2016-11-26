@@ -66,73 +66,6 @@ namespace {
 
     std::vector<std::string> currentMenuItems = OFFENSE_SPELL_NAMES;
 
-    // TODO replace placeholder ascii
-    std::string character1Ascii =
-            "                               ,----.\n"
-                    "                              '      |\n"
-                    "                             /       '\n"
-                    "                       __,..'         \"-._        _\n"
-                    "                  _.-\"\"                   `-.   ,\" `\".\n"
-                    "         ,-._  _.'                           `\"'      '\n"
-                    "       ,'    `\"                                       |\n"
-                    "      .                                               .\n"
-                    "       `.          _.--..               ____          '\n"
-                    "       /         ,'    . `           ,\"' .  `.         `.\n"
-                    "      /         .         |         /         \\          \\\n"
-                    "     /          `------...'        ._____      .          \\\n"
-                    "    .                                    `'\"\"\"'            \\\n"
-                    "    '                    ________                           .\n"
-                    "   j           `.\"\"/'\"\"\"`        '\"\"\"'\"'--....,-            |\n"
-                    "   |             `/.                      ,\\ /              `.\n"
-                    "   |                `-._               _.'  '                 `-.\n"
-                    "   |                    `\"-----------\"'                         |\n"
-                    " .\"                         ____                                |\n"
-                    "|                      ,-\"\"'    `\".                            ,'\n"
-                    "|                     .   .----.   `.                        .\"\n"
-                    "`.._                  |  '.____,'   |                        '\n"
-                    "    |             ,\". `.           ,' _                     /\n"
-                    "    '            '   `._`.'._\".__,' .' .                   /\n"
-                    "     .            `'-._ `._     _.-'  _.'                 /\n"
-                    "      `.               `.  `--'\" _,.-'                    `\n"
-                    "        .               ,'     .\"                          '\n"
-                    "         '        .-..-' _,.--._`\"-..,-.                 ,'\n"
-                    "        /         \\    ,'       `-.    |           .-'\"-\"\n"
-                    "        \\          `-.'            `..'         _,'\n"
-                    "         `.,.-\"`._                           ,-'\n"
-                    "                  `\"-.                       |\n"
-                    "                      \\       ,..----.     _.'\n"
-                    "                       `\"\"---\"        `..-\"";
-
-    // TODO replace placeholder ascii
-    std::string character2Ascii =
-            "                        _,.------....___,.' ',.-.\n"
-                    "                     ,-'          _,.--\"        |\n"
-                    "                   ,'         _.-'              .\n"
-                    "                  /   ,     ,'                   `\n"
-                    "                 .   /     /                     ``.\n"
-                    "                 |  |     .                       \\.\\\n"
-                    "       ____      |___._.  |       __               \\ `.\n"
-                    "     .'    `---\"\"       ``\"-.--\"'`  \\               .  \\\n"
-                    "    .  ,            __               `              |   .\n"
-                    "    `,'         ,-\"'  .               \\             |    L\n"
-                    "   ,'          '    _.'                -._          /    |\n"
-                    "  ,`-.    ,\".   `--'                      >.      ,'     |\n"
-                    " . .'\\'   `-'       __    ,  ,-.         /  `.__.-      ,'\n"
-                    " ||:, .           ,'  ;  /  / \\ `        `.    .      .'/\n"
-                    " j|:D  \\          `--'  ' ,'_  . .         `.__, \\   , /\n"
-                    "/ L:_  |                 .  \"' :_;                `.'.'\n"
-                    ".    \"\"'                  \"\"\"\"\"'                    V\n"
-                    " `.                                 .    `.   _,..  `\n"
-                    "   `,_   .    .                _,-'/    .. `,'   __  `\n"
-                    "    ) \\`._        ___....----\"'  ,'   .'  \\ |   '  \\  .\n"
-                    "   /   `. \"`-.--\"'         _,' ,'     `---' |    `./  |\n"
-                    "  .   _  `\"\"'--.._____..--\"   ,             '         |\n"
-                    "  | .\" `. `-.                /-.           /          ,\n"
-                    "  | `._.'    `,_            ;  /         ,'          .\n"
-                    " .'          /| `-.        . ,'         ,           ,\n"
-                    " '-.__ __ _,','    '`-..___;-...__   ,.'\\ ____.___.'\n"
-                    " `\"^--'..'   '-`-^-'\"--    `-^-'`.''\"\"\"\"\"`.,^.`.";
-
     gui::SpellMenuChoice getChoice(const std::string &val) {
         if (val == OFFENSE_CHOICE) {
             return gui::SpellMenuChoice::OFFENSE;
@@ -272,13 +205,13 @@ namespace gui {
                                        h - CHAR_WINDOW_HEIGHT - BOTTOM_WINDOW_HEIGHT - OFFSET, w / 2,
                                        CHAR_WINDOW_HEIGHT + OFFSET, 0);
         CHECK(character1AsciiWindow) << "Error creating char1 ascii window";
-        drawCharacterAscii(character1AsciiWindow, character1Ascii);
+        drawCharacterAscii(character1AsciiWindow, ascii::getAscii("Jack"));
 
         character2AsciiWindow = derwin(combatWindow,
                                        h - CHAR_WINDOW_HEIGHT - BOTTOM_WINDOW_HEIGHT - OFFSET, w / 2,
                                        CHAR_WINDOW_HEIGHT + OFFSET, w / 2);
         CHECK(character2AsciiWindow) << "Error creating char2 ascii window";
-        drawCharacterAscii(character2AsciiWindow, character2Ascii);
+        drawCharacterAscii(character2AsciiWindow, ascii::getAscii("Mother Goose"));
 
         messageWindow = derwin(combatWindow, BOTTOM_WINDOW_HEIGHT, w / 2, h - BOTTOM_WINDOW_HEIGHT, 0);
         CHECK(messageWindow) << "Error creating message window";
@@ -316,8 +249,8 @@ namespace gui {
         getparyx(menuSubWindow, y, x);
 
         wattron(menuWindow, A_BOLD);
-        mvwprintw(menuWindow, OFFSET, x, OFFENSE_SPELLS_LABEL.c_str());
-        mvwprintw(menuWindow, OFFSET, getWindowWidth(menuWindow) - x - MANA_LABEL.length(), MANA_LABEL.c_str());
+        mvwprintw(menuWindow, OFFSET * 2, x, OFFENSE_SPELLS_LABEL.c_str());
+        mvwprintw(menuWindow, OFFSET * 2, getWindowWidth(menuWindow) - x - MANA_LABEL.length(), MANA_LABEL.c_str());
         wattroff(menuWindow, A_BOLD);
 
         formatSpellSubMenuItems(getWindowWidth(menuSubWindow));

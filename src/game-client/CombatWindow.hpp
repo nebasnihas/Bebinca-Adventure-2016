@@ -9,6 +9,7 @@
 #include <functional>
 #include "Window.hpp"
 #include <boost/algorithm/string.hpp>
+#include "CharacterAsciis.hpp"
 
 namespace gui {
 
