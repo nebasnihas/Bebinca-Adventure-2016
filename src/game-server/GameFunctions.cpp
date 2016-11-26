@@ -8,12 +8,13 @@ GameFunctions::GameFunctions(Controller& controller)
           listPlayersCommand{gameModel},
           lookCommand{gameModel},
           moveCommand{gameModel},
-          sayCommand{controller},
+          sayCommand{gameModel, controller},
           shoutCommand{gameModel, controller},
-          whisperCommand{controller},
+          whisperCommand{gameModel, controller},
           attackCommand{gameModel, controller},
           castCommand{gameModel, controller},
-		  statusCommand{gameModel} {
+          statusCommand{gameModel},
+          kickCommand{controller} {
     registerCommands();
 }
 
@@ -27,7 +28,8 @@ void GameFunctions::registerCommands() {
     controller.registerCommand(COMMAND_WHISPER, whisperCommand);
     controller.registerCommand(COMMAND_ATTACK, attackCommand);
     controller.registerCommand(COMMAND_CAST, castCommand);
-	controller.registerCommand(COMMAND_STATUS, statusCommand);
+    controller.registerCommand(COMMAND_STATUS, statusCommand);
+    controller.registerCommand(COMMAND_KICK, kickCommand);
 }
 
 

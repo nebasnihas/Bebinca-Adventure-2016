@@ -1,5 +1,5 @@
 #include <commands/DisplayMessageBuilder.hpp>
-#include <GameStrings.hpp>
+#include "GameStrings.hpp"
 #include "ListExitsCommand.hpp"
 
 ListExitsCommand::ListExitsCommand(GameModel& gameModel) : gameModel{gameModel} {}

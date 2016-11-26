@@ -4,28 +4,30 @@
 #include <string>
 #include <map>
 #include <vector>
-#include <boost/optional.hpp>
 #include <memory>
-#include <commands/CommandHandle.hpp>
-
-#include "commands/Command.hpp"
-#include "game/GameModel.hpp"
-#include "networking/server.h"
-#include "game/protocols/PlayerCommand.hpp"
-#include "commands/MessageBuilder.hpp"
-#include "boost/bimap/unordered_set_of.hpp"
-#include "boost/bimap.hpp"
+#include <boost/optional.hpp>
+#include <boost/bimap.hpp>
+#include <boost/bimap/unordered_set_of.hpp>
 #include "commands/CommandConfig.hpp"
+#include "commands/CommandHandle.hpp"
+#include "game/protocols/PlayerCommand.hpp"
+#include "AccountInfo.hpp"
+#include "HelpCommand.hpp"
+
+class Command;
+class ConnectionManager;
+class MessageIO;
+class GameModel;
 
 class Controller {
 public:
-    Controller(GameModel& gameModel, networking::Server& server, const CommandConfig& commandCreator);
+    Controller(GameModel& gameModel, MessageIO& messageIO, ConnectionManager& connectionManager,
+                   const CommandConfig& commandCreator);
 
     void registerCommand(const std::string& commandId, Command& command);
-    void processCommand(const protocols::PlayerCommand& command,
-                        const networking::Connection& client);
+    void processCommand(const protocols::PlayerCommand& command, const networking::Connection& client);
 
-    void addNewPlayer(const PlayerInfo& player);
+    bool addNewPlayer(const AccountInfo& accountInfo, const networking::Connection& client);
     void removePlayer(const networking::Connection& clientID);
     void disconnectPlayer(const std::string& playerID);
     void update();
@@ -48,14 +50,19 @@ private:
     std::vector<networking::Connection> allClients;
 
     std::unordered_map<std::string, CommandHandle>  inputToCommandMap;
+    std::unordered_map<std::string, AccountInfo> playerAccountMap;
 
     GameModel& gameModel;
-    networking::Server& server;
+    MessageIO& messageIO;
     CommandConfig commandConfig;
+    ConnectionManager& connectionManager;
+
+    void sendOutput(const MessageBuilder& messageBuilder) const;
+    const AccountInfo& getAccountInfo(const networking::Connection& client) const;
 
     //help command
-    class HelpCommand;
-    std::shared_ptr<HelpCommand> helpCommand;
+    friend class HelpCommand;
+    std::unique_ptr<HelpCommand> helpCommand;
 };
 
 

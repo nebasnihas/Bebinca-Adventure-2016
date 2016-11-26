@@ -1,8 +1,12 @@
 
 add_executable(game-client
         GameClient.cpp
-        chatWindow.cpp
-        )
+        MainMenuWindow.cpp MainMenuWindow.hpp
+        Window.hpp
+        Application.cpp Application.hpp
+        AuthenticationWindow.cpp AuthenticationWindow.hpp
+        ChatWindow.cpp ChatWindow.hpp
+        StrColorizer.cpp StrColorizer.hpp)
 
 set_target_properties(game-client
         PROPERTIES
@@ -25,7 +29,9 @@ target_link_libraries(game-client
         protocols
         ${Boost_LIBRARIES}
         ${CURSES_LIBRARIES}
+        menu
         ${CMAKE_THREAD_LIBS_INIT}
+        glog
         )
 
 install(TARGETS game-client

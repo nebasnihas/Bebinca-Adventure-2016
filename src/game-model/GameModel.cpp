@@ -1,5 +1,7 @@
+#include <boost/format.hpp>
 #include "game/GameModel.hpp"
 #include "combat/CombatManager.hpp"
+#include "GameStrings.hpp"
 
 GameModel::GameModel() {
     // TODO: Move this to something more elegant
@@ -36,7 +38,7 @@ bool GameModel::createCharacter(const std::string& characterID,
 							  inventory,
 							  areaID
 	);
-	auto outputBuffer = std::make_shared<std::deque<std::string>>();
+	auto outputBuffer = std::make_shared<std::deque<PlayerMessage>>();
 	character.setOutputBuffer(outputBuffer);
 
 	characters.insert(std::pair<std::string, Character>(characterID, character));
@@ -254,8 +256,9 @@ bool GameModel::engageCharacterInCombat(const std::string& characterID, const st
     battleInstance.addCharacterToNewTeam(*c2);
     combatManager.loadCombatInstance(battleInstance);
 
-	c1->pushToBuffer("You have engaged " + target + " in battle!");
-	c2->pushToBuffer("You have been engaged in battle by " + characterID);
+	auto stringInfo = StringInfo{characterID, target, 0, ""};
+	c1->pushToBuffer(GameStrings::getFormatted(GameStringKeys::COMBAT_ENGAGE, stringInfo), GameStringKeys::MESSAGE_SENDER_BATTLE, ColorTag::WHITE);
+	c2->pushToBuffer(GameStrings::getFormatted(GameStringKeys::COMBAT_ENGAGED, stringInfo), GameStringKeys::MESSAGE_SENDER_BATTLE, ColorTag::WHITE);
 
     return true;
 }
@@ -351,23 +354,25 @@ void GameModel::updateStatusEffects() {
                                         }
         );
 		if (eraseIter != statusEffects.end()) {
-			character.pushToBuffer("Your status effect wears off");
+			character.pushToBuffer(GameStrings::get(GameStringKeys::STATUS_EFFECT_END),
+                                   GameStrings::get(GameStringKeys::SERVER_NAME),
+                                   ColorTag::WHITE);
 		}
         statusEffects.erase(eraseIter, statusEffects.end());
     }
 }
 
-void GameModel::pushToOutputBuffer(const std::string& characterID, std::string message) {
-	getCharacterByID(characterID)->pushToBuffer(message);
+void GameModel::pushToOutputBuffer(const std::string& characterID, std::string message, std::string sender, std::string color) {
+	getCharacterByID(characterID)->pushToBuffer(message, sender, color);
 }
 
 void GameModel::listValidSpells(const std::string& characterID) {
 	auto character = getCharacterByID(characterID);
-	std::string message = "List of Spells:\n";
+	std::string message = GameStrings::get(GameStringKeys::SPELL_LIST) + "\n";
 	for (auto& spellPairs: spells) {
 		message += spellPairs.first + ", ";
 	}
-	character->pushToBuffer(message);
+	character->pushToBuffer(message, GameStrings::get(GameStringKeys::SERVER_NAME), ColorTag::WHITE);
 }
 
 void GameModel::loadDefaultSpells() {
@@ -394,6 +399,9 @@ void GameModel::castSpell(const std::string& sourceID, const std::string& target
 			spellCast.execute(*getCharacterByID(sourceID), *getCharacterByID(targetID));
 		}
 	} else {
-		getCharacterByID(sourceID)->pushToBuffer("You do not know the spell " + spellID);
+		auto unknownSpellMessage = GameStrings::getFormatted(GameStringKeys::SPELL_UNKNOWN, StringInfo{sourceID, targetID, 0, spellID});
+		getCharacterByID(sourceID)->pushToBuffer(unknownSpellMessage,
+                                                 GameStrings::get(GameStringKeys::SERVER_NAME),
+                                                 ColorTag::WHITE);
 	}
 }

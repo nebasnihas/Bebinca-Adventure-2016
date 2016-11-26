@@ -14,5 +14,6 @@ static const std::string COMMAND_SHOUT = "shout";
 static const std::string COMMAND_ATTACK = "attack";
 static const std::string COMMAND_CAST = "cast";
 static const std::string COMMAND_STATUS = "status";
+static const std::string COMMAND_KICK = "kick";
 
 #endif //ADVENTURE2016_COMMANDLIST_HPP
