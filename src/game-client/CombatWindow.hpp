@@ -35,6 +35,8 @@ private:
     void createMenu();
     void removeMenu();
     void recreate();
+//    void refreshMenuSubWindow(std::vector<std::string> menuItems, const std::string &label);
+    void refreshMenuSubWindow(gui::SpellMenuChoice menuChoice);
     void appendText(const std::string& text);
 
     WINDOW* combatWindow;

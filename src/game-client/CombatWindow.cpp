@@ -182,7 +182,6 @@ namespace {
         mvwprintw(window, 0, 0, ascii.c_str());
     }
 
-    // TODO use
     WINDOW* drawMenuSubWindow(WINDOW* menuWindow, WINDOW* menuSubWindow) {
         int menuHeight = 0;
         int menuWidth = 0;
@@ -201,6 +200,8 @@ namespace {
             menuX = (getWindowWidth(menuWindow) / 2) - (SUBMENU_WIDTH / 2);
         }
 
+        werase(menuWindow);
+        box(menuWindow, 0, 0);
         delwin(menuSubWindow);
         menuSubWindow = derwin(menuWindow, menuHeight, menuWidth, menuY, menuX);
         return menuSubWindow;
@@ -296,27 +297,15 @@ namespace gui {
 
                 auto choice = getChoice(val);
 
-                if (choice == gui::SpellMenuChoice::OFFENSE) {
-                    removeMenu();
-                    currentMenuItems = offenseSpells;
-                    formatSpellSubMenuItems();
-                    createMenu();
-
-                    int x = 0;
-                    int y = 0;
-                    getparyx(menuSubWindow, y, x);
-
-                    wattron(menuWindow, A_BOLD);
-                    mvwprintw(menuWindow, OFFSET * 2, x, OFFENSE_SPELLS_LABEL.c_str());
-                    mvwprintw(menuWindow, OFFSET * 2, getWindowWidth(menuWindow) - x - MANA_LABEL.length(), MANA_LABEL.c_str());
-                    wattroff(menuWindow, A_BOLD);
-
-                    menuSubWindow = drawMenuSubWindow(menuWindow, menuSubWindow);
-                }
+                refreshMenuSubWindow(choice);
 
 //                if (callback) {
 //                    callback(choice);
 //                }
+                break;
+            }
+            case KEY_LEFT: {
+                refreshMenuSubWindow(gui::SpellMenuChoice::SUBMENU);
                 break;
             }
             default:
@@ -382,6 +371,45 @@ namespace gui {
             free_item(item);
         }
         menuItems.clear();
+    }
+
+//    void CombatWindow::refreshMenuSubWindow(std::vector<std::string> menuItems, const std::string &label) {
+    void CombatWindow::refreshMenuSubWindow(gui::SpellMenuChoice menuChoice) {
+        removeMenu();
+
+        std::string leftLabel = "";
+        std::string rightLabel = "";
+
+        switch (menuChoice) {
+            case gui::SpellMenuChoice::OFFENSE : {
+                currentMenuItems =offenseSpells;
+                leftLabel = OFFENSE_SPELLS_LABEL;
+                rightLabel = MANA_LABEL;
+                break;
+            }
+            case gui::SpellMenuChoice::DEFENSE : {
+                currentMenuItems = defenseSpells;
+                leftLabel = DEFENSE_SPELLS_LABEL;
+                rightLabel = MANA_LABEL;
+                break;
+            }
+            case gui::SpellMenuChoice::SUBMENU : {
+                currentMenuItems = SPELL_TYPE_NAMES;
+                break;
+            }
+        }
+
+        formatSpellSubMenuItems();
+        menuSubWindow = drawMenuSubWindow(menuWindow, menuSubWindow);
+        createMenu();
+
+        int x = 0;
+        int y = 0;
+        getparyx(menuSubWindow, y, x);
+        wattron(menuWindow, A_BOLD);
+        mvwprintw(menuWindow, OFFSET * 2, x, leftLabel.c_str());
+        mvwprintw(menuWindow, OFFSET * 2, getWindowWidth(menuWindow) - x - rightLabel.length(), rightLabel.c_str());
+        wattroff(menuWindow, A_BOLD);
     }
 
     void CombatWindow::recreate() {
