@@ -16,6 +16,7 @@
 #include <game/Area.hpp>
 #include <game/Object.hpp>
 #include <game/GameModel.hpp>
+#include <game/NPCScripts.hpp>
 
 class GameDataImporter {
 

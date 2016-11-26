@@ -37,8 +37,30 @@ std::unordered_map<std::string, NPC> GameDataImporter::returnNPCS(const YAML::No
         Inventory inventory;
         std::string areaID;
 
+        unordered_map<string, NPCScripts> NPCScriptings;
+        //Scripting Attributes
+        if(nodeNPC["programs"]) {
+
+            const YAML::Node programs = nodeNPC["programs"];
+            for (const auto &program : programs) {
+                vector<string> scriptingCommands = program["commands"] ? program["commands"].as<vector<string>>() : NPCScripts::defaultCommand;
+                string qualifier = program["qualifier"] ? program["qualifier"].as<string>() : NPCScripts::defaultQualifier;
+                string scriptingName = program["name"] ? program["name"].as<string>() : NPCScripts::defaultScriptingName;
+                vector<string> scriptingDescription = program["description"] ? program["description"].as<vector<string>>() : NPCScripts::defaultScriptingDescription;
+
+                boost::replace_all(qualifier, "~", "");
+                string scriptingDescriptionString = boost::algorithm::join(scriptingDescription, " ");
+
+                std::pair<string, vector<string>> qualifierCommandsPair (qualifier, scriptingCommands);
+
+                NPCScripts newNPCScript = NPCScripts(qualifier, scriptingCommands, scriptingName, scriptingDescriptionString);
+
+                NPCScriptings.insert(std::pair<string, NPCScripts>(qualifier,newNPCScript));
+            }
+        }
+
         NPC newNPC = NPC(npcID, shortdesc, hit, damage, level, exp, armor, gold, inventory, areaID, thac0,
-                              sDescription, sKeywords, sLongDescription);
+                              sDescription, sKeywords, sLongDescription, NPCScriptings);
         npcs.insert(std::pair<std::string, ::NPC>(npcID, newNPC));
     }
     return npcs;
@@ -60,7 +82,8 @@ std::vector<Area> GameDataImporter::getRooms(const YAML::Node& ROOMS) {
     for(const auto& ROOM : ROOMS){
         vector<string> desc = ROOM["desc"].as<vector<string>>();
         string description = boost::algorithm::join(desc, " ");
-        vector<string> extended_descriptions = ROOM["extended_descriptions"].as<vector<string>>();
+        //vector<string> extended_descriptions = ROOM["extended_descriptions"].as<vector<string>>();
+        vector<string> extended_descriptions;
         string id = ROOM["id"].as<string>();
         string name = ROOM["name"].as<string>();
 

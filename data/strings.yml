@@ -30,6 +30,15 @@ strings:
 
  player-kicked: "has been kicked out"
 
+ game-player-enter-area: '$n arrives from $a.'
+ game-player-leave-area: '$n leaves to $a.'
+ up-relative-direction: 'above'
+ down-relative-direction: 'below'
+ north-relative-direction: 'the north'
+ south-relative-direction: 'the south'
+ east-relative-direction: 'the east'
+ west-relative-direction: 'the west'
+
  combat-engage-issue: 'You engage &r$N&w in battle'
  combat-engage-receive: 'You have been engaged in battle by &r$n&w'
  combat-attack-issue: 'You attack &r$N&w and deal &y$d&w damage'
@@ -39,6 +48,7 @@ strings:
  combat-result-loss: 'You were &rkilled&w and lost the battle'
 
  spell-list-header: 'List of Spells: '
+ spell-usage-invalid: 'Invalid usage of cast. Type \"help\" cast'
  spell-insufficient-mana: 'Not enough mana to cast &c$a&w'
  spell-unknown: 'You do not know the spell ''&c$a&w'''
  spell-offense-self: 'You cast &c$a&w on yourself for &y$d&w damage'

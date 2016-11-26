@@ -37,6 +37,9 @@ const std::string USERNAME_INVALD = "username-invalid";
 
 const std::string PLAYER_KICKED = "player-kicked";
 
+const std::string PLAYER_ENTER = "game-player-enter-area";
+const std::string PLAYER_LEAVE = "game-player-leave-area";
+
 const std::string COMBAT_ENGAGE = "combat-engage-issue";
 const std::string COMBAT_ENGAGED = "combat-engage-receive";
 const std::string PLAYER_ATTACKS = "combat-attack-issue";
@@ -46,6 +49,7 @@ const std::string COMBAT_VICTORY = "combat-result-victory";
 const std::string COMBAT_LOSS = "combat-result-loss";
 
 const std::string SPELL_LIST = "spell-list-header";
+const std::string SPELL_INVALID_USAGE = "spell-invalid-usage";
 const std::string SPELL_NO_MANA = "spell-insufficient-mana";
 const std::string SPELL_UNKNOWN = "spell-unknown";
 const std::string SPELL_OFFENSE_SELF = "spell-offense-self";
@@ -60,6 +64,19 @@ const std::string SPELL_GENERIC_TARGET = "spell-generic-target";
 
 const std::string STATUS_EFFECT_END = "status-effect-expiry";
 const std::string CHAR_STATUS = "character-status";
+
+const std::string UP_DIRECTION = "up";
+const std::string UP_RELATIVE_DIRECTION = "up-relative-direction";
+const std::string DOWN_DIRECTION = "down";
+const std::string DOWN_RELATIVE_DIRECTION = "down-relative-direction";
+const std::string NORTH_DIRECTION = "north";
+const std::string NORTH_RELATIVE_DIRECTION = "north-relative-direction";
+const std::string SOUTH_DIRECTION = "south";
+const std::string SOUTH_RELATIVE_DIRECTION = "south-relative-direction";
+const std::string EAST_DIRECTION = "east";
+const std::string EAST_RELATIVE_DIRECTION = "east-relative-direction";
+const std::string WEST_DIRECTION = "west";
+const std::string WEST_RELATIVE_DIRECTION = "west-relative-direction";
 
 const std::string SOURCE_KEY = "$n";
 const std::string TARGET_KEY = "$N";
