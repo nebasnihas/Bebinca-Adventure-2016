@@ -83,8 +83,8 @@ std::vector<Area> GameDataImporter::getRooms(const YAML::Node& ROOMS) {
     return rooms;
 }
 
-std::vector<Object> GameDataImporter::getObjects(const YAML::Node& OBJECTS){
-    vector<Object> objects = {};
+std::unordered_map<std::string, Object> GameDataImporter::returnObjects(const YAML::Node& OBJECTS){
+    unordered_map<std::string, Object> objects;
 
     /*
     Split up objects in YML file and store them in the objects class
@@ -94,7 +94,7 @@ std::vector<Object> GameDataImporter::getObjects(const YAML::Node& OBJECTS){
         int cost = OBJECT["cost"] ? OBJECT["cost"].as<int>() : Object::defaultCost;
         int weight = OBJECT["weight"] ? OBJECT["weight"].as<int>() : Object::defaultWeight;
 
-        string objectId = OBJECT["id"] ? OBJECT["id"].as<string>() : Object::defaultObjectID;
+        string objectID = OBJECT["id"] ? OBJECT["id"].as<string>() : Object::defaultObjectID;
         string item_type = OBJECT["item_type"] ? OBJECT["item_type"].as<string>() : Object::defaultItemType;
         string shortdesc = OBJECT["shortdesc"] ? OBJECT["shortdesc"].as<string>() : Object::defaultShortDesc;
 
@@ -106,8 +106,8 @@ std::vector<Object> GameDataImporter::getObjects(const YAML::Node& OBJECTS){
 
         string description = boost::algorithm::join(longdesc, " ");
 
-        Object newObject = Object(attributes, cost, extra, objectId, item_type, keywords, description, shortdesc, wear_flags, weight);
-        objects.push_back(newObject);
+        Object newObject = Object(attributes, cost, extra, objectID, item_type, keywords, description, shortdesc, wear_flags, weight);
+        objects.insert(std::pair<std::string, Object> (objectID, newObject));
     }
     return objects;
 }

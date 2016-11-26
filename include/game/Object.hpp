@@ -37,7 +37,7 @@ public:
     std::vector<std::string> getAttributes() const;
 	int getCost() const;
 	std::vector<std::string> getExtra() const;
-    std::string getType() const; //Maybe we can have a subclass for each type of object
+    std::string getType() const;
     std::vector<std::string> getKeywords() const;
     std::string getName() const;
     std::vector<std::string> getWearflags() const;

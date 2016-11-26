@@ -46,15 +46,15 @@ Object::Object(	const std::vector<std::string>& attributes,
                	}
 
 //Defaults
-static const std::string Object::defaultObjectID = " ";
-static const std::string Object::defaultItemType = " ";
-static const std::string Object::defaultShortDesc = " ";
+const std::string Object::defaultObjectID = " ";
+const std::string Object::defaultItemType = " ";
+const std::string Object::defaultShortDesc = " ";
 
-static const std::vector<std::string> Object::defaultAttributes = {"noAttributes", " "};
-static const std::vector<std::string> Object::defaultExtra = {"noExtraDescription", " "};
-static const std::vector<std::string> Object::defaultKeywords = {"noKeywords", " "};
-static const std::vector<std::string> Object::defaultLongDesc = {"noLongDesc", " "};
-static const std::vector<std::string> Object::defaultWearFlags = {"noWearFlags", " "};
+const std::vector<std::string> Object::defaultAttributes = {"noAttributes", " "};
+const std::vector<std::string> Object::defaultExtra = {"noExtraDescription", " "};
+const std::vector<std::string> Object::defaultKeywords = {"noKeywords", " "};
+const std::vector<std::string> Object::defaultLongDesc = {"noLongDesc", " "};
+const std::vector<std::string> Object::defaultWearFlags = {"noWearFlags", " "};
 
 
 //*---------------
