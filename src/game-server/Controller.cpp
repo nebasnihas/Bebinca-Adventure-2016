@@ -59,7 +59,7 @@ bool Controller::addNewPlayer(const AccountInfo& accountInfo, const networking::
     allClients.push_back(client);
     gameModel.createCharacter(accountInfo.username, accountInfo.username);
 
-    auto outMsg = DisplayMessageBuilder{"Player <" + accountInfo.username + "> has joined."}
+    auto outMsg = DisplayMessageBuilder{"Player <" +  ColorTag::MAGENTA + accountInfo.username + ColorTag::WHITE + "> has joined."}
             .setSender(DisplayMessageBuilder::SENDER_SERVER)
             .addClients(allClients);
     sendOutput(outMsg);
@@ -87,7 +87,7 @@ void Controller::removePlayer(const networking::Connection& clientID) {
     allClients.erase(std::remove(allClients.begin(), allClients.end(), clientID), allClients.end());
     //TODO remove from game model
 
-    auto outMsg = DisplayMessageBuilder{"Player <" + player + "> has disconnected."}
+    auto outMsg = DisplayMessageBuilder{"Player <" + ColorTag::MAGENTA + player + ColorTag::WHITE + "> has disconnected."}
             .setSender(DisplayMessageBuilder::SENDER_SERVER)
             .addClients(allClients);
     sendOutput(outMsg);

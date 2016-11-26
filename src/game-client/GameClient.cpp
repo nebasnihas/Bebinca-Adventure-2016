@@ -113,6 +113,11 @@ void handleDisplayResponse(const protocols::ResponseMessage& responseMessage) {
 }
 
 void updateFromServer() {
+    if (networkingClient->isDisconnected()) {
+        running = false;
+        return;
+    }
+
     try {
         networkingClient->update();
     } catch (std::exception& e) {
@@ -149,7 +154,7 @@ void updateFromServer() {
 
 int main(int argc, char *argv[]) {
     if (argc < 3) {
-        printf("Usage:\n%s <ip address> <port>\ne.g. %s localhost 4002\n",
+        printf("Usage:\n%s <ip address> <port>\ne.g. %s localhost 4000\n",
                argv[0], argv[0]);
         return 1;
     }

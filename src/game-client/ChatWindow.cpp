@@ -3,6 +3,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/circular_buffer.hpp>
 #include <curses.h>
+#include "StrColorizer.hpp"
 
 namespace {
 const int ENTRY_WINDOW_HEIGHT = 3;
@@ -156,7 +157,7 @@ void ChatWindow::onEnter() {
 }
 
 void ChatWindow::showText(const std::string& text) {
-    wprintw(displayWindow, "%s\n", text.c_str());
+    StrColorizer::print_color(displayWindow, 0, 0, text + "\n");
 }
 
 }

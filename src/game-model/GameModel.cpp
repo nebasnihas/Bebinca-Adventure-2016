@@ -500,7 +500,7 @@ void GameModel::listValidSpells(const std::string& characterID) {
 	for (auto& spellPairs: spells) {
 		message += spellPairs.first + ", ";
 	}
-	character->pushToBuffer(message, GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
+	character->pushToBuffer(message, GameStrings::get(GameStringKeys::SERVER_NAME), ColorTag::WHITE);
 }
 
 void GameModel::loadDefaultSpells() {
@@ -528,7 +528,9 @@ void GameModel::castSpell(const std::string& sourceID, const std::string& target
 		}
 	} else {
 		auto unknownSpellMessage = GameStrings::getFormatted(GameStringKeys::SPELL_UNKNOWN, StringInfo{sourceID, targetID, 0, spellID});
-		getCharacterByID(sourceID)->pushToBuffer(unknownSpellMessage, GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
+		getCharacterByID(sourceID)->pushToBuffer(unknownSpellMessage,
+                                                 GameStrings::get(GameStringKeys::SERVER_NAME),
+                                                 ColorTag::WHITE);
 	}
 }
 

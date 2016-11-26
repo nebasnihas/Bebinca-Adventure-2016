@@ -1,20 +1,6 @@
 #include "Application.hpp"
 #include <glog/logging.h>
 
-namespace {
-const short NUM_COLOURS = 8;
-const short ALL_COLORS[NUM_COLOURS] = {
-    COLOR_BLACK,
-    COLOR_RED,
-    COLOR_GREEN,
-    COLOR_YELLOW,
-    COLOR_BLUE,
-    COLOR_MAGENTA,
-    COLOR_CYAN,
-    COLOR_WHITE,
-};
-}
-
 namespace gui {
 
 Application::Application() {
@@ -22,12 +8,6 @@ Application::Application() {
     noecho();
     cbreak();
     halfdelay(1);
-
-    for(short i = 0; i < NUM_COLOURS; i++) {
-        for(short j = 0; j < NUM_COLOURS; j++) {
-            init_pair(i + j, ALL_COLORS[i], ALL_COLORS[j]);
-        }
-    }
     start_color();
 
     clear();

@@ -35,6 +35,6 @@ std::unique_ptr<MessageBuilder> CastCommand::execute(const gsl::span<std::string
 	}
 
 	gameModel.castSpell(player.playerID, targetID, spell);
-	return DisplayMessageBuilder{spell};
+	return buildPlayerMessage(player.clientID, "Casting spell " + ColorTag::CYAN + spell + ColorTag::WHITE);
 
 }
