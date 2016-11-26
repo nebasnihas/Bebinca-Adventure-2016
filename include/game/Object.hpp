@@ -43,6 +43,19 @@ public:
     std::vector<std::string> getWearflags() const;
     int getWeight() const;
 
+	//Defaults
+	static const int defaultCost = 0;
+	static const int defaultWeight = 0;
+
+	static const std::string defaultObjectID;
+	static const std::string defaultItemType;
+	static const std::string defaultShortDesc;
+
+	static const std::vector<std::string> defaultAttributes;
+	static const std::vector<std::string> defaultExtra;
+	static const std::vector<std::string> defaultKeywords;
+	static const std::vector<std::string> defaultLongDesc;
+	static const std::vector<std::string> defaultWearFlags;
 
 
 private:
@@ -57,7 +70,8 @@ private:
     std::string name;
     std::vector<std::string> wearflags;
     int weight;
-    
+
+
 };
 
 /*
