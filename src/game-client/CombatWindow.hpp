@@ -16,6 +16,7 @@ namespace gui {
 enum class SpellMenuChoice {
     OFFENSE,
     DEFENSE,
+    SUBMENU,
 };
 
 class CombatWindow : public Window {

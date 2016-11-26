@@ -32,12 +32,17 @@ namespace {
 
     const std::string OFFENSE_CHOICE = "Offense Spells";
     const std::string DEFENSE_CHOICE = "Defense Spells";
-
+    const int NUM_MENU_ITEMS = 2;
     const std::string SPELL_DELIMITER = "=";
     const int CORRECT_NUM_SPELL_PROPERTIES = 2;
 
+    const std::vector<std::string> SPELL_TYPE_NAMES = {
+        OFFENSE_CHOICE,
+        DEFENSE_CHOICE,
+    };
+
     // TODO replace hardcoded values
-    std::vector<std::string> OFFENSE_SPELL_NAMES = {
+    std::vector<std::string> offenseSpells = {
             "blasphemy=10",
             "caustic touch=20",
             "magic missile=10",
@@ -52,7 +57,7 @@ namespace {
     };
 
     // TODO replace hardcoded values
-    std::vector<std::string> DEFENSE_SPELL_NAMES = {
+    std::vector<std::string> defenseSpells = {
             "cure poison=10",
             "elven beauty=20",
             "heal=15",
@@ -64,17 +69,20 @@ namespace {
             "test4=40",
     };
 
-    std::vector<std::string> currentMenuItems = OFFENSE_SPELL_NAMES;
+    std::vector<std::string> currentMenuItems = SPELL_TYPE_NAMES;
+//    std::vector<std::string> currentMenuItems = offenseSpells;
 
     gui::SpellMenuChoice getChoice(const std::string &val) {
         if (val == OFFENSE_CHOICE) {
             return gui::SpellMenuChoice::OFFENSE;
-        } else {
+        } else if (val == DEFENSE_CHOICE){
             return gui::SpellMenuChoice::DEFENSE;
+        } else {
+            return gui::SpellMenuChoice::SUBMENU;
         }
     }
 
-    void formatSpellSubMenuItems(int subMenuWindowWidth) {
+    void formatSpellSubMenuItems() {
         for (auto &item : currentMenuItems) {
             std::vector<std::string> spells;
             boost::split(spells, item, boost::is_any_of(SPELL_DELIMITER));
@@ -85,7 +93,7 @@ namespace {
                 std::string spellName = spells.back();
 
                 item = spellName;
-                int numSpaces = subMenuWindowWidth - spellName.length() - spellMana.length();
+                int numSpaces = SUBMENU_WIDTH - spellName.length() - spellMana.length();
                 for (int i = 0; i < numSpaces; i++) {
                     item += " ";
                 }
@@ -173,6 +181,30 @@ namespace {
     void drawCharacterAscii(WINDOW *window, const std::string &ascii) {
         mvwprintw(window, 0, 0, ascii.c_str());
     }
+
+    // TODO use
+    WINDOW* drawMenuSubWindow(WINDOW* menuWindow, WINDOW* menuSubWindow) {
+        int menuHeight = 0;
+        int menuWidth = 0;
+        int menuY = 0;
+        int menuX = 0;
+
+        if (currentMenuItems.size() == NUM_MENU_ITEMS) {
+            menuHeight = NUM_MENU_ITEMS;
+            menuWidth = MENU_WIDTH;
+            menuY = (getWindowHeight(menuWindow) / 2) - (NUM_MENU_ITEMS / 2);
+            menuX = (getWindowWidth(menuWindow) / 2) - (MENU_WIDTH / 2);
+        } else {
+            menuHeight = SUBMENU_ROWS;
+            menuWidth = SUBMENU_WIDTH;
+            menuY = (getWindowHeight(menuWindow) / 2) - (SUBMENU_ROWS / 2);
+            menuX = (getWindowWidth(menuWindow) / 2) - (SUBMENU_WIDTH / 2);
+        }
+
+        delwin(menuSubWindow);
+        menuSubWindow = derwin(menuWindow, menuHeight, menuWidth, menuY, menuX);
+        return menuSubWindow;
+    }
 }
 
 namespace gui {
@@ -238,22 +270,12 @@ namespace gui {
         CHECK(menuWindow) << "Error creating menu window";
         box(menuWindow, 0, 0);
 
-        menuSubWindow = derwin(menuWindow, SUBMENU_ROWS, SUBMENU_WIDTH,
-                               (getWindowHeight(menuWindow) / 2) - (SUBMENU_ROWS / 2),
-                               (getWindowWidth(menuWindow) / 2) - (SUBMENU_WIDTH / 2));
+        menuSubWindow = derwin(menuWindow, NUM_MENU_ITEMS, MENU_WIDTH,
+                               (getWindowHeight(menuWindow) / 2) - (NUM_MENU_ITEMS / 2),
+                               (getWindowWidth(menuWindow) / 2) - (MENU_WIDTH / 2));
         CHECK(menuSubWindow) << "Error creating menu subwindow";
         box(menuSubWindow, 0, 0);
 
-        int x = 0;
-        int y = 0;
-        getparyx(menuSubWindow, y, x);
-
-        wattron(menuWindow, A_BOLD);
-        mvwprintw(menuWindow, OFFSET * 2, x, OFFENSE_SPELLS_LABEL.c_str());
-        mvwprintw(menuWindow, OFFSET * 2, getWindowWidth(menuWindow) - x - MANA_LABEL.length(), MANA_LABEL.c_str());
-        wattroff(menuWindow, A_BOLD);
-
-        formatSpellSubMenuItems(getWindowWidth(menuSubWindow));
         createMenu();
 
         resize(Size{w, h});
@@ -271,10 +293,30 @@ namespace gui {
             case KEY_ENTER: {
                 auto currentItem = current_item(menu);
                 auto val = std::string{item_name(currentItem)};
+
                 auto choice = getChoice(val);
-                if (callback) {
-                    callback(choice);
+
+                if (choice == gui::SpellMenuChoice::OFFENSE) {
+                    removeMenu();
+                    currentMenuItems = offenseSpells;
+                    formatSpellSubMenuItems();
+                    createMenu();
+
+                    int x = 0;
+                    int y = 0;
+                    getparyx(menuSubWindow, y, x);
+
+                    wattron(menuWindow, A_BOLD);
+                    mvwprintw(menuWindow, OFFSET * 2, x, OFFENSE_SPELLS_LABEL.c_str());
+                    mvwprintw(menuWindow, OFFSET * 2, getWindowWidth(menuWindow) - x - MANA_LABEL.length(), MANA_LABEL.c_str());
+                    wattroff(menuWindow, A_BOLD);
+
+                    menuSubWindow = drawMenuSubWindow(menuWindow, menuSubWindow);
                 }
+
+//                if (callback) {
+//                    callback(choice);
+//                }
                 break;
             }
             default:
