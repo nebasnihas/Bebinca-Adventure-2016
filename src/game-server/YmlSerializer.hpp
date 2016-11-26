@@ -13,7 +13,7 @@
 #include <fstream>
 #include <map>
 
-class ymlSerializer {
+class YmlSerializer {
 
 private:
     static std::string get_saveloc(const std::string& username);

@@ -2,7 +2,7 @@
 //
 //
 
-#include "ymlSerializer.hpp"
+#include "YmlSerializer.hpp"
 
 
 namespace {
@@ -24,13 +24,13 @@ namespace {
 }
 
 
-std::string ymlSerializer::get_saveloc(const std::string& username){
+std::string YmlSerializer::get_saveloc(const std::string& username){
     std::string send_loc = SAVE_LOCATION + username + ".yml";
     return send_loc;
 }
 
 
-Character ymlSerializer::load_from_file(const std::string &username) {
+Character YmlSerializer::load_from_file(const std::string &username) {
 
     Character c;
     YAML::Node user_yaml_file = YAML::LoadFile(get_saveloc(username));
@@ -67,7 +67,7 @@ Character ymlSerializer::load_from_file(const std::string &username) {
 
 }
 
-std::map<std::string, std::string> ymlSerializer::update_savefiledata(const Character& c) {
+std::map<std::string, std::string> YmlSerializer::update_savefiledata(const Character& c) {
 
     std::map<std::string,std::string> ret_map = {
             {ID, c.getID()},
@@ -89,7 +89,7 @@ std::map<std::string, std::string> ymlSerializer::update_savefiledata(const Char
 
 }
 
-void ymlSerializer::save_to_file(const Character &c) {
+void YmlSerializer::save_to_file(const Character &c) {
 
     YAML::Node user_update_file = YAML::LoadFile(get_saveloc(c.getName()));
     std::map<std::string,std::string> savefile_update_map = update_savefiledata(c);
