@@ -116,10 +116,12 @@ void setupWorldBuildingWindow() {
     worldBuildingWindow = std::make_unique<gui::WorldBuildingWindow>();
 
     worldBuildingWindow->setOnSubmit([](auto area) {
-        worldBuildingWindow->showMessage("changes..");
         YAML::Emitter em;
         em << YAML::Node{area};
-        auto cmd =  protocols::createPlayerCommandRequestMessage(protocols::PlayerCommand{command : "edit submit ", arguments : em.c_str()});
+        std::stringstream arguments;
+        arguments << "submit '" << em.c_str() << "'";
+        auto args = arguments.str();
+        auto cmd =  protocols::createPlayerCommandRequestMessage(protocols::PlayerCommand{command : "edit", arguments : args});
         auto request = protocols::serializeRequestMessage(cmd);
         networkingClient->send(request);
 

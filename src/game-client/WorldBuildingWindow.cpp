@@ -71,7 +71,6 @@ WorldBuildingWindow::WorldBuildingWindow() {
 }
 
 void WorldBuildingWindow::update(int input) {
-    showMessage("submitted");
     if (isEditing()) {
         handleInputForForm(input);
         return;
@@ -119,9 +118,6 @@ void WorldBuildingWindow::redraw() {
         box(formSubWindow, 0, 0);
     }
 
-    auto msg = currentMessage.c_str();
-
-    int err = wprintw(messageSubWindow, const_cast<char*>(msg));
     wrefresh(mainWindow);
 }
 
@@ -209,7 +205,7 @@ void WorldBuildingWindow::handleSelect() {
         switch (getCurrentMainMenuItem()) {
             case MainMenuItem::SUBMIT:
                 if (onSubmitCallback && currentArea.is_initialized()) {
-//                    onSubmitCallback(currentArea.get());
+                    onSubmitCallback(currentArea.get());
                 }
                 break;
             case MainMenuItem::DISCARD:
@@ -295,8 +291,6 @@ void WorldBuildingWindow::handleCancel() {
 
 void WorldBuildingWindow::handleInputForForm(int val) {
     if (!isEditing()) {
-        wprintw(formWindow, "not working");
-        //we are not editing a value
         return;
     }
 
@@ -492,7 +486,8 @@ bool WorldBuildingWindow::hasAreaData() const {
 }
 
 void WorldBuildingWindow::showMessage(const std::string& text) {
-    this->currentMessage = text;
+    wgetch(messageSubWindow); //have to do this to move cursor to window, may cause delay
+    wprintw(messageSubWindow, text.c_str());
 }
 
 void WorldBuildingWindow::setupWindows() {
