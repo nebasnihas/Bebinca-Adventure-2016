@@ -130,7 +130,7 @@ std::unordered_map<std::string, Object> GameDataImporter::returnObjects(const YA
         string description = boost::algorithm::join(longdesc, " ");
 
         Object newObject = Object(attributes, cost, extra, objectID, item_type, keywords, description, shortdesc, wear_flags, weight);
-        objects.insert(std::pair<std::string, Object> (objectID, newObject));
+        objects.insert(std::pair<std::string, Object> (shortdesc, newObject));
     }
     return objects;
 }
@@ -173,7 +173,7 @@ vector<Resets> GameDataImporter::returnResets(const YAML::Node& RESETS) {
     return resets;
 }
 
-std::vector<Spell> GameDataImporter::getSpells(const YAML::Node& SPELLS) {
+vector<Spell> GameDataImporter::getSpells(const YAML::Node& SPELLS) {
 
     std::vector<Spell> returnSpells;
 
@@ -266,11 +266,11 @@ string getStringData(const YAML::Node node, string keyword) {
 
 
 //The workflow for SHOPS ends here, not sure how to utilize yet
-void GameDataImporter::loadShops(GameModel& gameModel, const YAML::Node& SHOPS){
-
-    for(const auto& SHOP : SHOPS){
-        //no data on shops in mgoose file
-
-    }
-
-}
+//void GameDataImporter::loadShops(GameModel& gameModel, const YAML::Node& SHOPS){
+//
+//    for(const auto& SHOP : SHOPS){
+//        //no data on shops in mgoose file
+//
+//    }
+//
+//}

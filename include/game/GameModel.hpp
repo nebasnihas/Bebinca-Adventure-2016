@@ -12,6 +12,7 @@
 #include <game/Character.hpp>
 #include "../../src/game-model/Resets.hpp"
 #include "Object.hpp"
+#include <game/GameDataImporter.hpp>
 #include <game/Inventory.hpp>
 #include "../../src/game-model/combat/CombatManager.hpp"
 
@@ -39,6 +40,8 @@ public:
 	 */
 
 	std::string getObjectDescription(const std::string& areaID, const std::string& objectName) const;
+	void addObjectToAreas();
+	void loadObjects(YAML::Node& OBJECTS);
 
 	/*
 	 *	AREA FUNCTIONS
@@ -121,6 +124,7 @@ private:
     std::unordered_map<std::string, Character> characters;
 	std::unordered_map<std::string, Area> locations;
 	std::unordered_map<std::string, NPC> npcs;
+	std::unordered_map<std::string, Object> objects;
     std::vector<Resets> resets;
 
 	std::string defaultLocation;

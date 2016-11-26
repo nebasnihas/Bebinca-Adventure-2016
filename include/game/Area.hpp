@@ -35,6 +35,8 @@ public:
     std::vector<Object> getObjectList() const;
     std::vector<std::string> getExtendedDescriptions() const;
 
+	void addObjects(std::string);
+
 	//std::string getAreaDescription() const;
 
 private:
@@ -49,6 +51,7 @@ private:
 
 	std::vector<Object> objectList; //The Mother Goose YAML file does not contain an object list for every "ROOM".
 
+	std::vector<std::string> objectNames;
 	//TO-DO: Add more detail to an area
 };
 
