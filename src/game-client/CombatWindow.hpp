@@ -3,9 +3,12 @@
 
 #include <memory>
 #include <vector>
+#include <unordered_map>
 #include <menu.h>
+#include <glog/logging.h>
 #include <functional>
 #include "Window.hpp"
+#include <boost/algorithm/string.hpp>
 
 namespace gui {
 
@@ -40,6 +43,8 @@ private:
     WINDOW* messageWindow;
     WINDOW* messageSubWindow;
     WINDOW* menuWindow;
+    WINDOW* menuSubWindow;
+
     std::vector<ITEM*> menuItems;
     MENU* menu;
     Size size;

@@ -1,32 +1,73 @@
-#include <menu.h>
 #include "CombatWindow.hpp"
-#include <unordered_map>
-#include <glog/logging.h>
 
 namespace {
     const std::string LEVEL_LABEL = "Level ";
-    const std::string HEALTH_LABEL = "HP";
+    const std::string HEALTH_LABEL = "Health";
     const std::string MANA_LABEL = "Mana";
+    const std::string OFFENSE_SPELLS_LABEL = "Offense Spells";
+    const std::string DEFENSE_SPELLS_LABEL = "Defense Spells";
 
-    const int CHAR_WINDOW_WIDTH = 38;
+    const int OFFSET = 1;
+    const int CHAR_WINDOW_WIDTH = 39;
     const int CHAR_WINDOW_HEIGHT = 6;
     const int BOTTOM_WINDOW_HEIGHT = 10;
     const int MESSAGE_SUBWINDOW_OFFSET_W = 5;
     const int MESSAGE_SUBWINDOW_OFFSET_H = 3;
     const int MESSAGE_SUBWINDOW_X = 3;
     const int MESSAGE_SUBWINDOW_Y = 2;
-    const int OFFSET = 1;
 
     const int LABEL_X = 2;
+    const int STATUS_BAR_X = 9;
     const int HEALTH_Y = 2;
     const int MANA_Y = 3;
-    const int STATUS_BAR_X = 8;
 
     const char BAR = '|';
     const int BAR_VALUE = 5;
     const int FULL_BAR_PERCENT = 100;
 
-    const std::string character1Ascii =
+    const int MENU_WIDTH = 14;
+    const int SUBMENU_WIDTH = MENU_WIDTH * 2;
+    const int SUBMENU_ROWS = 5;
+    const int SUBMENU_COLS = 1;
+
+    const std::string OFFENSE_CHOICE = "Offense Spells";
+    const std::string DEFENSE_CHOICE = "Defense Spells";
+
+    const std::string SPELL_DELIMITER = "=";
+    const int CORRECT_NUM_SPELL_PROPERTIES = 2;
+
+    // TODO replace hardcoded values
+    std::vector<std::string> OFFENSE_SPELL_NAMES = {
+            "blasphemy=10",
+            "caustic touch=20",
+            "magic missile=10",
+            "pestilence=15",
+            "soul petrification=30",
+            "solomonic invocation=35",
+            "extradimensional portal=12",
+            "test1=100",
+            "test2=20",
+            "test3=30",
+            "test4=40",
+    };
+
+    // TODO replace hardcoded values
+    std::vector<std::string> DEFENSE_SPELL_NAMES = {
+            "cure poison=10",
+            "elven beauty=20",
+            "heal=15",
+            "iceshield=30",
+            "sanctuary=15",
+            "test1=100",
+            "test2=20",
+            "test3=30",
+            "test4=40",
+    };
+
+    std::vector<std::string> currentMenuItems = OFFENSE_SPELL_NAMES;
+
+    // TODO replace placeholder ascii
+    std::string character1Ascii =
             "                               ,----.\n"
                     "                              '      |\n"
                     "                             /       '\n"
@@ -62,7 +103,8 @@ namespace {
                     "                      \\       ,..----.     _.'\n"
                     "                       `\"\"---\"        `..-\"";
 
-    const std::string character2Ascii =
+    // TODO replace placeholder ascii
+    std::string character2Ascii =
             "                        _,.------....___,.' ',.-.\n"
                     "                     ,-'          _,.--\"        |\n"
                     "                   ,'         _.-'              .\n"
@@ -91,21 +133,31 @@ namespace {
                     " '-.__ __ _,','    '`-..___;-...__   ,.'\\ ____.___.'\n"
                     " `\"^--'..'   '-`-^-'\"--    `-^-'`.''\"\"\"\"\"`.,^.`.";
 
-    const int MENU_NUM_ITEMS = 2;
-
-    const std::string OFFENSE_CHOICE = "Offense Spells";
-    const std::string DEFENSE_CHOICE = "Defense Spells";
-
-    const std::string MENU_ITEM_NAMES[MENU_NUM_ITEMS] = {
-            OFFENSE_CHOICE,
-            DEFENSE_CHOICE,
-    };
-
     gui::SpellMenuChoice getChoice(const std::string &val) {
         if (val == OFFENSE_CHOICE) {
             return gui::SpellMenuChoice::OFFENSE;
         } else {
             return gui::SpellMenuChoice::DEFENSE;
+        }
+    }
+
+    void formatSpellSubMenuItems(int subMenuWindowWidth) {
+        for (auto &item : currentMenuItems) {
+            std::vector<std::string> spells;
+            boost::split(spells, item, boost::is_any_of(SPELL_DELIMITER));
+
+            if (spells.size() == CORRECT_NUM_SPELL_PROPERTIES) {
+                std::string spellMana = spells.back();
+                spells.pop_back();
+                std::string spellName = spells.back();
+
+                item = spellName;
+                int numSpaces = subMenuWindowWidth - spellName.length() - spellMana.length();
+                for (int i = 0; i < numSpaces; i++) {
+                    item += " ";
+                }
+                item += spellMana;
+            }
         }
     }
 
@@ -199,34 +251,33 @@ namespace gui {
         size = Size{w, h};
 
         combatWindow = newwin(0, 0, 0, 0);
-        CHECK(combatWindow) << "Error creating window";
+        CHECK(combatWindow) << "Error creating combat window";
         keypad(combatWindow, true);
 
-        int subWindowTopY = 1;
-
-        character1Window = derwin(combatWindow, CHAR_WINDOW_HEIGHT, CHAR_WINDOW_WIDTH, subWindowTopY,
-                                  (w / 4) - (CHAR_WINDOW_WIDTH / 2));
+        character1Window = derwin(combatWindow,
+                                  CHAR_WINDOW_HEIGHT, CHAR_WINDOW_WIDTH,
+                                  OFFSET, (w / 4) - (CHAR_WINDOW_WIDTH / 2));
         CHECK(character1Window) << "Error creating player 1 window";
         box(character1Window, 0, 0);
         drawCharacterWindow(character1Window, "johndoe", 5, 60, 35);
 
-        character2Window = derwin(combatWindow, CHAR_WINDOW_HEIGHT, CHAR_WINDOW_WIDTH, subWindowTopY,
-                                  (w - (w / 4)) - (CHAR_WINDOW_WIDTH / 2));
+        character2Window = derwin(combatWindow,
+                                  CHAR_WINDOW_HEIGHT, CHAR_WINDOW_WIDTH,
+                                  OFFSET, (w - (w / 4)) - (CHAR_WINDOW_WIDTH / 2));
         CHECK(character2Window) << "Error creating player 2 window";
         box(character2Window, 0, 0);
         drawCharacterWindow(character2Window, "Bulbasaur", 8, 90, 0);
 
         character1AsciiWindow = derwin(combatWindow,
-                                       h - CHAR_WINDOW_HEIGHT - BOTTOM_WINDOW_HEIGHT - OFFSET,
-                                       w / 2,
+                                       h - CHAR_WINDOW_HEIGHT - BOTTOM_WINDOW_HEIGHT - OFFSET, w / 2,
                                        CHAR_WINDOW_HEIGHT + OFFSET, 0);
+        CHECK(character1AsciiWindow) << "Error creating char1 ascii window";
         drawCharacterAscii(character1AsciiWindow, character1Ascii);
 
         character2AsciiWindow = derwin(combatWindow,
-                                       h - CHAR_WINDOW_HEIGHT - BOTTOM_WINDOW_HEIGHT - OFFSET,
-                                       w / 2,
-                                       CHAR_WINDOW_HEIGHT + OFFSET,
-                                       w / 2);
+                                       h - CHAR_WINDOW_HEIGHT - BOTTOM_WINDOW_HEIGHT - OFFSET, w / 2,
+                                       CHAR_WINDOW_HEIGHT + OFFSET, w / 2);
+        CHECK(character2AsciiWindow) << "Error creating char2 ascii window";
         drawCharacterAscii(character2AsciiWindow, character2Ascii);
 
         messageWindow = derwin(combatWindow, BOTTOM_WINDOW_HEIGHT, w / 2, h - BOTTOM_WINDOW_HEIGHT, 0);
@@ -236,10 +287,13 @@ namespace gui {
         messageSubWindow = derwin(messageWindow,
                                   getWindowHeight(messageWindow) - MESSAGE_SUBWINDOW_OFFSET_H,
                                   getWindowWidth(messageWindow) - MESSAGE_SUBWINDOW_OFFSET_W,
-                                  MESSAGE_SUBWINDOW_Y, MESSAGE_SUBWINDOW_X);
+                                  MESSAGE_SUBWINDOW_Y,
+                                  MESSAGE_SUBWINDOW_X);
         CHECK(messageSubWindow) << "Error creating message subwindow";
-        scrollok(messageSubWindow, true);
         box(messageWindow, 0, 0);
+        scrollok(messageSubWindow, true);
+
+        // TODO remove placeholder text
         appendText("You attack Bulbasaur and deal 10 damage");
         appendText("You take 10 damage from Bulbasaur");
         appendText("You cast protection on yourself and heal 25");
@@ -251,6 +305,22 @@ namespace gui {
         CHECK(menuWindow) << "Error creating menu window";
         box(menuWindow, 0, 0);
 
+        menuSubWindow = derwin(menuWindow, SUBMENU_ROWS, SUBMENU_WIDTH,
+                               (getWindowHeight(menuWindow) / 2) - (SUBMENU_ROWS / 2),
+                               (getWindowWidth(menuWindow) / 2) - (SUBMENU_WIDTH / 2));
+        CHECK(menuSubWindow) << "Error creating menu subwindow";
+        box(menuSubWindow, 0, 0);
+
+        int x = 0;
+        int y = 0;
+        getparyx(menuSubWindow, y, x);
+
+        wattron(menuWindow, A_BOLD);
+        mvwprintw(menuWindow, OFFSET, x, OFFENSE_SPELLS_LABEL.c_str());
+        mvwprintw(menuWindow, OFFSET, getWindowWidth(menuWindow) - x - MANA_LABEL.length(), MANA_LABEL.c_str());
+        wattroff(menuWindow, A_BOLD);
+
+        formatSpellSubMenuItems(getWindowWidth(menuSubWindow));
         createMenu();
 
         resize(Size{w, h});
@@ -285,21 +355,27 @@ namespace gui {
 
     CombatWindow::~CombatWindow() {
         removeMenu();
+        delwin(menuSubWindow);
         delwin(menuWindow);
+        delwin(messageSubWindow);
         delwin(messageWindow);
-        delwin(character1Window);
-        delwin(character2Window);
         delwin(character1AsciiWindow);
         delwin(character2AsciiWindow);
+        delwin(character1Window);
+        delwin(character2Window);
         delwin(combatWindow);
     }
 
     void CombatWindow::redraw() {
+        wrefresh(combatWindow);
         wrefresh(character1Window);
         wrefresh(character2Window);
+        wrefresh(character1AsciiWindow);
+        wrefresh(character2AsciiWindow);
         wrefresh(messageWindow);
+        wrefresh(messageSubWindow);
         wrefresh(menuWindow);
-//        wrefresh(combatWindow);
+        wrefresh(menuSubWindow);
     }
 
     void CombatWindow::resize(const Size &size) {
@@ -308,15 +384,16 @@ namespace gui {
     }
 
     void CombatWindow::createMenu() {
-        for (const auto &name : MENU_ITEM_NAMES) {
-            auto itemName = name.c_str();
-            menuItems.emplace_back(new_item(itemName, nullptr));
+        for (const auto &item : currentMenuItems) {
+            menuItems.emplace_back(new_item(item.c_str(), nullptr));
         }
+
         menuItems.emplace_back(nullptr);
 
         menu = new_menu(menuItems.data());
-        set_menu_win(menu, combatWindow);
-        set_menu_sub(menu, menuWindow);
+        set_menu_win(menu, menuWindow);
+        set_menu_sub(menu, menuSubWindow);
+        set_menu_format(menu, SUBMENU_ROWS, SUBMENU_COLS);
         set_menu_mark(menu, "");
 
         post_menu(menu);
@@ -333,14 +410,23 @@ namespace gui {
     }
 
     void CombatWindow::recreate() {
-        int menuX = size.width / 2;
-        int menuY = size.height / 2;
-        mvwin(combatWindow, menuY, menuX);
-
-        set_menu_win(menu, combatWindow);
-        set_menu_sub(menu, menuWindow);
+//        wresize(messageWindow, BOTTOM_WINDOW_HEIGHT, size.width / 2);
+//        wresize(messageSubWindow,
+//                getWindowHeight(messageWindow) - MESSAGE_SUBWINDOW_OFFSET_H,
+//                getWindowWidth(messageWindow) - MESSAGE_SUBWINDOW_OFFSET_W);
+//        wresize(menuWindow, BOTTOM_WINDOW_HEIGHT, size.width / 2);
+//        wresize(menuSubWindow,
+//                (getWindowHeight(menuWindow) / 2) - (currentMenuItems.size() / 2),
+//                (getWindowWidth(menuWindow) / 2) - (MENU_WIDTH / 2));
+//
+//        mvwin(character1Window, OFFSET, (getWindowWidth(combatWindow) / 4) - (CHAR_WINDOW_WIDTH / 2));
+//        mvwin(character2Window, OFFSET,
+//              (getWindowWidth(combatWindow) - (getWindowWidth(combatWindow) / 4)- CHAR_WINDOW_WIDTH / 2));
+//        mvwin(character1AsciiWindow, CHAR_WINDOW_HEIGHT + OFFSET, 0);
+//        mvwin(character2AsciiWindow, CHAR_WINDOW_HEIGHT + OFFSET, getWindowWidth(combatWindow) / 2);
+//        mvwin(messageWindow, getWindowHeight(combatWindow) - BOTTOM_WINDOW_HEIGHT, 0);
+//        mvwin(menuWindow, getWindowHeight(combatWindow) - BOTTOM_WINDOW_HEIGHT, getWindowWidth(combatWindow) / 2);
     }
-
 
     void CombatWindow::appendText(const std::string &text) {
         wprintw(messageSubWindow, "%s\n", text.c_str());
