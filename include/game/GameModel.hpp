@@ -25,12 +25,14 @@ public:
 
     // TODO: Make this configurable
     static const int GAME_TICKS_PER_COMBAT_TICK = 30;
+	static const int GAME_TICKS_PER_NPC_TICK = 30;
 
 	GameModel();
 
 	bool createCharacter(const std::string& characterID, const std::string& characterName);
 	bool moveCharacter(const std::string& characterID, const std::string& areaTag);
 	Character* getCharacterByID(const std::string& characterID) const;
+	NPC* getNPCByID(const std::string& npcID) const;
 
 	/*
 	 *	OBJECT FUNCTIONS
@@ -45,7 +47,9 @@ public:
   	Area* getAreaByID(const std::string& areaID) const;
   	std::string getAreaDescription(const std::string& areaID) const;
   	std::unordered_map<std::string, std::string>* getConnectedAreas(const std::string& areaID) const;
-	std::vector<std::string> getCharacterIDsInArea(const std::string& areaID) const;
+	std::vector<std::string> getPlayerIDsInArea(const std::string &areaID) const;
+	std::vector<std::string> getNPCIDsInArea(const std::string& areaID) const;
+    std::vector<std::string> getCharacterIDsInArea(const std::string& areaID) const;
 
 	/*
 	 *	LOCATION FUNCTIONS
@@ -82,6 +86,7 @@ public:
 
     void loadActions(const std::unordered_map<std::string, std::shared_ptr<CombatAction>>& actionLookup);
 	void addSpell(Spell spell);
+	void setResets(const std::vector<Resets> resets);
 
     bool engageCharacterInCombat(const std::string& characterID, const std::string& target);
     bool setCombatAction(const std::string& characterID, const std::string& actionName);
@@ -93,13 +98,24 @@ public:
 	void castSpell(const std::string& sourceID, const std::string& targetID, const std::string& spellID);
 
 	void pushToOutputBuffer(const std::string& characterID, std::string message, std::string sender, std::string color);
+	void sendGlobalMessage(const std::string& senderID, std::string message);
+	void sendLocalMessageFromCharacter(const std::string &senderID, std::string message);
+	void sendPrivateMessage(const std::string& senderID, std::string message, const std::string& target);
 
 private:
     void manageDeadCharacters();
     bool characterCanMove(const Character& character);
+	Character* getCharacterByID(const std::string& characterID, bool considerStatusEffect) const;
     Character* getBodySwappedCharacter(Character* character) const;
 	void updateStatusEffects();
+	void removeExpiredStatus(time_t currentTime, Character &character,
+										std::vector<std::shared_ptr<StatusEffect>> &statusEffects) const;
 	void loadDefaultSpells();
+	void runNPCScripts();
+	void executeNPCCommand(const std::string& npcID, const std::string& command);
+	void sendMoveUpdateMessages(const std::string& playerID, const std::string& prevAreaID, const std::string& prevDir, const std::string& newAreaID, const std::string& newDir);
+	std::string findDirectionByAreaID(const std::string& sourceID, const std::string& destID);
+	std::string getRelativeDirection(const std::string& direction);
 
 	CombatManager combatManager;
     std::unordered_map<std::string, Character> characters;
