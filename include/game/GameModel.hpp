@@ -41,7 +41,7 @@ public:
 
 	std::string getObjectDescription(const std::string& areaID, const std::string& objectName) const;
 	void addObjectToAreas();
-	void loadObjects(YAML::Node& OBJECTS);
+	void loadObjects(const YAML::Node& OBJECTS);
 
 	/*
 	 *	AREA FUNCTIONS

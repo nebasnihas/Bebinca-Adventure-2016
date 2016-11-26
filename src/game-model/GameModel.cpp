@@ -302,7 +302,7 @@ Character* GameModel::getBodySwappedCharacter(Character* character) const {
     }
 }
 
-void GameModel::loadObjects(YAML::Node& OBJECTS){
+void GameModel::loadObjects(const YAML::Node& OBJECTS){
     this->objects = GameDataImporter::returnObjects(OBJECTS);
 }
 
