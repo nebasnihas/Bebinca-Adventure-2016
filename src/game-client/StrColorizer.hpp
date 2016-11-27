@@ -25,8 +25,22 @@ enum class color_type: char {
     BLUE    = 'b',
     MAGENTA = 'm',
     CYAN    = 'c',
-    WHITE   = 'w'
+    WHITE   = 'w',
+    RAINBOW = 'v',
 
+};
+    
+    
+enum color_looper{
+        
+    RED,
+    GREEN,
+    YELLOW,
+    BLUE,
+    MAGENTA,
+    CYAN,
+    WHITE
+        
 };
 
 struct color_token {
@@ -44,6 +58,7 @@ class StrColorizer {
 private:
     static bool is_tag(char c);
     static color_type get_color(char c);
+    static color_type get_looper_color(int i);
     static bool is_space(char c);
     static int process_tagged_str(int i, color_type& c_type, const std::string& text, attribute_string& att_str);
 
@@ -52,6 +67,7 @@ private:
 
 
     //-------------Converter-----------------//
+    static int str_to_rainbow_token(const std::string& text, int i, attribute_string& att_str);
     static attribute_string str_to_colortoken (const std::string& text);
 
     //-------------Printer-------------------//
