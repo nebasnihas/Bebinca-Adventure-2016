@@ -5,6 +5,12 @@
 #include "Controller.hpp"
 #include "PigLatinTranslator.hpp"
 
+namespace {
+std::default_random_engine gen;
+std::uniform_int_distribution<int> distribution{1, 50};
+auto rainbow = std::bind(distribution, gen);
+}
+
 std::vector<MessageInfo> PigLatinDecorator::buildMessages() const {
     auto messages = MessageBuilderDecorator::buildMessages();
     for(auto& msg : messages) {
@@ -21,6 +27,11 @@ std::vector<MessageInfo> PigLatinDecorator::buildMessages() const {
                 auto character = gameModel.getCharacterByID(playername);
                 if (character->hasStatusEffect(StatusType::PIG_LATIN)) {
                     displayMsg.message = translateToPigLatin(displayMsg.message);
+                }
+
+                //should be somewhere else but chance of text being rainbow
+                if (rainbow() == 1) {
+                    displayMsg.message = "&v" + displayMsg.message;
                 }
 
                 auto editedResponse = protocols::createDisplayResponseMessage(displayMsg);

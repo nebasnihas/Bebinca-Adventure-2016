@@ -65,6 +65,10 @@ bool Controller::addNewPlayer(const AccountInfo& accountInfo, const networking::
     sendOutput(outMsg);
 
     allClients.push_back(client);
+
+    //pretend that client sent look command;
+    auto lookInput = commandConfig.getCommandInputBindings(COMMAND_LOOK)[0];
+    processCommand(protocols::PlayerCommand{command : lookInput}, client);
     return true;
 }
 

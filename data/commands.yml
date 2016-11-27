@@ -85,7 +85,7 @@ commands:
       - "/k"
   command-edit:
     desc: "Edit areas"
-    usage: "[area|add|status]"
+    usage: "[area|resume|cancel]"
     role: "worldbuilder"
     bindings:
       - "edit"
