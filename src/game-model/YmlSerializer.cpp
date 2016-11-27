@@ -32,7 +32,6 @@ std::string YmlSerializer::get_saveloc(const std::string& username){
 
 Character YmlSerializer::load_from_file(const std::string &username) {
 
-    Character c;
     YAML::Node user_yaml_file = YAML::LoadFile(get_saveloc(username));
 
     auto area_id = user_yaml_file[AREAID].as<std::string>();
@@ -48,19 +47,11 @@ Character YmlSerializer::load_from_file(const std::string &username) {
     auto max_health = user_yaml_file[MAXHEALTH].as<int>();
     auto max_mana = user_yaml_file[MAXMANA].as<int>();
 
-    c.setID(id);
-    c.setAreaID(area_id);
-    c.setArmor(armor);
+    Character c(username, username, Character::defaultHit, damage, level, exp, armor, gold, area_id);
     c.setCurrentHealth(current_health);
     c.setCurrentMana(current_mana);
-    c.setDamage(damage);
-    c.setLevel(level);
-    c.setName(name);
-    c.setGold(gold);
     c.setMaxHealth(max_health);
     c.setMaxMana(max_mana);
-
-    //Change as needed
 
     return c;
 

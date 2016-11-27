@@ -14,6 +14,7 @@
 #include "Object.hpp"
 #include <game/Inventory.hpp>
 #include "../../src/game-model/combat/CombatManager.hpp"
+#include "../../src/game-model/YmlSerializer.hpp"
 
 class GameModel {
 
@@ -26,10 +27,11 @@ public:
     // TODO: Make this configurable
     static const int GAME_TICKS_PER_COMBAT_TICK = 30;
 	static const int GAME_TICKS_PER_NPC_TICK = 30;
+    static const int GAME_TICKS_PER_SAVE_TICK = 300;
 
 	GameModel();
 
-	bool createCharacter(const std::string& characterID, const std::string& characterName);
+	bool createCharacter(const std::string& characterID);
 	bool moveCharacter(const std::string& characterID, const std::string& areaTag);
 	Character* getCharacterByID(const std::string& characterID) const;
 	NPC* getNPCByID(const std::string& npcID) const;
@@ -116,6 +118,7 @@ private:
 	void sendMoveUpdateMessages(const std::string& playerID, const std::string& prevAreaID, const std::string& prevDir, const std::string& newAreaID, const std::string& newDir);
 	std::string findDirectionByAreaID(const std::string& sourceID, const std::string& destID);
 	std::string getRelativeDirection(const std::string& direction);
+    void saveAllCharacters();
 
 	CombatManager combatManager;
     std::unordered_map<std::string, Character> characters;

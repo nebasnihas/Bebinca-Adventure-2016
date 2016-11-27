@@ -19,8 +19,8 @@ protected:
         Spell spell = Spell("spell", 1, SpellType::OFFENSE, "l");
         gameModel.addSpell(spell);
 
-        gameModel.createCharacter(CHAR1_ID, CHAR1_ID);
-        gameModel.createCharacter(CHAR2_ID, CHAR2_ID);
+        gameModel.createCharacter(CHAR1_ID);
+        gameModel.createCharacter(CHAR2_ID);
 
     }
 
