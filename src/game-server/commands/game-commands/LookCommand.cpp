@@ -10,17 +10,29 @@ std::unique_ptr<MessageBuilder> LookCommand::execute(const gsl::span<std::string
 	std::string description;
 
 	if (arguments.empty()) {
-		description = gameModel.getAreaDescription(areaID);
-	} else {
-		auto targetEntity = boost::algorithm::join(arguments, " ");
-		auto NPCIDs = gameModel.getNPCIDsInArea(areaID);
-		if (std::find(NPCIDs.begin(), NPCIDs.end(), targetEntity) != NPCIDs.end()) {
-			description = gameModel.getNPCByID(targetEntity)->getlongDesc();
-		}
-		else {
-			description = gameModel.getEntityDescription(areaID, targetEntity);
-		}
+		description = gameModel.getAreaByID(areaID)->getTitle() + "\n" + gameModel.getAreaDescription(areaID);
+		gameModel.getCharacterByID(player.playerID)->pushToBuffer(description, GameStringKeys::MESSAGE_SENDER_SERVER,
+																  ColorTag::WHITE);
+		return DisplayMessageBuilder{description};
 	}
+
+	auto targetEntity = arguments[0];
+	auto npc = gameModel.getNPCInArea(targetEntity, areaID);
+	auto object = gameModel.getObjectInArea(targetEntity, areaID);
+	auto extDesc = gameModel.getExtendedDescription(targetEntity, areaID);
+	if (npc != nullptr) {
+		description = npc->getlongDesc();
+	}
+	else if (object != nullptr) {
+		description = object->getDescription();
+	}
+	else if (extDesc) {
+		description = extDesc.get();
+	}
+	else {
+		description = targetEntity + " " + GameStrings::get(GameStringKeys::INVALID_TGT);
+	}
+
 
 	gameModel.getCharacterByID(player.playerID)->pushToBuffer(description, GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
 	return DisplayMessageBuilder{description};

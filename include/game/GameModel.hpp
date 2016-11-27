@@ -7,11 +7,13 @@
 #include <exception>
 #include <deque>
 #include <memory>
+#include <boost/optional.hpp>
 
 #include <game/Area.hpp>
 #include <game/Character.hpp>
 #include "../../src/game-model/Resets.hpp"
 #include "Object.hpp"
+#include <game/GameDataImporter.hpp>
 #include <game/Inventory.hpp>
 #include "../../src/game-model/combat/CombatManager.hpp"
 #include "../../src/game-model/YmlSerializer.hpp"
@@ -35,12 +37,17 @@ public:
 	bool moveCharacter(const std::string& characterID, const std::string& areaTag);
 	Character* getCharacterByID(const std::string& characterID) const;
 	NPC* getNPCByID(const std::string& npcID) const;
+	NPC* getNPCInArea(const std::string& keyword, const std::string& areaID);
 
 	/*
 	 *	OBJECT FUNCTIONS
 	 */
 
-	std::string getObjectDescription(const std::string& areaID, const std::string& objectName) const;
+	void addObjectToAreas();
+	void loadObjects(const YAML::Node& OBJECTS);
+	Object* getObjectInArea(const std::string& keyword, const std::string& areaID);
+	Object* getObjectById(const std::string& objectID);
+	boost::optional<std::string> getExtendedDescription(const std::string& keyword, const std::string& areaID);
 
 	/*
 	 *	AREA FUNCTIONS
@@ -124,6 +131,7 @@ private:
     std::unordered_map<std::string, Character> characters;
 	std::unordered_map<std::string, Area> locations;
 	std::unordered_map<std::string, NPC> npcs;
+	std::unordered_map<std::string, Object> objects;
     std::vector<Resets> resets;
 
 	std::string defaultLocation;

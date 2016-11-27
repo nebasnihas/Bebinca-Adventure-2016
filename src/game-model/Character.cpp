@@ -184,21 +184,21 @@ std::string Character::getStatus() {
 ///////                                     NPC Subclass                                               ///////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-NPC::NPC(const std::string& id,
-                   const std::string& name,
-                   std::string& hit,
-                   std::string& damage,
-                   int level,
-                   int exp,
-                   int armor,
-                   int gold,
-                   std::string& areaID,
-                   int thac0,
-                   const std::string& description,
-                   const std::string& keywords,
-                   const std::string& longDesc,
-                   std::unordered_map<std::string, NPCScripts>& scripts
-                    )
+NPC::NPC(const std::string &id,
+		 const std::string &name,
+		 std::string &hit,
+		 std::string &damage,
+		 int level,
+		 int exp,
+		 int armor,
+		 int gold,
+		 std::string &areaID,
+		 int thac0,
+		 const std::string &description,
+		 const std::vector<std::string> &keywords,
+		 const std::string &longDesc,
+		 std::unordered_map<std::string, NPCScripts> &scripts
+)
 
                     : Character(id,
                         name, //Shortdesc is a name
@@ -230,7 +230,7 @@ std::string NPC::getDescription() const {
     return description;
 }
 
-std::string NPC::getKeywords() const {
+const std::vector<std::string> & NPC::getKeywords() const {
     return keywords;
 }
 
@@ -272,7 +272,7 @@ std::vector<std::string> NPC::getCommandsToExecute()
             auto& script = pair.second;
 
             // Capture the name of the player that triggered this
-            std::string qualifierPattern = "(\\w+) " + script.getScriptingQualifier();
+            std::string qualifierPattern = "(\\w+).*" + script.getScriptingQualifier();
             boost::regex effectsRegex{qualifierPattern};
             boost::smatch matches;
 

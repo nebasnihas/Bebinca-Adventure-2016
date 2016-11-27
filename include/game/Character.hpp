@@ -118,24 +118,24 @@ private:
 //NPC Subclass
 class NPC : public Character{
 public:
-    NPC(        const std::string& id,
-                const std::string& name, //Name is the short desc
-                std::string& hit,
-                std::string& damage,
-                int level,
-                int exp,
-                int armor,
-                int gold,
-                std::string& areaID,
-                int thac0,
-                const std::string& description,
-                const std::string& keywords,
-                const std::string& longDesc,
-                std::unordered_map<std::string, NPCScripts>& scripts
-                );
+    NPC(const std::string &id,
+		const std::string &name, //Name is the short desc
+		std::string &hit,
+		std::string &damage,
+		int level,
+		int exp,
+		int armor,
+		int gold,
+		std::string &areaID,
+		int thac0,
+		const std::string &description,
+		const std::vector<std::string> &keywords,
+		const std::string &longDesc,
+		std::unordered_map<std::string, NPCScripts> &scripts
+	);
 
     std::string getDescription() const;
-    std::string getKeywords() const;
+    const std::vector<std::string> & getKeywords() const;
     std::string getlongDesc() const;
     int getThac0() const;
     std::unordered_map<std::string, NPCScripts> getScripts() const;
@@ -155,7 +155,7 @@ public:
 
 private:
     std::string description;
-    std::string keywords;
+    std::vector<std::string> keywords;
     std::string longDesc;
     int thac0;
     std::unordered_map<std::string, NPCScripts> scripts;

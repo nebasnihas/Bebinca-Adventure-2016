@@ -18,7 +18,6 @@ public:
 
     Object(	const std::vector<std::string>& attributes,
 			int cost,
-			const std::vector<std::string>& extra,
 			const std::string& ID,
 			const std::string& type,
 			const std::vector<std::string>& keywords,
@@ -37,12 +36,25 @@ public:
     std::vector<std::string> getAttributes() const;
 	int getCost() const;
 	std::vector<std::string> getExtra() const;
-    std::string getType() const; //Maybe we can have a subclass for each type of object
+    std::string getType() const;
     std::vector<std::string> getKeywords() const;
     std::string getName() const;
     std::vector<std::string> getWearflags() const;
     int getWeight() const;
 
+	//Defaults
+	static const int defaultCost = 0;
+	static const int defaultWeight = 0;
+
+	static const std::string defaultObjectID;
+	static const std::string defaultItemType;
+	static const std::string defaultShortDesc;
+
+	static const std::vector<std::string> defaultAttributes;
+	static const std::vector<std::string> defaultExtra;
+	static const std::vector<std::string> defaultKeywords;
+	static const std::vector<std::string> defaultLongDesc;
+	static const std::vector<std::string> defaultWearFlags;
 
 
 private:
@@ -57,7 +69,8 @@ private:
     std::string name;
     std::vector<std::string> wearflags;
     int weight;
-    
+
+
 };
 
 /*
