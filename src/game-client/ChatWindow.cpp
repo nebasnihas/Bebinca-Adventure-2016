@@ -122,6 +122,7 @@ void ChatWindow::redraw() {
 void ChatWindow::resize(const Size& maxSize) {
     wclear(displayWindow);
     wclear(entryWindow);
+    unpost_form(entryForm);
 
     wresize(displayWindow, maxSize.height - ENTRY_WINDOW_HEIGHT, maxSize.width);
     wresize(entryWindow, ENTRY_WINDOW_HEIGHT, maxSize.width);
@@ -130,7 +131,12 @@ void ChatWindow::resize(const Size& maxSize) {
     mvwin(entryWindow, maxSize.height - ENTRY_WINDOW_HEIGHT, 0);
     move_field(entryField, maxSize.height - ENTRY_WINDOW_HEIGHT + 1, 0);
 
+    reprintText();
+
+    post_form(entryForm);
     pos_form_cursor(entryForm);
+    set_field_buffer(entryField, 0, "");
+    form_driver(entryForm, REQ_END_FIELD);
 }
 
 WINDOW* ChatWindow::getCursesWindow() {
@@ -157,16 +163,7 @@ void ChatWindow::onEnter() {
     curs_set(true);
     pos_form_cursor(entryForm);
 
-    int w;
-    int lines;
-    getmaxyx(displayWindow, lines, w);
-    if (lineHistory.size() < lines ) {
-        lines = (int)lineHistory.size(); //Make sure buffer size is less than max int
-    }
-
-    for (int i = 0; i < lines; i++) {
-        printColorText(lineHistory[i]);
-    }
+    reprintText();
 }
 
 void ChatWindow::showText(const std::string& text) {
@@ -191,6 +188,19 @@ void ChatWindow::onExit() {
 
 void ChatWindow::printColorText(const std::string& text) {
     StrColorizer::print_color(displayWindow, 0, 0, text + "\n\n");
+}
+
+void ChatWindow::reprintText() {
+    int w;
+    int lines;
+    getmaxyx(displayWindow, lines, w);
+    if (lineHistory.size() < lines ) {
+        lines = (int)lineHistory.size(); //Make sure buffer size is less than max int
+    }
+
+    for (int i = 0; i < lines; i++) {
+        printColorText(lineHistory[i]);
+    }
 }
 
 }

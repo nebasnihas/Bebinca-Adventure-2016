@@ -92,7 +92,7 @@ private:
     std::vector<ITEM*> exitsMenuItems;
 
     FORM* editForm;
-    FIELD* editFields[3] = {nullptr, nullptr, nullptr};
+    FIELD* editFields[4] = {nullptr, nullptr, nullptr, nullptr};
 
     //Cant figure how to reset field type
     FIELDTYPE* TYPE_ANY;

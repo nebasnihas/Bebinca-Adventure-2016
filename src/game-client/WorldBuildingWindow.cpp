@@ -296,6 +296,7 @@ void WorldBuildingWindow::handleInputForForm(int val) {
     switch (val) {
         case '\n':
         case KEY_ENTER:
+            form_driver(editForm, REQ_END_FIELD);
             form_driver(editForm, REQ_VALIDATION);
             if (submitForm()) {
                 handleCancel();
@@ -330,6 +331,7 @@ void WorldBuildingWindow::showForm() {
     //Show the form with the current value
     FIELD* title = editFields[0];
     FIELD* value = editFields[1];
+
     CHECK(currentArea) << "Should have area data";
     Area& area = currentArea.get();
     switch (currentEditType.get()) {
@@ -343,12 +345,14 @@ void WorldBuildingWindow::showForm() {
         case AreaEditType::NAME:
             set_field_type(value, TYPE_ANY);
             field_opts_off(title, O_EDIT | O_ACTIVE);
+            field_opts_on(value, O_EDIT | O_ACTIVE);
 
             set_field_buffer(title, 0, "AREA NAME");
             set_field_buffer(value, 0, area.getTitle().c_str());
             break;
         case AreaEditType::DESC:
             set_field_type(value, TYPE_ANY);
+            field_opts_on(value, O_EDIT | O_ACTIVE);
             field_opts_off(title, O_EDIT | O_ACTIVE);
 
             set_field_buffer(title, 0, "AREA DESCRIPTION");
@@ -356,6 +360,7 @@ void WorldBuildingWindow::showForm() {
             break;
         case AreaEditType::EXIT: {
             field_opts_on(title, O_EDIT | O_ACTIVE);
+            field_opts_on(value, O_EDIT | O_ACTIVE);
             set_field_type(title, TYPE_ANY);
             set_field_type(value, TYPE_INTEGER, 0, std::numeric_limits<int>::max());
 
@@ -368,6 +373,7 @@ void WorldBuildingWindow::showForm() {
         }
         case AreaEditType::NEW_EXIT:
             field_opts_on(title, O_EDIT | O_ACTIVE);
+            field_opts_on(value, O_EDIT | O_ACTIVE);
             set_field_type(title, TYPE_ANY);
             set_field_type(value, TYPE_INTEGER, 0, std::numeric_limits<int>::max());
 
@@ -432,12 +438,12 @@ bool WorldBuildingWindow::submitForm() {
             boost::trim(exitName);
 
             if(exitName.empty() || value.empty()) {
-                showMessage("Cant have empty fields");
+                set_field_buffer(editFields[2], 0, "Cant have empty fields");
                 return false;
             }
 
             if (std::find(exitsMenuItemNames.begin(), exitsMenuItemNames.end(), exitName) != exitsMenuItemNames.end()) {
-                showMessage("Exit already exists");
+                set_field_buffer(editFields[2], 0, "Exit already exists");
                 return false;
             }
 
@@ -476,6 +482,7 @@ void WorldBuildingWindow::addNewExitItem(const std::string& exit, const std::str
 
 void WorldBuildingWindow::setUpExitsMenu() {
     exitsMenuItemNames.emplace_back(EXITS_MENU_ADD);
+    exitsMenuItems.clear();
     exitsMenu = createMenu(exitsMenuItemNames, exitsMenuItems, secondaryMenuWindow, secondaryMenuSubWindow);
 }
 
@@ -488,8 +495,15 @@ void WorldBuildingWindow::loadAreaData(const Area& area) {
 
     exitsMenuItemNames.clear();
     for (const auto& exit : *area.getConnectedAreas()) {
-        addNewExitItem(exit.first, exit.second);
+        exitsMenuItemNames.emplace_back(exit.first);
     }
+
+    for (auto item : exitsMenuItems) {
+        free_item(item);
+    }
+    free_menu(exitsMenu);
+
+    setUpExitsMenu();
 
     menu_driver(currentFocusedMenu, REQ_FIRST_ITEM);
     showSecondaryMenu();
@@ -505,7 +519,6 @@ bool WorldBuildingWindow::hasAreaData() const {
 }
 
 void WorldBuildingWindow::showMessage(const std::string& text) {
-    wgetch(messageSubWindow); //have to do this to move cursor to window, may cause delay
     wclear(messageSubWindow);
     wprintw(messageSubWindow, text.c_str());
 }
@@ -558,16 +571,20 @@ void WorldBuildingWindow::setupForm() {
     getmaxyx(formSubWindow, h, w);
 
     auto titleField = new_field(1, w - 2, 1, 1, 0, 0);
-    field_opts_off(titleField, O_AUTOSKIP);
+    field_opts_off(titleField, O_AUTOSKIP | O_ACTIVE | O_EDIT);
     set_field_opts(titleField, O_STATIC | O_PUBLIC | O_VISIBLE);
     set_field_fore(titleField, A_BOLD | A_UNDERLINE);
     editFields[0] = titleField;
 
-    auto valueField = new_field(h - 3, w - 2, 2, 1, 0, 0);
+    auto valueField = new_field(h - 4, w - 2, 2, 1, 0, 0);//-2 for title field and error field -2 for border
     field_opts_off(valueField, O_AUTOSKIP);
     set_field_opts(valueField, O_STATIC | O_PUBLIC | O_VISIBLE | O_ACTIVE | O_EDIT | O_WRAP);
     editFields[1] = valueField;
 
+    auto errorField = new_field(1, w - 2, h - 2, 1, 0, 0);
+    field_opts_off(errorField, O_AUTOSKIP | O_ACTIVE | O_EDIT);
+    set_field_opts(errorField, O_STATIC | O_PUBLIC | O_VISIBLE);
+    editFields[2] = errorField;
 
     editForm = new_form(editFields);
     set_form_win(editForm, formWindow);
