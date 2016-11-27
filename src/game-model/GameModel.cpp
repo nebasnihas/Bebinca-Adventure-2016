@@ -483,14 +483,16 @@ void GameModel::sendGlobalMessage(const std::string& senderID, std::string messa
 void GameModel::sendLocalMessageFromCharacter(const std::string& senderID, std::string message) {
 	auto areaID = getCharacterByID(senderID)->getAreaID();
 	for (const auto &character: getCharacterIDsInArea(areaID)) {
-		getCharacterByID(character)->pushToBuffer(message, getCharacterByID(senderID)->getName(), ColorTag::WHITE);
+		getCharacterByID(character)->pushToBuffer(GameStrings::get(GameStringKeys::AREA_CHANNEL) + message,
+                                                  getCharacterByID(senderID)->getName(), ColorTag::CYAN);
 	}
 }
 
 void GameModel::sendPrivateMessage(const std::string& senderID, std::string message, const std::string& target) {
 	auto targetCharacter = getCharacterByID(target);
 	if (targetCharacter != nullptr) {
-		targetCharacter->pushToBuffer(message, getCharacterByID(senderID)->getName(), ColorTag::WHITE);
+		targetCharacter->pushToBuffer(GameStrings::get(GameStringKeys::PRIVATE_CHANNEL) + message,
+                                      getCharacterByID(senderID)->getName(), ColorTag::MAGENTA);
 	}
 }
 
