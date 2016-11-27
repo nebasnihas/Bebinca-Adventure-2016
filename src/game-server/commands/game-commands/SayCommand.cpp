@@ -7,12 +7,7 @@ SayCommand::SayCommand(GameModel& gameModel, Controller& controller) : gameModel
 std::unique_ptr<MessageBuilder> SayCommand::execute(const gsl::span<std::string, -1> arguments,
                                                     const PlayerInfo& player) {
     std::string message = GameStrings::get(GameStringKeys::GLOBAL_CHANNEL) + " " + boost::join(arguments, " ");
-
-    auto clientList = controller.getAllClients();
-	for (auto& client: clientList) {
-		auto characterID = controller.getPlayerID(client);
-		gameModel.getCharacterByID(characterID)->pushToBuffer(message, player.playerID, ColorTag::WHITE);
-	}
+	gameModel.sendGlobalMessage(player.playerID, message);
 	return DisplayMessageBuilder{message};
 }
 

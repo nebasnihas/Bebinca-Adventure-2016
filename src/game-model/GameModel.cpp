@@ -26,8 +26,9 @@ bool GameModel::createCharacter(const std::string& characterID,
     int experience = NPC::defaultExp;
     Inventory inventory;
     std::string areaID = this->getDefaultLocationID();
+    auto outputBuffer = std::make_shared<std::deque<PlayerMessage>>();
 
-	Character character(      characterID,
+    Character character(      characterID,
 							  characterName,
 							  hit,
 							  damage,
@@ -36,10 +37,9 @@ bool GameModel::createCharacter(const std::string& characterID,
 							  armor,
 							  gold,
 							  inventory,
-							  areaID
+							  areaID,
+                              outputBuffer
 	);
-	auto outputBuffer = std::make_shared<std::deque<PlayerMessage>>();
-	character.setOutputBuffer(outputBuffer);
 
 	characters.insert(std::pair<std::string, Character>(characterID, character));
 
@@ -129,7 +129,8 @@ bool GameModel::moveCharacter(const std::string& characterID, const std::string&
         return false;
     }
 
-    auto area = getAreaByID(character->getAreaID());
+    auto currAreaID = character->getAreaID();
+    auto area = getAreaByID(currAreaID);
     if (area == nullptr) {
         return false;
     }
@@ -143,8 +144,52 @@ bool GameModel::moveCharacter(const std::string& characterID, const std::string&
     }
 
     character->setAreaID(connectedArea->second);
+    auto newDir = getRelativeDirection(findDirectionByAreaID(connectedArea->second, currAreaID));
+    sendMoveUpdateMessages(character->getID(), currAreaID, getRelativeDirection(areaTag), character->getAreaID(), newDir);
+
     return true;
 
+}
+
+std::string GameModel::findDirectionByAreaID(const std::string& sourceID, const std::string& destID) {
+    auto connectedAreas = *(getAreaByID(sourceID)->getConnectedAreas());
+    return std::find_if(connectedAreas.begin(), connectedAreas.end(), [&destID] (const auto& pair) { return pair.second == destID; })->first;
+}
+
+std::string GameModel::getRelativeDirection(const std::string& direction) {
+    if (direction == GameStringKeys::UP_DIRECTION) {
+        return GameStrings::get(GameStringKeys::UP_RELATIVE_DIRECTION);
+    } else if (direction == GameStringKeys::DOWN_DIRECTION) {
+        return GameStrings::get(GameStringKeys::DOWN_RELATIVE_DIRECTION);
+    } else if (direction == GameStringKeys::NORTH_DIRECTION) {
+        return GameStrings::get(GameStringKeys::NORTH_RELATIVE_DIRECTION);
+    } else if (direction == GameStringKeys::SOUTH_DIRECTION) {
+        return GameStrings::get(GameStringKeys::SOUTH_RELATIVE_DIRECTION);
+    } else if (direction == GameStringKeys::EAST_DIRECTION) {
+        return GameStrings::get(GameStringKeys::EAST_RELATIVE_DIRECTION);
+    } else if (direction == GameStringKeys::WEST_DIRECTION) {
+        return GameStrings::get(GameStringKeys::WEST_RELATIVE_DIRECTION);
+    }
+    return direction;
+}
+
+void GameModel::sendMoveUpdateMessages(const std::string& playerID,
+                                       const std::string& prevAreaID, const std::string& prevDir,
+                                       const std::string& newAreaID, const std::string& newDir) {
+
+    auto prevStrInfo = StringInfo{playerID, "", 0, prevDir};
+    for (const auto& characterID : getCharacterIDsInArea(prevAreaID)) {
+        auto character = getCharacterByID(characterID, false);
+        character->pushToBuffer(GameStrings::getFormatted(GameStringKeys::PLAYER_LEAVE, prevStrInfo), GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
+    }
+
+    auto newStrInfo = StringInfo{playerID, "", 0, newDir};
+    for (const auto& characterID : getCharacterIDsInArea(newAreaID)) {
+        if (playerID != characterID) {
+            auto character = getCharacterByID(characterID, false);
+            character->pushToBuffer(GameStrings::getFormatted(GameStringKeys::PLAYER_ENTER, newStrInfo), GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
+        }
+    }
 }
 
 bool GameModel::characterCanMove(const Character& character) {
@@ -161,21 +206,41 @@ bool GameModel::characterIsDead(const std::string& characterID) {
     return character->getState() == CharacterState::DEAD;
 }
 
-std::vector<std::string> GameModel::getCharacterIDsInArea(const std::string& areaID) const {
+std::vector<std::string> GameModel::getPlayerIDsInArea(const std::string &areaID) const {
 	Area* area = getAreaByID(areaID);
 
 	std::vector<std::string> charactersInArea;
 
 	//TODO consider keep track of character inside area class
 	for (const auto& pair : characters) {
-
 		auto character = pair.second;
 		if (character.getAreaID() == areaID) {
 			charactersInArea.push_back(character.getID());
 		}
 	}
-
 	return charactersInArea;
+}
+
+std::vector<std::string> GameModel::getNPCIDsInArea(const std::string &areaID) const {
+	std::vector<std::string>NPCsInArea;
+	for (const auto& pair : npcs) {
+		auto character = pair.second;
+		if (character.getAreaID() == areaID) {
+			NPCsInArea.push_back(character.getID());
+		}
+	}
+	return NPCsInArea;
+}
+
+std::vector<std::string> GameModel::getCharacterIDsInArea(const std::string &areaID) const {
+    std::vector<std::string> charactersInArea;
+    auto playersIDs = getPlayerIDsInArea(areaID);
+    auto npcsIDs = getNPCIDsInArea(areaID);
+
+    charactersInArea.reserve(playersIDs.size() + npcsIDs.size());
+    charactersInArea.insert(charactersInArea.end(), playersIDs.begin(), playersIDs.end());
+    charactersInArea.insert(charactersInArea.end(), npcsIDs.begin(), npcsIDs.end());
+    return charactersInArea;
 }
 
 /*
@@ -191,11 +256,28 @@ void GameModel::setDefaultLocationID(const std::string& locationID) {
 }
 
 Character* GameModel::getCharacterByID(const std::string& characterID) const {
-	if (characters.count(characterID) == 1) {
-        auto character = (Character*)&(characters.at(characterID));
-        return getBodySwappedCharacter(character);
-    }
+	return getCharacterByID(characterID, true);
+}
 
+Character* GameModel::getCharacterByID(const std::string& characterID, bool considerStatusEffect) const {
+	Character* character;
+	if (characters.count(characterID) == 1) {
+		character = (Character*)&(characters.at(characterID));
+	}
+	else if (npcs.count(characterID) > 0) {
+		character = (NPC*)&(npcs.at(characterID));
+	}
+	else {
+		return nullptr;
+	}
+
+	return (considerStatusEffect) ? getBodySwappedCharacter(character) : character;
+}
+
+NPC* GameModel::getNPCByID(const std::string& npcID) const {
+	if (npcs.count(npcID) > 0) {
+		return (NPC*)&(npcs.at(npcID));
+	}
 	return nullptr;
 }
 
@@ -209,7 +291,13 @@ Character* GameModel::getBodySwappedCharacter(Character* character) const {
     } else {
         // TODO: print bodyswapped message
         auto characterID = std::static_pointer_cast<BodySwapStatus>(*statusEffect)->getSwappedID();
-		return (Character*)&(characters.at(characterID));
+		if (characters.find(characterID) != characters.end()) {
+			return (Character*)&(characters.at(characterID));
+		}
+		else if (npcs.find(characterID) != npcs.end()) {
+			return (NPC*)&(npcs.at(characterID));
+		}
+		else return character;
     }
 }
 
@@ -220,14 +308,14 @@ void GameModel::addNPCsToAreas() {
             try {
 
                 auto& npc = npcTemplates.at(reset.getActionID());
-
                 for (int i = 0; i < reset.getLimit(); i++) {
                     std::string newNpcID = npc.getID();
-                    newNpcID = newNpcID.append(std::to_string(npc.getCounter()));
+//                    newNpcID = newNpcID.append(std::to_string(npc.getCounter()));
+					newNpcID = npc.getName() + "-" + newNpcID.append(std::to_string(npc.getCounter()));
 
                     auto newNPC = NPC(npc);
-                    npc.setID(newNpcID);
-                    npc.setAreaID(reset.getAreaID());
+                    newNPC.setID(newNpcID);
+                    newNPC.setAreaID(reset.getAreaID());
                     npcs.insert(std::pair<std::string, NPC>(newNPC.getID(), newNPC));
                     npc.increaseCounter();
                 }
@@ -240,12 +328,16 @@ void GameModel::addNPCsToAreas() {
 }
 
 void GameModel::setNPCs(const std::unordered_map<std::string, NPC> npcs) {
-    this->npcs = npcs;
+    this->npcTemplates = npcs;
+}
+
+void GameModel::setResets(const std::vector<Resets> resets) {
+	this->resets = resets;
 }
 
 bool GameModel::engageCharacterInCombat(const std::string& characterID, const std::string& target) {
     auto c1 = getCharacterByID(characterID);
-    auto c2 = getCharacterByID(target);
+    auto c2 = getCharacterByID(target, true);
 
     if (c1 == nullptr || c2 == nullptr) {
         return false;
@@ -309,6 +401,10 @@ void GameModel::update() {
     // Consider not calling this every tick
     updateStatusEffects();
 
+    if (gameTicks % GameModel::GAME_TICKS_PER_NPC_TICK == 0) {
+        runNPCScripts();
+    }
+
     gameTicks++;
 }
 
@@ -344,26 +440,58 @@ void GameModel::updateStatusEffects() {
     time(&currentTime);
 
     for (auto& pair : characters) {
-        auto& character = pair.second;
-        auto& statusEffects = character.getStatusEffects();
+		auto& character = pair.second;
+		auto& statusEffects = character.getStatusEffects();
+		removeExpiredStatus(currentTime, character, statusEffects);
+	}
+	for (auto& pair: npcs) {
+		auto& npc = pair.second;
+		auto& statusEffects = npc.getStatusEffects();
+		removeExpiredStatus(currentTime, npc, statusEffects);
+	}
+}
 
-        // Remove if we have passed the end time
-        auto eraseIter = std::remove_if(statusEffects.begin(), statusEffects.end(),
-                                        [&currentTime] (const auto& se) {
-                                            return se->getEndTime() < currentTime;
-                                        }
-        );
-		if (eraseIter != statusEffects.end()) {
-			character.pushToBuffer(GameStrings::get(GameStringKeys::STATUS_EFFECT_END),
-                                   GameStrings::get(GameStringKeys::SERVER_NAME),
-                                   ColorTag::WHITE);
+void GameModel::removeExpiredStatus(time_t currentTime, Character &character,
+									std::vector<std::shared_ptr<StatusEffect>> &statusEffects) const {
+	auto eraseIter = remove_if(statusEffects.begin(), statusEffects.end(),
+							   [&currentTime] (const auto& se) {
+									   return se->getEndTime() < currentTime;
+								   });
+	if (eraseIter != statusEffects.end()) {
+			character.pushToBuffer(GameStrings::get(GameStringKeys::STATUS_EFFECT_END), GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
 		}
-        statusEffects.erase(eraseIter, statusEffects.end());
-    }
+	statusEffects.erase(eraseIter, statusEffects.end());
 }
 
 void GameModel::pushToOutputBuffer(const std::string& characterID, std::string message, std::string sender, std::string color) {
 	getCharacterByID(characterID)->pushToBuffer(message, sender, color);
+}
+
+void GameModel::sendGlobalMessage(const std::string& senderID, std::string message) {
+	for (const auto& pair : characters) {
+		auto character = pair.second;
+		character.pushToBuffer(message, getCharacterByID(senderID)->getName(), ColorTag::WHITE);
+	}
+	for (const auto& pair : npcs) {
+		auto character = pair.second;
+        if (character.getID() == senderID) {
+            character.pushToBuffer(message, getCharacterByID(senderID)->getName(), ColorTag::WHITE);
+        }
+	}
+}
+
+void GameModel::sendLocalMessageFromCharacter(const std::string& senderID, std::string message) {
+	auto areaID = getCharacterByID(senderID)->getAreaID();
+	for (const auto &character: getCharacterIDsInArea(areaID)) {
+		getCharacterByID(character)->pushToBuffer(message, getCharacterByID(senderID)->getName(), ColorTag::WHITE);
+	}
+}
+
+void GameModel::sendPrivateMessage(const std::string& senderID, std::string message, const std::string& target) {
+	auto targetCharacter = getCharacterByID(target);
+	if (targetCharacter != nullptr) {
+		targetCharacter->pushToBuffer(message, getCharacterByID(senderID)->getName(), ColorTag::WHITE);
+	}
 }
 
 void GameModel::listValidSpells(const std::string& characterID) {
@@ -396,7 +524,7 @@ void GameModel::castSpell(const std::string& sourceID, const std::string& target
 		}
 		else {
 			CombatCast spellCast{spell};
-			spellCast.execute(*getCharacterByID(sourceID), *getCharacterByID(targetID));
+			spellCast.execute(*getCharacterByID(sourceID), *getCharacterByID(targetID, false));
 		}
 	} else {
 		auto unknownSpellMessage = GameStrings::getFormatted(GameStringKeys::SPELL_UNKNOWN, StringInfo{sourceID, targetID, 0, spellID});
@@ -404,4 +532,49 @@ void GameModel::castSpell(const std::string& sourceID, const std::string& target
                                                  GameStrings::get(GameStringKeys::SERVER_NAME),
                                                  ColorTag::WHITE);
 	}
+}
+
+void GameModel::runNPCScripts() {
+
+    for (auto& pair : npcs) {
+        auto& npc = pair.second;
+        auto commands = npc.getCommandsToExecute();
+
+        for (const auto& command : commands) {
+            executeNPCCommand(npc.getID(), command);
+        }
+    }
+}
+
+void GameModel::executeNPCCommand(const std::string &npcID, const std::string &command) {
+    std::stringstream ss;
+    ss.str(command);
+    std::string token;
+    std::getline(ss, token, ' ');
+
+    if (token == "say") {
+
+        std::string message;
+        std::getline(ss, message);
+
+        if (message == "") {
+            return;
+        }
+
+        sendLocalMessageFromCharacter(npcID, message);
+
+    } else if (token == "mpechoat") {
+
+        std::string target;
+        std::getline(ss, target, ' ');
+
+        std::string message;
+        std::getline(ss, message);
+
+        if (target == "" || message == "") {
+            return;
+        }
+
+        sendPrivateMessage(npcID, message, target);
+    }
 }

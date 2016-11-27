@@ -65,13 +65,14 @@ void CombatCast::execute(Character& source, Character& target) {
 			break;
 		case SpellType::BODY_SWAP:
 			//TODO: determine duration of body swap based on player level
-			auto sourceStatus = std::make_shared<BodySwapStatus>(10, target.getID());
-			target.pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_GENERIC_SOURCE, stringInfo), GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
-			source.addStatusEffect(sourceStatus);
+			auto sourceStatus = std::make_shared<BodySwapStatus>(20, target.getID());
+			auto targetStatus = std::make_shared<BodySwapStatus>(20, source.getID());
 
-			auto targetStatus = std::make_shared<BodySwapStatus>(10, source.getID());
-			source.pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_GENERIC_TARGET, stringInfo), GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
+			source.addStatusEffect(sourceStatus);
 			target.addStatusEffect(targetStatus);
+
+			target.pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_GENERIC_SOURCE, stringInfo), GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
+			source.pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_GENERIC_TARGET, stringInfo), GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
     }
 }
 

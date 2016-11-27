@@ -1,5 +1,6 @@
 #include <game/Character.hpp>
 #include <boost/format.hpp>
+#include <game/NPCScripts.hpp>
 #include "GameStrings.hpp"
 
 Character::Character() {}
@@ -13,7 +14,8 @@ Character::Character(const std::string& id,
                      int armor,
                      int gold,
                      Inventory inventory,
-                     std::string& areaID
+                     std::string& areaID,
+                     MessageBuffer outputBuffer
                     )
 
                     :
@@ -26,7 +28,7 @@ Character::Character(const std::string& id,
                     , armor(armor)
                     , gold(gold)
                     , areaID(areaID)
-
+                    , outputBuffer(outputBuffer)
                     {
                        inventory = Inventory(inventory); //Unsure if this works/keeps consistency (Understatement of the year)
                     }
@@ -172,12 +174,16 @@ void Character::setOutputBuffer(MessageBuffer outputBuffer) {
 }
 
 void Character::pushToBuffer(const std::string message, const std::string sender, std::string color) {
-	outputBuffer->push_back(PlayerMessage{message, sender, color});
+	if (outputBuffer != nullptr) {
+		outputBuffer->push_back(PlayerMessage{message, sender, color});
+	}
 }
 
 std::string Character::getStatus() {
-	std::string status = (boost::format(GameStrings::get(GameStringKeys::CHAR_STATUS))
-						  % name % getLevel() % currentHealth % currentMana).str();
+	std::string status = name + "\n" +
+						"Health: " + std::to_string(currentHealth) + "\n" +
+						"Mana: " + std::to_string(currentMana) + "\n" +
+						"Level: " + std::to_string(getLevel());
 	return status;
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -197,7 +203,8 @@ NPC::NPC(const std::string& id,
                    int thac0,
                    const std::string& description,
                    const std::string& keywords,
-                   const std::string& longDesc
+                   const std::string& longDesc,
+                   std::unordered_map<std::string, NPCScripts>& scripts
                     )
 
                     : Character(id,
@@ -209,13 +216,16 @@ NPC::NPC(const std::string& id,
                         armor,
                         gold,
                         inventory,
-                        areaID
+                        areaID,
+                        std::make_shared<std::deque<PlayerMessage>>()
                         )
 
                     , thac0(thac0)
                     , description(description)
                     , keywords(keywords)
                     , longDesc(longDesc)
+                    , scripts(scripts)
+
                     {
                     }
 
@@ -241,6 +251,10 @@ int NPC::getThac0() const {
     return thac0;
 }
 
+std::unordered_map<std::string, NPCScripts> NPC::getScripts() const {
+    return scripts;
+}
+
 int NPC::getCounter() const {
     return counter;
 }
@@ -251,4 +265,40 @@ void NPC::increaseCounter() {
 
 void NPC::setCounter(int newCount) {
     this->counter = newCount;
+}
+
+std::vector<std::string> NPC::getCommandsToExecute()
+{
+    std::vector<std::string> commandsToExecute;
+    for (auto& message : *outputBuffer ) {
+
+        // We only read messages that are sent by the server
+        if (message.senderID != GameStringKeys::MESSAGE_SENDER_SERVER) {
+            continue;
+        }
+
+        for (auto& pair : scripts) {
+            auto& script = pair.second;
+
+            // Capture the name of the player that triggered this
+            std::string qualifierPattern = "(\\w+) " + script.getScriptingQualifier();
+            boost::regex effectsRegex{qualifierPattern};
+            boost::smatch matches;
+
+            // If this isn't a match, move on
+            if (!boost::regex_match(message.text, matches, effectsRegex)) {
+                continue;
+            }
+
+            // Substitute the "$n" string for the userID, then add it to the vector of commands
+            std::string userID = matches.str(1);
+            const auto& commands = script.getScriptingCommands();
+            for (auto command : commands) {
+                boost::replace_all(command, "$n", userID);
+                commandsToExecute.push_back(command);
+            }
+        }
+    }
+    outputBuffer->clear();
+    return commandsToExecute;
 }

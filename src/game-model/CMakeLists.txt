@@ -2,6 +2,7 @@ add_library(game Area.cpp
             Character.cpp
             Object.cpp
             GameModel.cpp
+            NPCScripts.cpp
             Inventory.cpp
             Resets.cpp
             GameDataImporter.cpp
@@ -12,7 +13,7 @@ add_library(game Area.cpp
             combat/CombatAction.cpp
             Spell.cpp
             StatusEffect.cpp
-            ExpressionExtractor.hpp)
+            ExpressionExtractor.hpp )
 
 find_package(Boost 1.58 COMPONENTS regex REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})

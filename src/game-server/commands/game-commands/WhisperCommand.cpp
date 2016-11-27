@@ -8,25 +8,24 @@ WhisperCommand::WhisperCommand(GameModel& gameModel, Controller& controller) : g
 std::unique_ptr<MessageBuilder> WhisperCommand::execute(const gsl::span<std::string, -1> arguments,
                                                         const PlayerInfo& player) {
     if (arguments.empty()) {
-        return DisplayMessageBuilder{GameStrings::get(GameStringKeys::UNSPECIFIED_PLAYER)}
-                .addClient(player.clientID)
-                .setSender(DisplayMessageBuilder::SENDER_SERVER);
+		gameModel.getCharacterByID(player.playerID)->pushToBuffer(GameStrings::get(GameStringKeys::UNSPECIFIED_PLAYER),
+																  GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
+		return DisplayMessageBuilder{GameStrings::get(GameStringKeys::UNSPECIFIED_PLAYER)};
     }
 
     auto targetPlayerID = arguments[0];
     auto targetClient = controller.getClientID(targetPlayerID);
+	auto message = GameStrings::get(GameStringKeys::PRIVATE_CHANNEL) + " "
+				   + boost::algorithm::join(arguments.subspan(1, arguments.length() - 1), " ");
 
     if (!targetClient) {
-        return DisplayMessageBuilder{GameStrings::get(GameStringKeys::PLAYER)
-                                     + " " + targetPlayerID + " "
-                                     + GameStrings::get(GameStringKeys::INVALID_TGT)}
-                .addClient(player.clientID)
-                .setSender(DisplayMessageBuilder::SENDER_SERVER);
+		gameModel.getCharacterByID(player.playerID)->pushToBuffer(GameStrings::get(GameStringKeys::PLAYER)
+															  + " " + targetPlayerID + " "
+															  + GameStrings::get(GameStringKeys::INVALID_TGT),
+																  GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
+		return DisplayMessageBuilder{message};
     }
 
-    auto message = GameStrings::get(GameStringKeys::PRIVATE_CHANNEL) + " "
-                   + boost::algorithm::join(arguments.subspan(1, arguments.length() - 1), " ");
-
-	gameModel.getCharacterByID(targetPlayerID)->pushToBuffer(message, player.playerID, ColorTag::WHITE);
+	gameModel.sendPrivateMessage(player.playerID, message, targetPlayerID);
     return DisplayMessageBuilder{message};
 }
