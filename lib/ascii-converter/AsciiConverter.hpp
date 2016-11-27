@@ -83,6 +83,9 @@ class AsciiConverter {
     //To be added
     // static string sentence_helper(const string font_type, const string& sentence);
     
+    //Animation
+    static string animation_helper(const string& objname, char anim_frame[MAX_SHADES], const string& file);
+    static void set_sequence_filepath(vector<string>& filepath_seq, const string&objname);
     
     
     
@@ -109,6 +112,11 @@ class AsciiConverter {
     //To be added
     // static string printSentence(const string font_type, const string &sentence);
     // static string printSentence(const string font_type, const string sentence);
+    
+    //Animation
+    static vector<string> animateObject(const string &objname);
+    static vector<string> animateSequence(const string &objname);
+    
 };
 
 #endif /* AsciiConverter_hpp */
