@@ -33,6 +33,7 @@ public:
 	bool moveCharacter(const std::string& characterID, const std::string& areaTag);
 	Character* getCharacterByID(const std::string& characterID) const;
 	NPC* getNPCByID(const std::string& npcID) const;
+	NPC* getNPCInArea(const std::string& keyword, const std::string& areaID);
 
 	/*
 	 *	OBJECT FUNCTIONS

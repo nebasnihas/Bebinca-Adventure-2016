@@ -10,15 +10,15 @@ std::unique_ptr<MessageBuilder> LookCommand::execute(const gsl::span<std::string
 	std::string description;
 
 	if (arguments.empty()) {
-		description = gameModel.getAreaDescription(areaID);
+		description = gameModel.getAreaByID(areaID)->getTitle() + "\n" + gameModel.getAreaDescription(areaID);
 	} else {
-		auto targetEntity = boost::algorithm::join(arguments, " ");
-		auto NPCIDs = gameModel.getNPCIDsInArea(areaID);
-		if (std::find(NPCIDs.begin(), NPCIDs.end(), targetEntity) != NPCIDs.end()) {
-			description = gameModel.getNPCByID(targetEntity)->getlongDesc();
+		auto targetEntity = arguments[0];
+		auto npc = gameModel.getNPCInArea(targetEntity, areaID);
+		if (npc == nullptr) {
+			description = targetEntity + " " + GameStrings::get(GameStringKeys::INVALID_TGT);
 		}
 		else {
-			description = gameModel.getEntityDescription(areaID, targetEntity);
+			description = npc->getlongDesc();
 		}
 	}
 

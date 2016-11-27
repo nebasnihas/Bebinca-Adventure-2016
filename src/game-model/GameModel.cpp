@@ -301,6 +301,18 @@ Character* GameModel::getBodySwappedCharacter(Character* character) const {
     }
 }
 
+NPC* GameModel::getNPCInArea(const std::string& keyword, const std::string& areaID) {
+	for (const auto& npcID: getNPCIDsInArea(areaID)) {
+		auto npc = getNPCByID(npcID);
+		for (auto& npcKeyword: npc->getKeywords()) {
+			if (keyword == npcKeyword) {
+				return npc;
+			}
+		}
+	}
+	return nullptr;
+}
+
 void GameModel::addNPCsToAreas() {
     for (const auto& reset : resets) {
 

@@ -31,7 +31,6 @@ std::unordered_map<std::string, NPC> GameDataImporter::returnNPCS(const YAML::No
         vector<string> longdesc = nodeNPC["longdesc"] ? nodeNPC["longdesc"].as<vector<string>>() : NPC::defaultLongDescription;
 
         string sDescription = boost::algorithm::join(description, " ");
-        string sKeywords = boost::algorithm::join(keywords, " ");
         string sLongDescription = boost::algorithm::join(longdesc, " ");
 
         Inventory inventory;
@@ -44,6 +43,9 @@ std::unordered_map<std::string, NPC> GameDataImporter::returnNPCS(const YAML::No
             const YAML::Node programs = nodeNPC["programs"];
             for (const auto &program : programs) {
                 vector<string> scriptingCommands = program["commands"] ? program["commands"].as<vector<string>>() : NPCScripts::defaultCommand;
+				for (auto& command: scriptingCommands) {
+					boost::trim(command);
+				}
                 string qualifier = program["qualifier"] ? program["qualifier"].as<string>() : NPCScripts::defaultQualifier;
                 string scriptingName = program["name"] ? program["name"].as<string>() : NPCScripts::defaultScriptingName;
                 vector<string> scriptingDescription = program["description"] ? program["description"].as<vector<string>>() : NPCScripts::defaultScriptingDescription;
@@ -60,7 +62,7 @@ std::unordered_map<std::string, NPC> GameDataImporter::returnNPCS(const YAML::No
         }
 
         NPC newNPC = NPC(npcID, shortdesc, hit, damage, level, exp, armor, gold, inventory, areaID, thac0,
-                              sDescription, sKeywords, sLongDescription, NPCScriptings);
+                              sDescription, keywords, sLongDescription, NPCScriptings);
         npcs.insert(std::pair<std::string, ::NPC>(npcID, newNPC));
     }
     return npcs;
