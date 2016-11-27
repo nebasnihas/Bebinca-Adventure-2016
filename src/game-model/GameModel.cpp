@@ -489,9 +489,7 @@ void GameModel::sendGlobalMessage(const std::string& senderID, std::string messa
 	}
 	for (const auto& pair : npcs) {
 		auto character = pair.second;
-        if (character.getID() == senderID) {
-            character.pushToBuffer(message, getCharacterByID(senderID)->getName(), ColorTag::WHITE);
-        }
+		character.pushToBuffer(message, getCharacterByID(senderID)->getName(), ColorTag::WHITE);
 	}
 }
 
