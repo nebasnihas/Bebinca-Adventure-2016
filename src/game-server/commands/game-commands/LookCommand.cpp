@@ -19,11 +19,15 @@ std::unique_ptr<MessageBuilder> LookCommand::execute(const gsl::span<std::string
 	auto targetEntity = arguments[0];
 	auto npc = gameModel.getNPCInArea(targetEntity, areaID);
 	auto object = gameModel.getObjectInArea(targetEntity, areaID);
+	auto extDesc = gameModel.getExtendedDescription(targetEntity, areaID);
 	if (npc != nullptr) {
 		description = npc->getlongDesc();
 	}
 	else if (object != nullptr) {
 		description = object->getDescription();
+	}
+	else if (extDesc) {
+		description = extDesc.get();
 	}
 	else {
 		description = targetEntity + " " + GameStrings::get(GameStringKeys::INVALID_TGT);

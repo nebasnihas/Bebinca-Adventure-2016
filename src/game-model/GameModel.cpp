@@ -99,6 +99,14 @@ std::string GameModel::getAreaDescription(const std::string& areaID) const {
 	return area->getDescription();
 }
 
+boost::optional<std::string> GameModel::getExtendedDescription(const std::string& keyword, const std::string& areaID) {
+	auto descriptionsMap = getAreaByID(areaID)->getExtendedDescriptions();
+	if (descriptionsMap.find(keyword) != descriptionsMap.end()) {
+		return descriptionsMap.at(keyword);
+	}
+	return boost::optional<std::string>{};
+}
+
 std::unordered_map<std::string, std::string>* GameModel::getConnectedAreas(const std::string& areaID) const {
     auto area = getAreaByID(areaID);
     return area->getConnectedAreas();

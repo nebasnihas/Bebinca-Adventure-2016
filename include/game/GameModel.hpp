@@ -7,6 +7,7 @@
 #include <exception>
 #include <deque>
 #include <memory>
+#include <boost/optional.hpp>
 
 #include <game/Area.hpp>
 #include <game/Character.hpp>
@@ -40,11 +41,11 @@ public:
 	 *	OBJECT FUNCTIONS
 	 */
 
-	std::string getObjectDescription(const std::string& areaID, const std::string& objectName) const;
 	void addObjectToAreas();
 	void loadObjects(const YAML::Node& OBJECTS);
 	Object* getObjectInArea(const std::string& keyword, const std::string& areaID);
 	Object* getObjectById(const std::string& objectID);
+	boost::optional<std::string> getExtendedDescription(const std::string& keyword, const std::string& areaID);
 
 	/*
 	 *	AREA FUNCTIONS

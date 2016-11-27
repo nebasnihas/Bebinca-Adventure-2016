@@ -21,7 +21,7 @@ public:
 	// Constructors
 	//---------------*
 
-	Area(const std::string &id, const std::string &title, const Doors& connectedAreas, const std::string &description, const std::vector<std::string>& extendedDescriptions);
+	Area(const std::string &id, const std::string &title, const Doors& connectedAreas, const std::string &description, const std::unordered_map<std::string, std::string>& extendedDescriptions);
 	Area(const std::string &id, const std::string &title); //For testing
 
 	//*---------------
@@ -32,7 +32,7 @@ public:
 	std::string getTitle() const;
 	std::string getDescription() const;
 	Doors* getConnectedAreas() const;
-    std::vector<std::string> getExtendedDescriptions() const;
+	std::unordered_map<std::string, std::string> getExtendedDescriptions() const;
 
 	void addObjects(std::string);
 	const std::vector<std::string>& getObjectNames() const;
@@ -47,7 +47,7 @@ private:
 	Doors connectedAreas;
 
     std::string description;
-    std::vector<std::string> extendedDescriptions;
+	std::unordered_map<std::string, std::string> extendedDescriptions;
 	std::vector<std::string> objectNames;
 };
 

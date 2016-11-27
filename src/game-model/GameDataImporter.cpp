@@ -85,7 +85,15 @@ std::vector<Area> GameDataImporter::getRooms(const YAML::Node& ROOMS) {
         vector<string> desc = ROOM["desc"].as<vector<string>>();
         string description = boost::algorithm::join(desc, " ");
         //vector<string> extended_descriptions = ROOM["extended_descriptions"].as<vector<string>>();
-        vector<string> extended_descriptions;
+        unordered_map<string, string> exKeywordToDesc;
+		for (const auto& EX_DESC : ROOM["extended_descriptions"]) {
+			auto ex_desc_list = EX_DESC["desc"].as<vector<string>>();
+			auto ex_desc = boost::join(ex_desc_list, " ");
+			string ex_keyword = EX_DESC["keywords"].as<vector<string>>()[0];
+			exKeywordToDesc[ex_keyword] = ex_desc;
+		}
+
+		vector<string> extended_descriptions;
         string id = ROOM["id"].as<string>();
         string name = ROOM["name"].as<string>();
 
@@ -102,7 +110,7 @@ std::vector<Area> GameDataImporter::getRooms(const YAML::Node& ROOMS) {
             doorsMap.insert(doorKeyValuePair);
         }
         //Create an Area objects with ID, title, connected areas, and descriptions
-        Area newArea = Area(id, name, doorsMap, description, extended_descriptions);
+        Area newArea = Area(id, name, doorsMap, description, exKeywordToDesc);
         rooms.push_back(newArea);
     }
     return rooms;
