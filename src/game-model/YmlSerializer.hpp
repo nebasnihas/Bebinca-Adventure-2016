@@ -7,7 +7,7 @@
 
 #include <iostream>
 #include "yaml-cpp/yaml.h"
-#include "../../include/game/Character.hpp"
+#include "game/Character.hpp"
 #include <string>
 #include <glog/logging.h>
 #include <fstream>

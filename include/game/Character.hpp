@@ -52,15 +52,13 @@ public:
 
     Character(      const std::string& id,
                     const std::string& name,
-                    std::string& hit,
-                    std::string& damage,
+                    const std::string& hit,
+                    const std::string& damage,
                     int level,
                     int exp,
                     int armor,
                     int gold,
-                    Inventory inventory,
-                    std::string& areaID,
-                    MessageBuffer outputBuffer
+                    std::string& areaID
                     );
 
     std::string getName() const;
@@ -97,7 +95,6 @@ public:
     void setCurrentMana(int currentMana);
     void increaseLevel();
     void increaseExp(int expToAdd);
-	void setOutputBuffer(MessageBuffer outputBuffer);
 
 	void pushToBuffer(const std::string message, const std::string sender, std::string color);
     void addStatusEffect(std::shared_ptr<StatusEffect> statusEffect);
@@ -129,7 +126,6 @@ public:
 		int exp,
 		int armor,
 		int gold,
-		Inventory inventory,
 		std::string &areaID,
 		int thac0,
 		const std::string &description,
@@ -166,45 +162,5 @@ private:
     int counter;
 
 };
-
-
-////Creatable Character Classes
-//class WarriorCharacter : public Character {
-//public:
-//    WarriorCharacter(const std::string& id, const std::string& name, const std::string& areaID)
-//    : Character(id, name, areaID) {
-//        attributes.setPrimaryAttribute("strength");
-//    }
-//
-//    std::string getClass() {
-//        return "warrior";
-//    }
-//};
-//
-//class WizardCharacter : public Character {
-//public:
-//    WizardCharacter(const std::string& id, const std::string& name, const std::string& areaID)
-//            : Character(id, name, areaID) {
-//        attributes.setPrimaryAttribute("intelligence");
-//    }
-//
-//    std::string getClass() {
-//        return "wizard";
-//    }
-//};
-//
-//class RangerCharacter : public Character {
-//public:
-//    RangerCharacter(const std::string& id, const std::string& name, const std::string& areaID)
-//            : Character(id, name, areaID) {
-//        attributes.setPrimaryAttribute("dexterity");
-//    }
-//
-//    std::string getClass() {
-//        return "ranger";
-//    }
-//
-//
-//};
 
 #endif

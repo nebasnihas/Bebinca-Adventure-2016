@@ -26,6 +26,7 @@ protected:
         YAML::Node configNode;
         configNode["desc"] = desc;
         configNode["usage"] = usage;
+        configNode["role"] = "user";
         for (const auto& b : bindings) {
             configNode["bindings"].push_back(b);
         }

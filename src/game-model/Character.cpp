@@ -7,15 +7,13 @@ Character::Character() {}
 
 Character::Character(const std::string& id,
                      const std::string& name,
-                     std::string& hit,
-                     std::string& damage,
+                     const std::string& hit,
+                     const std::string& damage,
                      int level,
                      int exp,
                      int armor,
                      int gold,
-                     Inventory inventory,
-                     std::string& areaID,
-                     MessageBuffer outputBuffer
+                     std::string& areaID
                     )
 
                     :
@@ -28,9 +26,8 @@ Character::Character(const std::string& id,
                     , armor(armor)
                     , gold(gold)
                     , areaID(areaID)
-                    , outputBuffer(outputBuffer)
+                    , outputBuffer(std::make_shared<std::deque<PlayerMessage>>())
                     {
-                       inventory = Inventory(inventory); //Unsure if this works/keeps consistency (Understatement of the year)
                     }
 
 
@@ -169,9 +166,6 @@ void Character::setAreaID(const std::string& newAreaID){
 void Character::addStatusEffect(std::shared_ptr<StatusEffect> statusEffect) {
     statusEffects.push_back(statusEffect);
 }
-void Character::setOutputBuffer(MessageBuffer outputBuffer) {
-	this->outputBuffer = std::move(outputBuffer);
-}
 
 void Character::pushToBuffer(const std::string message, const std::string sender, std::string color) {
 	if (outputBuffer != nullptr) {
@@ -198,7 +192,6 @@ NPC::NPC(const std::string &id,
 		 int exp,
 		 int armor,
 		 int gold,
-		 Inventory inventory,
 		 std::string &areaID,
 		 int thac0,
 		 const std::string &description,
@@ -215,9 +208,7 @@ NPC::NPC(const std::string &id,
                         exp,
                         armor,
                         gold,
-                        inventory,
-                        areaID,
-                        std::make_shared<std::deque<PlayerMessage>>()
+                        areaID
                         )
 
                     , thac0(thac0)

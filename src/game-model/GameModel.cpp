@@ -1,7 +1,5 @@
 #include <boost/format.hpp>
 #include "game/GameModel.hpp"
-#include "combat/CombatManager.hpp"
-#include "GameStrings.hpp"
 
 GameModel::GameModel() {
     // TODO: Move this to something more elegant
@@ -15,37 +13,13 @@ GameModel::GameModel() {
 const std::string ACTION_NPC = "npc";
 const std::string ACTION_OBJECT = "object";
 
-bool GameModel::createCharacter(const std::string& characterID,
-                                const std::string& characterName) {
+bool GameModel::createCharacter(const std::string& characterID) {
 
-    // defaults
-    std::string hit = NPC::defaultHit;
-    std::string damage = NPC::defaultDamage;
-    int level = NPC::defaultLevel;
-    int armor = NPC::defaultArmor;
-    int gold = NPC::defaultGold;
-    int experience = NPC::defaultExp;
-    Inventory inventory;
-    std::string areaID = this->getDefaultLocationID();
-    auto outputBuffer = std::make_shared<std::deque<PlayerMessage>>();
-
-    Character character(      characterID,
-							  characterName,
-							  hit,
-							  damage,
-							  level,
-							  experience,
-							  armor,
-							  gold,
-							  inventory,
-							  areaID,
-                              outputBuffer
-	);
-
+    Character character = YmlSerializer::load_from_file(characterID);
+    if (character.getAreaID() == "-1") {
+        character.setAreaID(this->defaultLocation);
+    }
 	characters.insert(std::pair<std::string, Character>(characterID, character));
-
-	// Possible failure cases
-	// - Invalid character; taken care of by the Character class
 
 	return true;
 }
@@ -437,6 +411,10 @@ void GameModel::update() {
         runNPCScripts();
     }
 
+    if (gameTicks % GameModel::GAME_TICKS_PER_SAVE_TICK) {
+        saveAllCharacters();
+    }
+
     gameTicks++;
 }
 
@@ -608,5 +586,11 @@ void GameModel::executeNPCCommand(const std::string &npcID, const std::string &c
         }
 
         sendPrivateMessage(npcID, message, target);
+    }
+}
+
+void GameModel::saveAllCharacters() {
+    for (const auto& pair : characters) {
+        YmlSerializer::save_to_file(pair.second);
     }
 }

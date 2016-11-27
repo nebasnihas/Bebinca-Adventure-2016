@@ -61,7 +61,7 @@ std::unordered_map<std::string, NPC> GameDataImporter::returnNPCS(const YAML::No
             }
         }
 
-        NPC newNPC = NPC(npcID, shortdesc, hit, damage, level, exp, armor, gold, inventory, areaID, thac0,
+        NPC newNPC = NPC(npcID, shortdesc, hit, damage, level, exp, armor, gold, areaID, thac0,
                               sDescription, keywords, sLongDescription, NPCScriptings);
         npcs.insert(std::pair<std::string, ::NPC>(npcID, newNPC));
     }
