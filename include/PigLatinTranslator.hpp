@@ -29,9 +29,9 @@ The Pig Latin system has the following functionalities:
 #ifndef ADVENTURE2016_PIGLATINTRANSLATOR_HPP
 #define ADVENTURE2016_PIGLATINTRANSLATOR_HPP
 
-#include <iostream>
 #include <string>
 #include <vector>
+#include <iostream>
 
 
 
@@ -244,14 +244,6 @@ performPigLatinWithVowelAsFirstLetter( std::string& word )
 
 
 
-static inline void 
-performDefaultPigLatin( std::string& word )
-{
-	word += "ay";
-}
-
-
-
 /*
  *	METHODS THAT PERFORM PIG LATIN STEPS
  */
@@ -263,17 +255,20 @@ transformOneWordToPigLatin( std::string& word )
 {
 	const int STARTING_CHARACTER_OF_WORD = 0;
 
-	if( ! isWordAlphabetical( word ) )
+	if( isWordAlphabetical( word ) && 
+	isLetterVowel( word[ STARTING_CHARACTER_OF_WORD ] ) )
 	{
-		performDefaultPigLatin( word );
+		performPigLatinWithVowelAsFirstLetter( word ) ;
 	}
-	else if( isLetterVowel( word[ STARTING_CHARACTER_OF_WORD ] ) )
+	else if( isWordAlphabetical( word ) && 
+	! isLetterVowel( word[ STARTING_CHARACTER_OF_WORD ] ) )
 	{
-		performPigLatinWithVowelAsFirstLetter( word) ;
+		performPigLatinWithConsonantAsFirstLetter( word );
 	}
 	else
 	{
-		performPigLatinWithConsonantAsFirstLetter( word );
+		// Do nothing. All words with non-alphabetic characters
+		// will stay the same.
 	}
 }
 
@@ -335,7 +330,7 @@ static inline std::vector< std::string >
 translateWordsToPigLatin( const std::vector< std::string >& originalWords )
 {
 	std::vector<std::string> newWords = {};
-	
+
 	for( std::string word : originalWords )
     {
     	// Punctuation will be removed from word and added back
@@ -351,7 +346,11 @@ translateWordsToPigLatin( const std::vector< std::string >& originalWords )
 
 
 		// Main procedure
-		if( doesWordHaveHyphen(word) )
+		if ( word == "" )
+		{
+			// Do nothing.
+		}
+		else if( doesWordHaveHyphen(word) )
 		{
 			transformTwoWordsToPigLatin( word, '-' );
 		}
@@ -380,6 +379,10 @@ formPigLatinSentence( const std::vector< std::string >& wordArray )
     {
     	sentence += word + " ";
     }
+
+    const int UNNECESSARY_SPACE_OF_SENTENCE = sentence.length() - 1;
+    sentence.erase( UNNECESSARY_SPACE_OF_SENTENCE );
+
     return sentence;
 }
 
