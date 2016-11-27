@@ -170,6 +170,46 @@ color_type StrColorizer::get_color(char c){
 
 }
 
+color_type StrColorizer::get_looper_color(int i){
+    
+    
+    switch(i){
+            
+        case 0:
+            return color_type::RED;
+            break;
+            
+        case 1:
+            return color_type::GREEN;
+            break;
+            
+        case 2:
+            return color_type::YELLOW;
+            break;
+            
+        case 3:
+            return color_type::BLUE;
+            break;
+            
+        case 4:
+            return color_type::MAGENTA;
+            break;
+            
+        case 5:
+            return color_type::CYAN;
+            break;
+            
+        case 6:
+            return color_type::WHITE;
+            break;
+            
+        default:
+            return color_type::WHITE;
+            break;
+    }
+    
+}
+
 attribute_string StrColorizer::str_to_colortoken(const std::string &text){
 
     attribute_string att_str_vector;
@@ -198,11 +238,39 @@ attribute_string StrColorizer::str_to_colortoken(const std::string &text){
 int StrColorizer::process_tagged_str(int i, color_type& c_type, const std::string &text, attribute_string &att_str) {
 
     while (!is_tag(text[i]) && i< text.size()){
-
-        att_str.push_back(color_token { text[i], c_type});
-        i++;
-
+        
+        if(c_type == color_type::RAINBOW){
+            
+            return str_to_rainbow_token(text, i, att_str);
+            
+        } else {
+            
+            att_str.push_back(color_token { text[i], c_type});
+            i++;
+            
+        }
     }
+    
+    return --i; //We return the last char before a tag}
 
-    return --i; //We return the last char before a tag
+int StrColorizer::str_to_rainbow_token(const std::string &text, int i, attribute_string &att_str){
+    
+    int color_code = 0;
+    
+    for(int color_loop = color_looper::RED; ; color_loop++){
+        
+        if(is_tag(text[i]) || i >= text.size()) break;
+        
+        att_str.push_back(color_token {text[i], get_looper_color(color_code)});
+        i++;
+        color_code ++;
+        
+        if(color_code > 6) color_code = 0;
+        
+        if(color_loop == color_looper::WHITE) color_loop = color_looper::RED;
+        
+    }
+    
+    return i--;
+    
 }
