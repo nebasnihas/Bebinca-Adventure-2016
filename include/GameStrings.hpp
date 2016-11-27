@@ -91,7 +91,14 @@ const std::string GENERIC_POSSESSIVE_PRONOUN = "their";
 const std::string MESSAGE_SENDER_SERVER = "Server";
 const std::string MESSAGE_SENDER_BATTLE = "Battle";
 
-
+const std::string EDIT_IN_USE = "edit-in-use";
+const std::string EDIT_CANCEL = "edit-cancel";
+const std::string EDIT_ALREADY_EDITING = "edit-already-editing";
+const std::string EDIT_NOT_EDITING = "edit-not-editing";
+const std::string EDIT_AREA_HELP = "edit-area-help";
+const std::string EDIT_INVALID_ARG = "edit-invalid-arg";
+const std::string EDIT_SAVED = "edit-saved";
+const std::string EDIT_SAVE_ERROT = "edit-save-error";
 }
 
 namespace ColorTag {

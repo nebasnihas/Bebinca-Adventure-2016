@@ -17,12 +17,14 @@ public:
 private:
     bool playerIsEditing(const std::string& player);
     std::unique_ptr<MessageBuilder> addAreaToEdit(const Area& area, const PlayerInfo& player);
+    std::unique_ptr<MessageBuilder> resume(const PlayerInfo& player);
     std::unique_ptr<MessageBuilder> editArea(const gsl::span<std::string, -1> arguments, const PlayerInfo& player);
     std::unique_ptr<MessageBuilder> saveChanges(const gsl::span<std::string, -1> arguments, const PlayerInfo& player);
+    std::unique_ptr<MessageBuilder> cancel(const PlayerInfo& player);
 
     GameModel& gameModel;
     std::unordered_set<std::string> areas;
-    std::unordered_map<std::string, Area> areaEditMap;
+    std::unordered_map<std::string, std::string> playerToAreaIdMap;
 };
 
 

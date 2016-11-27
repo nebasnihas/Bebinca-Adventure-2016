@@ -1,16 +1,11 @@
 #include "ChatWindow.hpp"
 #include <glog/logging.h>
 #include <boost/algorithm/string.hpp>
-#include <boost/circular_buffer.hpp>
-#include <curses.h>
 #include "StrColorizer.hpp"
 
 namespace {
 const int ENTRY_WINDOW_HEIGHT = 3;
 const int ENTRY_SUB_WINDOW_HEIGHT = 1;
-const int HISTORY_BUFFER_SIZE = 32;
-boost::circular_buffer<std::string> commandHistory{HISTORY_BUFFER_SIZE};
-int historyIndex = -1; //warning. using an int so its easier to index
 }
 
 namespace gui {
@@ -161,10 +156,22 @@ void ChatWindow::onEnter() {
     Window::onEnter();
     curs_set(true);
     pos_form_cursor(entryForm);
+
+    int w;
+    int lines;
+    getmaxyx(displayWindow, lines, w);
+    if (lineHistory.size() < lines ) {
+        lines = (int)lineHistory.size(); //Make sure buffer size is less than max int
+    }
+
+    for (int i = 0; i < lines; i++) {
+        printColorText(lineHistory[i]);
+    }
 }
 
 void ChatWindow::showText(const std::string& text) {
-    StrColorizer::print_color(displayWindow, 0, 0, text + "\n");
+    printColorText(text);
+    lineHistory.push_back(text);
 }
 
 void ChatWindow::setOnSoftKeyPressed(std::function<void(SoftKey)> callback) {
@@ -175,6 +182,15 @@ void ChatWindow::onSoftKeyPressed(SoftKey key) {
     if (softkeyPressed) {
         softkeyPressed(key);
     }
+}
+
+void ChatWindow::onExit() {
+    Window::onExit();
+    wmove(displayWindow, 0, 0);
+}
+
+void ChatWindow::printColorText(const std::string& text) {
+    StrColorizer::print_color(displayWindow, 0, 0, text + "\n\n");
 }
 
 }

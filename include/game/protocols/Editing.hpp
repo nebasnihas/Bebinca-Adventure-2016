@@ -4,6 +4,7 @@
 #include <boost/optional.hpp>
 #include <yaml-cpp/yaml.h>
 #include "ResponseMessage.hpp"
+#include "game/Area.hpp"
 
 namespace protocols {
 
@@ -16,7 +17,7 @@ struct EditResponse {
     EditType editType;
     bool success;
     std::string message;
-    boost::optional<YAML::Node> data;
+    boost::optional<Area> data;
 };
 
 ResponseMessage createEditResponse(const EditResponse& editResponse);

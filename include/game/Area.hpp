@@ -24,6 +24,7 @@ public:
 	Area(const std::string &id, const std::string &title, const Doors& connectedAreas, const std::string &description, const std::vector<std::string>& extendedDescriptions);
 	Area(const std::string &id, const std::string &title); //For testing
     Area(std::string id);
+	Area(){};
 
 	//*---------------
 	// Getters

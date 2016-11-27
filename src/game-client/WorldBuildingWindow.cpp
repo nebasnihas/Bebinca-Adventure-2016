@@ -83,11 +83,10 @@ void WorldBuildingWindow::update(int input) {
             handleSelect();
             break;
         case KEY_LEFT:
+        case 27:
             if (currentFocusedMenu == mainMenu) {
                 break;
             }
-            //Fallthrough
-        case 27:
             handleCancel();
             break;
         case KEY_UP:
@@ -298,8 +297,9 @@ void WorldBuildingWindow::handleInputForForm(int val) {
         case '\n':
         case KEY_ENTER:
             form_driver(editForm, REQ_VALIDATION);
-            submitForm();
-            handleCancel();
+            if (submitForm()) {
+                handleCancel();
+            }
             break;
         case KEY_BACKSPACE:
         case 127:
@@ -356,6 +356,7 @@ void WorldBuildingWindow::showForm() {
             break;
         case AreaEditType::EXIT: {
             field_opts_on(title, O_EDIT | O_ACTIVE);
+            set_field_type(title, TYPE_ANY);
             set_field_type(value, TYPE_INTEGER, 0, std::numeric_limits<int>::max());
 
             auto exitName = getSecondaryMenuItem();
@@ -367,6 +368,7 @@ void WorldBuildingWindow::showForm() {
         }
         case AreaEditType::NEW_EXIT:
             field_opts_on(title, O_EDIT | O_ACTIVE);
+            set_field_type(title, TYPE_ANY);
             set_field_type(value, TYPE_INTEGER, 0, std::numeric_limits<int>::max());
 
             set_field_buffer(title, 0, "EXIT NAME");
@@ -398,7 +400,7 @@ void WorldBuildingWindow::hideForm() {
     unpost_form(editForm);
 }
 
-void WorldBuildingWindow::submitForm() {
+bool WorldBuildingWindow::submitForm() {
     auto value = std::string{field_buffer(editFields[1], 0)};
     boost::algorithm::trim(value);
 
@@ -429,9 +431,18 @@ void WorldBuildingWindow::submitForm() {
             auto exitName = std::string{field_buffer(titleField, 0)};
             boost::trim(exitName);
 
+            if(exitName.empty() || value.empty()) {
+                showMessage("Cant have empty fields");
+                return false;
+            }
+
+            if (std::find(exitsMenuItemNames.begin(), exitsMenuItemNames.end(), exitName) != exitsMenuItemNames.end()) {
+                showMessage("Exit already exists");
+                return false;
+            }
+
             addNewExitItem(exitName, value);
             area.addConnectedArea(exitName, value);
-            //TODO check aleady exists
             field_opts_off(titleField, O_EDIT | O_ACTIVE);
             redrawMenu(exitsMenu);
             break;
@@ -441,6 +452,8 @@ void WorldBuildingWindow::submitForm() {
         case AreaEditType::NEW_OBJECT:
             break;
     }
+
+    return true;
 }
 
 void WorldBuildingWindow::addNewExitItem(const std::string& exit, const std::string& to) {
@@ -450,7 +463,12 @@ void WorldBuildingWindow::addNewExitItem(const std::string& exit, const std::str
     }
     free_menu(exitsMenu);
 
-    exitsMenuItemNames.back() = exit;
+    if (exitsMenuItemNames.empty()) {
+        exitsMenuItemNames.emplace_back(exit);
+    } else {
+        exitsMenuItemNames.back() = exit;
+    }
+
     exitsMenuItems.clear();
     setUpExitsMenu();
     currentSecondaryMenu = exitsMenu;
@@ -468,6 +486,7 @@ bool WorldBuildingWindow::isEditing() {
 void WorldBuildingWindow::loadAreaData(const Area& area) {
     currentArea = area;
 
+    exitsMenuItemNames.clear();
     for (const auto& exit : *area.getConnectedAreas()) {
         addNewExitItem(exit.first, exit.second);
     }
@@ -487,6 +506,7 @@ bool WorldBuildingWindow::hasAreaData() const {
 
 void WorldBuildingWindow::showMessage(const std::string& text) {
     wgetch(messageSubWindow); //have to do this to move cursor to window, may cause delay
+    wclear(messageSubWindow);
     wprintw(messageSubWindow, text.c_str());
 }
 

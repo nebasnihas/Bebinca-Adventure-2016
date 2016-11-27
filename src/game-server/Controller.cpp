@@ -57,7 +57,6 @@ bool Controller::addNewPlayer(const AccountInfo& accountInfo, const networking::
 
     playerMap.insert(PlayerMapPair{accountInfo.username, client});
     playerAccountMap.insert({accountInfo.username, accountInfo});
-    allClients.push_back(client);
     gameModel.createCharacter(accountInfo.username, accountInfo.username);
 
     auto outMsg = DisplayMessageBuilder{"Player <" +  ColorTag::MAGENTA + accountInfo.username + ColorTag::WHITE + "> has joined."}
@@ -65,6 +64,7 @@ bool Controller::addNewPlayer(const AccountInfo& accountInfo, const networking::
             .addClients(allClients);
     sendOutput(outMsg);
 
+    allClients.push_back(client);
     return true;
 }
 

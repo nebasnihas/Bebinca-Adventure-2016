@@ -136,15 +136,15 @@ bool GameModel::moveCharacter(const std::string& characterID, const std::string&
     }
 
     auto connectedAreas = area->getConnectedAreas();
-    // Check if the current area is connected to the target destination
-    auto connectedArea = connectedAreas->find(areaTag);
 
-    if (connectedArea == connectedAreas->end()) {
+    // Check if the current area is connected to the target destination
+    if (connectedAreas->count(areaTag) == 0) {
         return false;
     }
+    auto connectedArea = connectedAreas->at(areaTag);
 
-    character->setAreaID(connectedArea->second);
-    auto newDir = getRelativeDirection(findDirectionByAreaID(connectedArea->second, currAreaID));
+    character->setAreaID(connectedArea);
+    auto newDir = getRelativeDirection(findDirectionByAreaID(connectedArea, currAreaID));
     sendMoveUpdateMessages(character->getID(), currAreaID, getRelativeDirection(areaTag), character->getAreaID(), newDir);
 
     return true;

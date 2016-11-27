@@ -65,7 +65,14 @@ strings:
 
  character-status: '%s\nLevel: %d\nHealth: %d\nMana: %d\n'
 
-
+ edit-in-use: "Area is currently being edited"
+ edit-cancel: "You stopped editing the area"
+ edit-already-editing: "You are already editing an area. Use the <resume> argument to continue editing"
+ edit-not-editing: "You are not currently editing an area"
+ edit-area-help: "Use the 'area [id]' argument to begin editing"
+ edit-invalid-arg: "Invalid argument to the edit command"
+ edit-saved: "Changes have been saved"
+ edit-save-error: "Error saving changes:"
 
 
 

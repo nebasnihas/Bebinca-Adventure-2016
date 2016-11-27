@@ -39,6 +39,8 @@ std::unique_ptr<gui::AuthenticationWindow> registerWindow;
 std::unique_ptr<gui::ChatWindow> chatWindow;
 std::unique_ptr<gui::WorldBuildingWindow> worldBuildingWindow;
 
+std::string editCommand;
+
 void setupAuthWindow() {
     authWindow = std::make_unique<gui::MainMenuWindow>();
     authWindow->setOnSelection([](auto selection){
@@ -119,11 +121,10 @@ void setupWorldBuildingWindow() {
         YAML::Emitter em;
         em << YAML::Node{area};
         std::stringstream arguments;
-        arguments << "submit '" << em.c_str() << "'";
+        arguments << "submit \"" << em.c_str() << "\"";
         auto args = arguments.str();
-        auto cmd =  protocols::createPlayerCommandRequestMessage(protocols::PlayerCommand{command : "edit", arguments : args});
-        auto request = protocols::serializeRequestMessage(cmd);
-        networkingClient->send(request);
+        auto cmd =  protocols::createPlayerCommandRequestMessage(protocols::PlayerCommand{command : editCommand, arguments : args});
+        networkingClient->send(protocols::serializeRequestMessage(cmd));
 
         worldBuildingWindow->showMessage("Saving changes..");
     });
@@ -133,7 +134,9 @@ void setupWorldBuildingWindow() {
     });
 
     worldBuildingWindow->setOnDiscard([]() {
-
+        auto cmd =  protocols::createPlayerCommandRequestMessage(protocols::PlayerCommand{command : editCommand, arguments : "cancel"});
+        networkingClient->send(protocols::serializeRequestMessage(cmd));
+        gameClient->switchToWindow(CHAT_WINDOW_ID);
     });
 
     worldBuildingWindow->setOnQuit([]() {
@@ -177,7 +180,7 @@ void handleCommandResponse(const protocols::ResponseMessage& responseMessage) {
     auto response = protocols::readCommandInfoResponse(responseMessage);
     switch(response.name) {
         case protocols::CommandName::EDIT:
-            chatWindow->showText(response.inputBinding);
+            editCommand = response.inputBinding;
             break;
         default:
             break;
@@ -189,22 +192,22 @@ void handleEditResponse(const protocols::ResponseMessage& responseMessage) {
     switch (editResponse.editType) {
         case protocols::EditType::AREA: {
             CHECK(editResponse.data) << "No data for area";
-            auto areaNode = editResponse.data.get();
-            auto area = GameDataImporter::getRooms(areaNode);
-
-            if (editResponse.success) {
-                //Succesfully requested area to edit
-                worldBuildingWindow->loadAreaData(area[0]);
-            } else if (!(editResponse.success || worldBuildingWindow->hasAreaData())) {
-                //This means player was disconnected while editing. Resume from where left off
-                worldBuildingWindow->loadAreaData(area[0]);
-            }
+            auto area = editResponse.data.get();
+            worldBuildingWindow->loadAreaData(area);
 
             gameClient->switchToWindow(WORLDBUILDING_WINDOW_ID);
             break;
         }
-        default:
+        case protocols::EditType::SAVE_CHANGES: {
+            if (!editResponse.success) {
+                worldBuildingWindow->showMessage(editResponse.message);
+                break;
+            }
+
+            gameClient->switchToWindow(CHAT_WINDOW_ID);
+            chatWindow->showText(editResponse.message);
             break;
+        }
     }
 }
 

@@ -58,7 +58,7 @@ private:
     void handleInputForForm(int val);
     void showForm();
     void hideForm();
-    void submitForm();
+    bool submitForm();
     void addNewExitItem(const std::string& exit, const std::string& to);
     void redrawMenu(MENU* menu);
     bool isEditing();
