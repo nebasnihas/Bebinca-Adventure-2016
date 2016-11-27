@@ -24,8 +24,7 @@ add_library(game-server-lib
         MessageIO.hpp
         ConnectionManager.hpp PlayerRole.hpp AccountInfo.hpp
         HelpCommand.cpp HelpCommand.hpp
-        CommandInfoRequestHandler.cpp CommandInfoRequestHandler.hpp
-        YmlSerializer.cpp YmlSerializer.hpp)
+        CommandInfoRequestHandler.cpp CommandInfoRequestHandler.hpp)
 
 set_target_properties(game-server-lib
         PROPERTIES

@@ -15,11 +15,12 @@ AttackCommand::execute(const gsl::span<std::string, -1> arguments, const PlayerI
     auto targetClient = controller.getClientID(targetID);
 
     if (!targetClient) {
-		auto targetNPC = gameModel.getNPCByID(targetID);
+		auto targetNPC = gameModel.getNPCInArea(targetID, gameModel.getCharacterByID(player.playerID)->getAreaID());
 		if (targetNPC == nullptr) {
 			std::string invalidPlayer = targetID + " " + NOT_FOUND;
 			return buildPlayerMessage(player.clientID, invalidPlayer);
 		}
+        targetID = targetNPC->getID();
     }
 
     if (gameModel.characterIsInCombat(player.playerID)) {

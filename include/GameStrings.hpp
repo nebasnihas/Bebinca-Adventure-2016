@@ -39,6 +39,7 @@ const std::string PLAYER_KICKED = "player-kicked";
 
 const std::string PLAYER_ENTER = "game-player-enter-area";
 const std::string PLAYER_LEAVE = "game-player-leave-area";
+const std::string PLAYER_ENTER_UNKNOWN = "game-player-enters";
 
 const std::string COMBAT_ENGAGE = "combat-engage-issue";
 const std::string COMBAT_ENGAGED = "combat-engage-receive";
@@ -88,8 +89,8 @@ const std::string ACTION_KEY = "$a";
 const std::string GENERIC_PRONOUN = "they";
 const std::string GENERIC_POSSESSIVE_PRONOUN = "their";
 
-const std::string MESSAGE_SENDER_SERVER = "Server";
-const std::string MESSAGE_SENDER_BATTLE = "Battle";
+const std::string MESSAGE_SENDER_SERVER = "&yServer";
+const std::string MESSAGE_SENDER_BATTLE = "&rBattle";
 
 const std::string EDIT_IN_USE = "edit-in-use";
 const std::string EDIT_CANCEL = "edit-cancel";

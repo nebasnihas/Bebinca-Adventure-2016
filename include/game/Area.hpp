@@ -34,7 +34,6 @@ public:
 	const std::string& getTitle() const;
 	const std::string& getDescription() const;
     const std::vector<Object>& getObjectList() const;
-    const std::vector<std::string>& getExtendedDescriptions() const;
     Doors* getConnectedAreas() const;
 	std::unordered_map<std::string, std::string> getExtendedDescriptions() const;
 

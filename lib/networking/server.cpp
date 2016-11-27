@@ -41,7 +41,7 @@ public:
 
     Connection getConnection() const { return connection; }
 
-    static constexpr unsigned BUFFER_SIZE = 1024;
+    static constexpr unsigned BUFFER_SIZE = 4096;
 
 private:
     void readLine();

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <glog/logging.h>
 #include "ServerLoop.hpp"
+#include <game/GameModel.hpp>
 
 using namespace networking;
 

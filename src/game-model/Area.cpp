@@ -75,10 +75,6 @@ Area::Doors* Area::getConnectedAreas() const{
     return (Doors*) &connectedAreas;
 }
 
-const std::vector<Object>& Area::getObjectList() const {
-    return objectList;
-}
-
 std::unordered_map<std::string, std::string> Area::getExtendedDescriptions() const {
     return extendedDescriptions;
 }
@@ -109,7 +105,4 @@ void Area::addObjects(std::string object) {
 
 const std::vector<std::string>& Area::getObjectNames() const{
 	return objectNames;
-}
-void Area::addObject(const Object& object) {
-    objectList.emplace_back(object);
 }
