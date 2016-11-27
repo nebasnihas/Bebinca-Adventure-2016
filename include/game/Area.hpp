@@ -32,10 +32,10 @@ public:
 	std::string getTitle() const;
 	std::string getDescription() const;
 	Doors* getConnectedAreas() const;
-    std::vector<Object> getObjectList() const;
     std::vector<std::string> getExtendedDescriptions() const;
 
 	void addObjects(std::string);
+	const std::vector<std::string>& getObjectNames() const;
 
 	//std::string getAreaDescription() const;
 
@@ -48,11 +48,7 @@ private:
 
     std::string description;
     std::vector<std::string> extendedDescriptions;
-
-	std::vector<Object> objectList; //The Mother Goose YAML file does not contain an object list for every "ROOM".
-
 	std::vector<std::string> objectNames;
-	//TO-DO: Add more detail to an area
 };
 
 /*

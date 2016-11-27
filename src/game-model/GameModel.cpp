@@ -50,21 +50,25 @@ bool GameModel::createCharacter(const std::string& characterID,
 	return true;
 }
 
-std::string GameModel::getObjectDescription(const std::string& areaID, const std::string& objectName) const {
-
-	auto area = getAreaByID(areaID);
-	auto objectList = area->getObjectList();
-    auto objectIter = std::find_if(objectList.begin(), objectList.end(),
-                          [&objectName](const Object& object) { return object.getName() == objectName; });
-
-    // Error message when entity doesn't exist in area
-    if ( ! (objectIter != objectList.end() ) ) {
-    	return "Object does not exist.";
-    }
-
-    return objectIter->getDescription();
+Object* GameModel::getObjectById(const std::string& objectID) {
+	if (objects.find(objectID) != objects.end()) {
+		return (Object*)&(objects.at(objectID));
+	}
+	return nullptr;
 }
 
+Object* GameModel::getObjectInArea(const std::string& keyword, const std::string& areaID) {
+	auto area = getAreaByID(areaID);
+	for (auto& objectID : area->getObjectNames()) {
+		auto object = getObjectById(objectID);
+		for (auto& objectKeyword: object->getKeywords()) {
+			if (keyword == objectKeyword) {
+				return object;
+			}
+		}
+	}
+	return nullptr;
+}
 /*
  *	AREA FUNCTIONS
  */
@@ -88,35 +92,16 @@ Area* GameModel::getAreaByID(const std::string& areaID) const {
 }
 
 std::string GameModel::getAreaDescription(const std::string& areaID) const {
-
 	auto area = getAreaByID(areaID);
-
 	if (area == nullptr) {
 		return "Area does not exist.\n";
 	}
-
 	return area->getDescription();
-
 }
 
 std::unordered_map<std::string, std::string>* GameModel::getConnectedAreas(const std::string& areaID) const {
     auto area = getAreaByID(areaID);
     return area->getConnectedAreas();
-}
-
-std::string GameModel::getEntityDescription(const std::string& areaID, const std::string& entityDisplayName) const {
-
-	auto area = getAreaByID(areaID);
-
-	auto entityList = area->getObjectList();
-    auto iter = std::find_if(entityList.begin(), entityList.end(),
-                          [&entityDisplayName](const Object& entity) { return entity.getName() == entityDisplayName; });
-    if (iter != entityList.end()) {
-        return iter->getDescription();
-    }
-
-    // Error message when entity doesn't exist in area
-    return "Entity does not exist.";
 }
 
 bool GameModel::moveCharacter(const std::string& characterID, const std::string& areaTag) {

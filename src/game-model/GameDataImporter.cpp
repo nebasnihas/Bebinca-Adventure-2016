@@ -124,14 +124,13 @@ std::unordered_map<std::string, Object> GameDataImporter::returnObjects(const YA
         string shortdesc = OBJECT["shortdesc"] ? OBJECT["shortdesc"].as<string>() : Object::defaultShortDesc;
 
         vector<string> attributes = OBJECT["attributes"] ? OBJECT["attributes"].as<vector<string>>() : Object::defaultAttributes;
-        vector<string> extra = OBJECT["extra"] ? OBJECT["extra"].as<vector<string>>() : Object::defaultExtra;
         vector<string> keywords = OBJECT["keywords"] ? OBJECT["keywords"].as<vector<string>>() : Object::defaultKeywords;
         vector<string> longdesc = OBJECT["longdesc"] ? OBJECT["longdesc"].as<vector<string>>() : Object::defaultLongDesc;
         vector<string> wear_flags = OBJECT["wear_flags"] ? OBJECT["wear_flags"].as<vector<string>>() : Object::defaultWearFlags;
 
         string description = boost::algorithm::join(longdesc, " ");
 
-        Object newObject = Object(attributes, cost, extra, objectID, item_type, keywords, description, shortdesc, wear_flags, weight);
+        Object newObject = Object(attributes, cost, objectID, item_type, keywords, description, shortdesc, wear_flags, weight);
         objects.insert(std::pair<std::string, Object> (shortdesc, newObject));
     }
     return objects;

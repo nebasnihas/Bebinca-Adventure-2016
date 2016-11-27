@@ -18,7 +18,6 @@ public:
 
     Object(	const std::vector<std::string>& attributes,
 			int cost,
-			const std::vector<std::string>& extra,
 			const std::string& ID,
 			const std::string& type,
 			const std::vector<std::string>& keywords,

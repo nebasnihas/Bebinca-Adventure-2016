@@ -43,6 +43,8 @@ public:
 	std::string getObjectDescription(const std::string& areaID, const std::string& objectName) const;
 	void addObjectToAreas();
 	void loadObjects(const YAML::Node& OBJECTS);
+	Object* getObjectInArea(const std::string& keyword, const std::string& areaID);
+	Object* getObjectById(const std::string& objectID);
 
 	/*
 	 *	AREA FUNCTIONS

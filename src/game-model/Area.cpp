@@ -73,10 +73,6 @@ Area::Doors* Area::getConnectedAreas() const{
     return (Doors*) &connectedAreas;
 }
 
-std::vector<Object> Area::getObjectList() const {
-    return objectList;
-}
-
 std::vector<std::string> Area::getExtendedDescriptions() const {
     return extendedDescriptions;
 }
@@ -86,24 +82,6 @@ void Area::addObjects(std::string object) {
     this->objectNames.push_back(object);
 }
 
-
-//TODO : explain this function
-
-/*
- std::string Area::getAreaDescription() const {
- 	// Placeholder function
- 	std::string description = "";
- 	description += "Temporary description for " + this->getTitle() + ".";
- 	if (entityList.size() > 0) {
-         description += "\nIn this area:\n";
-         for (Entity entity : entityList) {
-             description += entity.getDisplayName() + "\n";
-         }
-         description += "\nConnected to the:\n";
-         for (auto pair : connectedAreas) {
-             description += pair.first + "\n";
-         }
-     }
-     return description;
- }
-*/
+const std::vector<std::string>& Area::getObjectNames() const{
+	return objectNames;
+}

@@ -11,16 +11,24 @@ std::unique_ptr<MessageBuilder> LookCommand::execute(const gsl::span<std::string
 
 	if (arguments.empty()) {
 		description = gameModel.getAreaByID(areaID)->getTitle() + "\n" + gameModel.getAreaDescription(areaID);
-	} else {
-		auto targetEntity = arguments[0];
-		auto npc = gameModel.getNPCInArea(targetEntity, areaID);
-		if (npc == nullptr) {
-			description = targetEntity + " " + GameStrings::get(GameStringKeys::INVALID_TGT);
-		}
-		else {
-			description = npc->getlongDesc();
-		}
+		gameModel.getCharacterByID(player.playerID)->pushToBuffer(description, GameStringKeys::MESSAGE_SENDER_SERVER,
+																  ColorTag::WHITE);
+		return DisplayMessageBuilder{description};
 	}
+
+	auto targetEntity = arguments[0];
+	auto npc = gameModel.getNPCInArea(targetEntity, areaID);
+	auto object = gameModel.getObjectInArea(targetEntity, areaID);
+	if (npc != nullptr) {
+		description = npc->getlongDesc();
+	}
+	else if (object != nullptr) {
+		description = object->getDescription();
+	}
+	else {
+		description = targetEntity + " " + GameStrings::get(GameStringKeys::INVALID_TGT);
+	}
+
 
 	gameModel.getCharacterByID(player.playerID)->pushToBuffer(description, GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
 	return DisplayMessageBuilder{description};
