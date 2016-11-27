@@ -2,6 +2,7 @@
 #define ADVENTURE2016_STRINGUTILS_HPP
 
 #include <string>
+#include <sstream>
 #include <vector>
 #include "boost/algorithm/string.hpp"
 #include <boost/tokenizer.hpp>

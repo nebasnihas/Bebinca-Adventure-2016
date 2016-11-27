@@ -78,15 +78,13 @@ void CombatCast::execute(Character& source, Character& target) {
 			break;
 		}
 		case SpellType::PIG_LATIN: {
-			auto sourceStatus = std::make_shared<PigLatinSwapStatus>(20);
 			auto targetStatus = std::make_shared<PigLatinSwapStatus>(20);
 
-			source.addStatusEffect(sourceStatus);
 			target.addStatusEffect(targetStatus);
 
-			target.pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_GENERIC_SOURCE, stringInfo),
+			target.pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_GENERIC_TARGET, stringInfo),
 								GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
-			source.pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_GENERIC_TARGET, stringInfo),
+			source.pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_GENERIC_SOURCE, stringInfo),
 								GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
 			break;
 		}

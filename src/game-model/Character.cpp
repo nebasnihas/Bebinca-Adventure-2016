@@ -290,7 +290,10 @@ std::vector<std::string> NPC::getCommandsToExecute()
             }
         }
     }
-    outputBuffer->clear();
+
+    if (!hasStatusEffect(StatusType::BODYSWAP)) {
+        outputBuffer->clear();
+    }
     return commandsToExecute;
 }
 

@@ -25,12 +25,13 @@ std::unique_ptr<MessageBuilder> CastCommand::execute(const gsl::span<std::string
 			targetID = player.playerID;
 		}
 		else {
-			auto targetNPC = gameModel.getCharacterByID(targetID);
+			auto targetNPC = gameModel.getNPCInArea(targetID, gameModel.getCharacterByID(player.playerID)->getAreaID());
 			if (targetNPC == nullptr) {
 				std::string invalidPlayer = targetID + " " + GameStrings::get(GameStringKeys::INVALID_TGT);
 				gameModel.getCharacterByID(player.playerID)->pushToBuffer(invalidPlayer, GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
 				return DisplayMessageBuilder{invalidPlayer};
 			}
+			targetID = targetNPC->getID();
 		}
 	}
 

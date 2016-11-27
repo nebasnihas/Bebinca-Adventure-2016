@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <typeinfo>
 #include <boost/algorithm/string/join.hpp>
+#include "StringUtils.hpp"
 
 #include "yaml-cpp/yaml.h"
 #include <game/Character.hpp>
@@ -52,19 +53,25 @@ const static std::string AREA_EXTENDED_DESC_KEY = "extended_descriptions";
 const static std::string AREA_DOORS_KEY = "doors";
 const static std::string AREA_DOOR_DIR_KEY = "dir";
 const static std::string AREA_DOOR_TO_KEY = "to";
+const static std::string AREA_EXTENDED_KEYWORDS_KEY = "keywords";
 }
 
 namespace YAML {
 template<>
 struct convert<Area> {
 	static Node encode(const Area& area) {
-
-
 		Node node;
 		node[YamlKeys::AREA_ID_KEY] = area.getID();
 		node[YamlKeys::AREA_NAME_KEY] = area.getTitle();
 		node[YamlKeys::AREA_DESC_KEY].push_back(area.getDescription());
-		//node[YamlKeys::AREA_EXTENDED_DESC_KEY] = area.getExtendedDescriptions();
+
+		for (const auto& pair : area.getExtendedDescriptions()) {
+		    YAML::Node desc;
+			desc[YamlKeys::AREA_EXTENDED_KEYWORDS_KEY].push_back(pair.first);
+			desc[YamlKeys::AREA_DESC_KEY].push_back(pair.second);
+			node[YamlKeys::AREA_EXTENDED_DESC_KEY].push_back(desc);
+		}
+
 		for (const auto& door : *area.getConnectedAreas()) {
 			YAML::Node doorNode;
 			doorNode[YamlKeys::AREA_DOOR_DIR_KEY] = door.first;
@@ -80,8 +87,14 @@ struct convert<Area> {
         auto desc = node[YamlKeys::AREA_DESC_KEY].as<std::vector<std::string>>();
         auto description = boost::algorithm::join(desc, " ");
 
-		std::vector<std::string> extended_descriptions;
-        //auto extended_descriptions = node[YamlKeys::AREA_EXTENDED_DESC_KEY].as<std::vector<std::string>>();
+        std::unordered_map<std::string, std::string> exKeywordToDesc;
+		for (const auto& EX_DESC : node[YamlKeys::AREA_EXTENDED_DESC_KEY]) {
+			auto ex_desc_list = EX_DESC[YamlKeys::AREA_DESC_KEY].as<std::vector<std::string>>();
+			auto ex_desc = boost::join(ex_desc_list, " ");
+			std::string ex_keyword = EX_DESC[YamlKeys::AREA_EXTENDED_KEYWORDS_KEY].as<std::vector<std::string>>()[0];
+			exKeywordToDesc[ex_keyword] = ex_desc;
+		}
+
         auto id = node[YamlKeys::AREA_ID_KEY].as<std::string>();
         auto name = node[YamlKeys::AREA_NAME_KEY].as<std::string>();
 
@@ -92,7 +105,7 @@ struct convert<Area> {
             doorsMap.emplace(dir, to);
         }
 
-        area = Area{id, name, doorsMap, description, extended_descriptions};
+        area = Area{id, name, doorsMap, description, exKeywordToDesc};
         return true;
     }
 };

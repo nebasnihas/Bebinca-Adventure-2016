@@ -121,7 +121,8 @@ bool GameModel::moveCharacter(const std::string& characterID, const std::string&
 
 std::string GameModel::findDirectionByAreaID(const std::string& sourceID, const std::string& destID) {
     auto connectedAreas = *(getAreaByID(sourceID)->getConnectedAreas());
-    return std::find_if(connectedAreas.begin(), connectedAreas.end(), [&destID] (const auto& pair) { return pair.second == destID; })->first;
+    auto ptr = std::find_if(connectedAreas.begin(), connectedAreas.end(), [&destID] (const auto& pair) { return pair.second == destID; });
+    return ptr == connectedAreas.end() ? "" : ptr->first;
 }
 
 std::string GameModel::getRelativeDirection(const std::string& direction) {
@@ -155,7 +156,11 @@ void GameModel::sendMoveUpdateMessages(const std::string& playerID,
     for (const auto& characterID : getCharacterIDsInArea(newAreaID)) {
         if (playerID != characterID) {
             auto character = getCharacterByID(characterID, false);
-            character->pushToBuffer(GameStrings::getFormatted(GameStringKeys::PLAYER_ENTER, newStrInfo), GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
+            std::string message = GameStrings::getFormatted(GameStringKeys::PLAYER_ENTER, newStrInfo);
+            if (newDir.empty()) {
+                message = GameStrings::getFormatted(GameStringKeys::PLAYER_ENTER_UNKNOWN, newStrInfo);
+            }
+            character->pushToBuffer(message, GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
         }
     }
 }

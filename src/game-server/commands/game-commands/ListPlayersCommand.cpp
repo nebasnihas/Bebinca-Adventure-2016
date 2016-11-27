@@ -13,7 +13,7 @@ std::unique_ptr<MessageBuilder> ListPlayersCommand::execute(const gsl::span<std:
         message += gameModel.getCharacterByID(playerID)->getName() + " \n";
     }
 	for (const auto& NPCID: gameModel.getNPCIDsInArea(areaID)) {
-		message += gameModel.getNPCByID(NPCID)->getID() + " \n";
+		message += gameModel.getNPCByID(NPCID)->getName() + " \n";
 	}
 
     return DisplayMessageBuilder{message}

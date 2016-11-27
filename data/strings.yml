@@ -32,6 +32,7 @@ strings:
 
  game-player-enter-area: '$n arrives from $a.'
  game-player-leave-area: '$n leaves to $a.'
+ game-player-enters: '$n arrives.'
  up-relative-direction: 'above'
  down-relative-direction: 'below'
  north-relative-direction: 'the north'
