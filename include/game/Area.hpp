@@ -21,7 +21,7 @@ public:
 	// Constructors
 	//---------------*
 
-	Area(const std::string &id, const std::string &title, const Doors& connectedAreas, const std::string &description, const std::vector<std::string>& extendedDescriptions);
+	Area(const std::string &id, const std::string &title, const Doors& connectedAreas, const std::string &description, const std::unordered_map<std::string, std::string>& extendedDescriptions);
 	Area(const std::string &id, const std::string &title); //For testing
     Area(std::string id);
 	Area(){};
@@ -36,6 +36,10 @@ public:
     const std::vector<Object>& getObjectList() const;
     const std::vector<std::string>& getExtendedDescriptions() const;
     Doors* getConnectedAreas() const;
+	std::unordered_map<std::string, std::string> getExtendedDescriptions() const;
+
+	void addObjects(std::string);
+	const std::vector<std::string>& getObjectNames() const;
 
     void setTitle(const std::string& title);
     void setDescription(const std::string& description);
@@ -51,11 +55,8 @@ private:
 	Doors connectedAreas;
 
     std::string description;
-    std::vector<std::string> extendedDescriptions;
-
-	std::vector<Object> objectList; //The Mother Goose YAML file does not contain an object list for every "ROOM".
-
-	//TO-DO: Add more detail to an area
+	std::unordered_map<std::string, std::string> extendedDescriptions;
+	std::vector<std::string> objectNames;
 };
 
 /*

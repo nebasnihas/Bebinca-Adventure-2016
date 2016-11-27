@@ -109,11 +109,13 @@ void ServerLoop::initGameModel(GameModel& gameModel) {
     gameModel.setDefaultLocationID(rooms[0].getID());
 
     const YAML::Node OBJECTS = dataFile["OBJECTS"];
+    gameModel.loadObjects(OBJECTS);
 
     const YAML::Node RESETS = dataFile["RESETS"];
 	auto resets = GameDataImporter::returnResets(RESETS);
 	gameModel.setResets(resets);
 	gameModel.addNPCsToAreas();
+    gameModel.addObjectToAreas();
 
     const YAML::Node SHOPS = dataFile["SHOPS"];
 

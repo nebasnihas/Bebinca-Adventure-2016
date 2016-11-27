@@ -8,7 +8,7 @@ Area::Area( const std::string &id,
             const std::string &title, 
             const Doors& connectedAreas, 
             const std::string &description,
-            const std::vector<std::string>& extendedDescriptions)
+			const std::unordered_map<std::string, std::string>& extendedDescriptions)
     : id(id)
     , title(title)
     , connectedAreas(connectedAreas)
@@ -79,7 +79,7 @@ const std::vector<Object>& Area::getObjectList() const {
     return objectList;
 }
 
-const std::vector<std::string>& Area::getExtendedDescriptions() const {
+std::unordered_map<std::string, std::string> Area::getExtendedDescriptions() const {
     return extendedDescriptions;
 }
 
@@ -102,7 +102,14 @@ void Area::addConnectedArea(const std::string& exit, const std::string& areaID) 
 void Area::removeConnectedArea(const std::string& exit) {
     connectedAreas.erase(exit);
 }
+//Setters
+void Area::addObjects(std::string object) {
+    this->objectNames.push_back(object);
+}
 
+const std::vector<std::string>& Area::getObjectNames() const{
+	return objectNames;
+}
 void Area::addObject(const Object& object) {
     objectList.emplace_back(object);
 }

@@ -52,15 +52,13 @@ public:
 
     Character(      const std::string& id,
                     const std::string& name,
-                    std::string& hit,
-                    std::string& damage,
+                    const std::string& hit,
+                    const std::string& damage,
                     int level,
                     int exp,
                     int armor,
                     int gold,
-                    Inventory inventory,
-                    std::string& areaID,
-                    MessageBuffer outputBuffer
+                    std::string& areaID
                     );
 
     std::string getName() const;
@@ -97,7 +95,6 @@ public:
     void setCurrentMana(int currentMana);
     void increaseLevel();
     void increaseExp(int expToAdd);
-	void setOutputBuffer(MessageBuffer outputBuffer);
 
 	void pushToBuffer(const std::string message, const std::string sender, std::string color);
     void addStatusEffect(std::shared_ptr<StatusEffect> statusEffect);
@@ -122,25 +119,24 @@ private:
 //NPC Subclass
 class NPC : public Character{
 public:
-    NPC(        const std::string& id,
-                const std::string& name, //Name is the short desc
-                std::string& hit,
-                std::string& damage,
-                int level,
-                int exp,
-                int armor,
-                int gold,
-                Inventory inventory,
-                std::string& areaID,
-                int thac0,
-                const std::string& description,
-                const std::string& keywords,
-                const std::string& longDesc,
-                std::unordered_map<std::string, NPCScripts>& scripts
-                );
+    NPC(const std::string &id,
+		const std::string &name, //Name is the short desc
+		std::string &hit,
+		std::string &damage,
+		int level,
+		int exp,
+		int armor,
+		int gold,
+		std::string &areaID,
+		int thac0,
+		const std::string &description,
+		const std::vector<std::string> &keywords,
+		const std::string &longDesc,
+		std::unordered_map<std::string, NPCScripts> &scripts
+	);
 
     std::string getDescription() const;
-    std::string getKeywords() const;
+    const std::vector<std::string> & getKeywords() const;
     std::string getlongDesc() const;
     int getThac0() const;
     std::unordered_map<std::string, NPCScripts> getScripts() const;
@@ -160,52 +156,12 @@ public:
 
 private:
     std::string description;
-    std::string keywords;
+    std::vector<std::string> keywords;
     std::string longDesc;
     int thac0;
     std::unordered_map<std::string, NPCScripts> scripts;
     int counter;
 
 };
-
-
-////Creatable Character Classes
-//class WarriorCharacter : public Character {
-//public:
-//    WarriorCharacter(const std::string& id, const std::string& name, const std::string& areaID)
-//    : Character(id, name, areaID) {
-//        attributes.setPrimaryAttribute("strength");
-//    }
-//
-//    std::string getClass() {
-//        return "warrior";
-//    }
-//};
-//
-//class WizardCharacter : public Character {
-//public:
-//    WizardCharacter(const std::string& id, const std::string& name, const std::string& areaID)
-//            : Character(id, name, areaID) {
-//        attributes.setPrimaryAttribute("intelligence");
-//    }
-//
-//    std::string getClass() {
-//        return "wizard";
-//    }
-//};
-//
-//class RangerCharacter : public Character {
-//public:
-//    RangerCharacter(const std::string& id, const std::string& name, const std::string& areaID)
-//            : Character(id, name, areaID) {
-//        attributes.setPrimaryAttribute("dexterity");
-//    }
-//
-//    std::string getClass() {
-//        return "ranger";
-//    }
-//
-//
-//};
 
 #endif

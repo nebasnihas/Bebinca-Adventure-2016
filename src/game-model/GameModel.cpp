@@ -1,7 +1,5 @@
 #include <boost/format.hpp>
 #include "game/GameModel.hpp"
-#include "combat/CombatManager.hpp"
-#include "GameStrings.hpp"
 
 GameModel::GameModel() {
     // TODO: Move this to something more elegant
@@ -13,57 +11,38 @@ GameModel::GameModel() {
  */
 
 const std::string ACTION_NPC = "npc";
+const std::string ACTION_OBJECT = "object";
 
-bool GameModel::createCharacter(const std::string& characterID,
-                                const std::string& characterName) {
+bool GameModel::createCharacter(const std::string& characterID) {
 
-    // defaults
-    std::string hit = NPC::defaultHit;
-    std::string damage = NPC::defaultDamage;
-    int level = NPC::defaultLevel;
-    int armor = NPC::defaultArmor;
-    int gold = NPC::defaultGold;
-    int experience = NPC::defaultExp;
-    Inventory inventory;
-    std::string areaID = this->getDefaultLocationID();
-    auto outputBuffer = std::make_shared<std::deque<PlayerMessage>>();
-
-    Character character(      characterID,
-							  characterName,
-							  hit,
-							  damage,
-							  level,
-							  experience,
-							  armor,
-							  gold,
-							  inventory,
-							  areaID,
-                              outputBuffer
-	);
-
+    Character character = YmlSerializer::load_from_file(characterID);
+    if (character.getAreaID() == "-1") {
+        character.setAreaID(this->defaultLocation);
+    }
 	characters.insert(std::pair<std::string, Character>(characterID, character));
-
-	// Possible failure cases
-	// - Invalid character; taken care of by the Character class
 
 	return true;
 }
 
-std::string GameModel::getObjectDescription(const std::string& areaID, const std::string& objectName) const {
-
-	auto area = getAreaByID(areaID);
-	auto objectList = area->getObjectList();
-    auto objectIter = std::find_if(objectList.begin(), objectList.end(),
-                          [&objectName](const Object& object) { return object.getName() == objectName; });
-
-    // Error message when entity doesn't exist in area
-    if ( ! (objectIter != objectList.end() ) ) {
-    	return "Object does not exist.";
-    }
-
-    return objectIter->getDescription();
+Object* GameModel::getObjectById(const std::string& objectID) {
+	if (objects.find(objectID) != objects.end()) {
+		return (Object*)&(objects.at(objectID));
+	}
+	return nullptr;
 }
 
+Object* GameModel::getObjectInArea(const std::string& keyword, const std::string& areaID) {
+	auto area = getAreaByID(areaID);
+	for (auto& objectID : area->getObjectNames()) {
+		auto object = getObjectById(objectID);
+		for (auto& objectKeyword: object->getKeywords()) {
+			if (keyword == objectKeyword) {
+				return object;
+			}
+		}
+	}
+	return nullptr;
+}
 /*
  *	AREA FUNCTIONS
  */
@@ -87,35 +66,24 @@ Area* GameModel::getAreaByID(const std::string& areaID) const {
 }
 
 std::string GameModel::getAreaDescription(const std::string& areaID) const {
-
 	auto area = getAreaByID(areaID);
-
 	if (area == nullptr) {
 		return "Area does not exist.\n";
 	}
-
 	return area->getDescription();
+}
 
+boost::optional<std::string> GameModel::getExtendedDescription(const std::string& keyword, const std::string& areaID) {
+	auto descriptionsMap = getAreaByID(areaID)->getExtendedDescriptions();
+	if (descriptionsMap.find(keyword) != descriptionsMap.end()) {
+		return descriptionsMap.at(keyword);
+	}
+	return boost::optional<std::string>{};
 }
 
 std::unordered_map<std::string, std::string>* GameModel::getConnectedAreas(const std::string& areaID) const {
     auto area = getAreaByID(areaID);
     return area->getConnectedAreas();
-}
-
-std::string GameModel::getEntityDescription(const std::string& areaID, const std::string& entityDisplayName) const {
-
-	auto area = getAreaByID(areaID);
-
-	auto entityList = area->getObjectList();
-    auto iter = std::find_if(entityList.begin(), entityList.end(),
-                          [&entityDisplayName](const Object& entity) { return entity.getName() == entityDisplayName; });
-    if (iter != entityList.end()) {
-        return iter->getDescription();
-    }
-
-    // Error message when entity doesn't exist in area
-    return "Entity does not exist.";
 }
 
 bool GameModel::moveCharacter(const std::string& characterID, const std::string& areaTag) {
@@ -301,6 +269,44 @@ Character* GameModel::getBodySwappedCharacter(Character* character) const {
     }
 }
 
+void GameModel::loadObjects(const YAML::Node& OBJECTS){
+    this->objects = GameDataImporter::returnObjects(OBJECTS);
+}
+
+void GameModel::addObjectToAreas(){
+    for ( const auto& reset : resets) {
+        if (reset.getAction() == ACTION_OBJECT){
+
+            //ActionID is ItemID
+            std::string actionID = reset.getActionID();
+
+            //find Objects
+            std::string objectName;
+            for(auto& object : objects){
+                if(actionID == object.second.getID()) {
+                    objectName = object.second.getName();
+                }
+            }
+            std::string roomID = reset.getAreaID();
+
+            //add to game model areas map
+            locations.at(roomID).addObjects(objectName);
+        }
+    }
+}
+
+NPC* GameModel::getNPCInArea(const std::string& keyword, const std::string& areaID) {
+	for (const auto& npcID: getNPCIDsInArea(areaID)) {
+		auto npc = getNPCByID(npcID);
+		for (auto& npcKeyword: npc->getKeywords()) {
+			if (keyword == npcKeyword) {
+				return npc;
+			}
+		}
+	}
+	return nullptr;
+}
+
 void GameModel::addNPCsToAreas() {
     for (const auto& reset : resets) {
 
@@ -403,6 +409,10 @@ void GameModel::update() {
 
     if (gameTicks % GameModel::GAME_TICKS_PER_NPC_TICK == 0) {
         runNPCScripts();
+    }
+
+    if (gameTicks % GameModel::GAME_TICKS_PER_SAVE_TICK) {
+        saveAllCharacters();
     }
 
     gameTicks++;
@@ -581,5 +591,11 @@ void GameModel::executeNPCCommand(const std::string &npcID, const std::string &c
         }
 
         sendPrivateMessage(npcID, message, target);
+    }
+}
+
+void GameModel::saveAllCharacters() {
+    for (const auto& pair : characters) {
+        YmlSerializer::save_to_file(pair.second);
     }
 }
