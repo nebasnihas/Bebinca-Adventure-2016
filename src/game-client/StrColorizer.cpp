@@ -162,6 +162,10 @@ color_type StrColorizer::get_color(char c){
         case 'c':
             return color_type::CYAN;
             break;
+            
+        case 'v':
+            return color_type::RAINBOW;
+            break;
 
         default:
             return color_type::WHITE;
@@ -251,7 +255,8 @@ int StrColorizer::process_tagged_str(int i, color_type& c_type, const std::strin
         }
     }
     
-    return --i; //We return the last char before a tag}
+    return --i; //We return the last char before a tag
+}
 
 int StrColorizer::str_to_rainbow_token(const std::string &text, int i, attribute_string &att_str){
     
