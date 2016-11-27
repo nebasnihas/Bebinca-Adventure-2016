@@ -5,6 +5,7 @@
 #define MAX_SHADES 10
 #define MAX_WORD_COUNT 10
 #define DEBUG 1
+#define MAX_SEQ 48
 
 typedef unsigned short uint16;
 typedef unsigned int uint32;
@@ -131,7 +132,7 @@ string AsciiConverter::convertObject0(const string style, const string &objname)
     ifstream bmpfile;
     BMPFileHeader header;
     
-    const string filepath = "assets/bmpimgs/" + objname + ".bmp";
+    const string filepath = "assets/bmpimgs/" + move(objname) + ".bmp";
     
     // Open the image file
     bmpfile.open (filepath, ios::in | ios::binary);
@@ -725,5 +726,155 @@ string AsciiConverter::convertWord0(const string &font_type, const string &word)
  }
  */
 
+string AsciiConverter::animation_helper(const string &objname, char anim_frame[MAX_SHADES], const string& file){
+    
+    int width, height;
+    unsigned char *image;
+    // = {'#','$','O','=','+','|','-','^','.',' '};
+    // = {'0','1','2','3','4','5','6','7','8','9'};
+    int average_color = 0;
+    
+    
+    string ret_string;
+    ifstream bmpfile;
+    BMPFileHeader header;
+    
+    string filepath = file;
+    
+    // Open the image file
+    bmpfile.open (filepath, ios::in | ios::binary);
+    if ( ! bmpfile ) {
+        //cout << "cannot open bmp file" << endl;
+        return "File not found";
+    }
+    
+    // Read header
+    readHeader (bmpfile, header);
+    
+    // Read image
+    width = int(header.width);
+    if ( width < 0 )
+        width *= -1;
+    height = int(header.height);
+    if ( height < 0 )
+        height *= -1;
+    
+    int rowsize = width * 3;
+    
+    image = new unsigned char [ rowsize * height ];
+    
+    bmpfile.seekg ( header.offset, ios::beg );
+    bmpfile.read ( (char *)image, 3*width*height );
+    bmpfile.close();
+    
+    //char tempoutput[3][3];
+    //string temo;
+    for(int y = height-1; y >= 0; y--) {
+        
+        for(int x = 0; x < width; x++) {
+            
+            // Get the average color
+            average_color = ( image[x*3     + y*rowsize] +
+                             image[x*3 + 1 + y*rowsize] +
+                             image[x*3 + 2 + y*rowsize] ) / 3;
+            
+            // Convert to a shade
+            average_color /= (256/MAX_SHADES);
+            if(average_color >= MAX_SHADES)
+                average_color = MAX_SHADES-1;
+            
+            // Write Output to string
+            
+            ret_string += anim_frame[average_color];
+            
+        }
+        
+        ret_string += "\n";
+        
+    }
+    
+    return ret_string;
+    
+    
+}
 
+void AsciiConverter::set_anim_splitter(int i, int &splitter){
+    
+    if(i%11 == 0)
+        splitter = 1;
+    
+}
+
+vector<string> AsciiConverter::animateObject(const string &objname){
+    
+    vector<string> string_animation_frames;
+    vector<animation_type> char_types;
+    const int frames = 11;
+    const string filepath = "assets/bmpimgs/" + move(objname) + ".bmp";
+    
+    //vector<animation_frame> anim_frames[framespersec];
+    
+    // vector<animation_array> anim_arr;
+    // vector<char[MAX_SHADES]> animation_frames;
+    
+    //Init 4 char array types and a final type
+    char_types.push_back({'-','-','-','-','-','-','-','-','-','-'});
+    char_types.push_back({'.',' ',' ',' ',' ',' ',' ',' ','.',' '});
+    char_types.push_back({'^',' ',' ','#',' ',' ',' ','#',' ',' '});
+    char_types.push_back({'.','^','.','^','.','^','.','^','.',' '});
+    char_types.push_back({' ',' ','^',' ','^',' ',' ','#',' ',' '});
+    char_types.push_back({' ','q',' ',' ','*',' ',' ',' ',' ',' '});
+    char_types.push_back({'c',' ',' ','!',' ',' ',' ',' ',')',' '});
+    char_types.push_back({' ',' ','^',' ',' ',']',' ',' ',' ','-'});
+    char_types.push_back({' ',' ',' ',' ',' ',' ',' ','.',' ',' '});
+    char_types.push_back({'c','q','^','!','*',']','[','.',')',' '});
+    
+    //Final
+    char_types.push_back({'#','$','O','=','+','|','-','^','.',' '});
+    
+    
+    int splitter = 1;
+    for (int i=0; i < frames-1; i++){
+        
+        string_animation_frames.push_back(animation_helper(objname, char_types[splitter].anim_type, filepath));
+        
+        splitter++;
+        set_anim_splitter(i, splitter);
+    }
+    
+    string_animation_frames.push_back(animation_helper(objname, char_types[10].anim_type, filepath));
+    
+    
+    return string_animation_frames;
+    
+}
+
+void AsciiConverter::set_sequence_filepath(vector<string> &filepath_seq, const string& objname){
+    
+    for(int i=0; i< MAX_SEQ; i++){
+        string sq = to_string(i);
+        string push = "assets/bmpimgs/sequences/" + move(objname) +
+        "/" + sq + ".bmp";
+        filepath_seq.push_back(push);
+    }
+    
+}
+
+vector<string> AsciiConverter::animateSequence(const string &objname){
+    
+    vector<string> string_animation_frames;
+    
+    vector<string> filepath_sequence;
+    set_sequence_filepath(filepath_sequence, move(objname));
+    
+    char def_shades[MAX_SHADES] = {'#','$','O','=','+','|','-','^','.',' '};
+    
+    for(int i=0; i< MAX_SEQ; i++){
+        string_animation_frames.push_back(animation_helper(objname, def_shades, filepath_sequence[i]));
+    }
+    
+    
+    return string_animation_frames;
+    
+}
 

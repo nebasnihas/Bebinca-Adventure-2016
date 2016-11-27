@@ -10,6 +10,8 @@
 #ifndef AsciiConverter_hpp
 #define AsciiConverter_hpp
 
+#define MAX_SHADES 10
+
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
@@ -21,9 +23,14 @@
 
 using namespace std;
 
+
+struct animation_type{
+    char anim_type[MAX_SHADES];
+};
+
 class AsciiConverter {
     
-    private:
+private:
     
     //Types to hold BMP File header data
     typedef unsigned short uint16;
@@ -65,6 +72,7 @@ class AsciiConverter {
     static void process_letter_location(const char &c, string& word_file);
     static int get_word_size(string& word);
     static string process_font_type(const string& font_type);
+    static void set_anim_splitter(int i, int& splitter);
     
     //Methods supporting word streams upto  10 letters. Multiple methods so that memory (allocation) is not
     //wasted if unnecessary
@@ -83,10 +91,12 @@ class AsciiConverter {
     //To be added
     // static string sentence_helper(const string font_type, const string& sentence);
     
+    //Animation
+    static string animation_helper(const string& objname, char anim_frame[MAX_SHADES], const string& file);
+    static void set_sequence_filepath(vector<string>& filepath_seq, const string&objname);
     
     
-    
-    public:
+public:
     
     //Print Object: Returns a Multitext string of ASCII art of an object in the assets/bmpimgs folder
     //Styles: default, numbers
@@ -109,6 +119,11 @@ class AsciiConverter {
     //To be added
     // static string printSentence(const string font_type, const string &sentence);
     // static string printSentence(const string font_type, const string sentence);
+    
+    //Animation
+    static vector<string> animateObject(const string &objname);
+    static vector<string> animateSequence(const string &objname);
+    
 };
 
 #endif /* AsciiConverter_hpp */

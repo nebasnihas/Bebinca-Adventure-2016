@@ -21,6 +21,7 @@
 #include "AuthenticationWindow.hpp"
 #include "ChatWindow.hpp"
 #include "WorldBuildingWindow.hpp"
+#include "CombatWindow.hpp"
 
 using namespace networking;
 
@@ -28,6 +29,7 @@ static const std::string MAIN_MENU_WINDOW_ID = "auth";
 static const std::string LOGIN_WINDOW_ID = "login";
 static const std::string REGISTER_WINDOW_ID = "register";
 static const std::string CHAT_WINDOW_ID = "chat";
+static const std::string COMBAT_WINDOW_ID = "combat";
 static const std::string WORLDBUILDING_WINDOW_ID = "build";
 bool running = true;
 
@@ -38,6 +40,7 @@ std::unique_ptr<gui::AuthenticationWindow> loginWindow;
 std::unique_ptr<gui::AuthenticationWindow> registerWindow;
 std::unique_ptr<gui::ChatWindow> chatWindow;
 std::unique_ptr<gui::WorldBuildingWindow> worldBuildingWindow;
+std::unique_ptr<gui::CombatWindow> combatWindow;
 
 std::string editCommand;
 
@@ -101,16 +104,6 @@ void setupChatWindow() {
         networkingClient->send(protocols::serializeRequestMessage(request));
     });
 
-    chatWindow->setOnSoftKeyPressed([](auto key) {
-        switch(key) {
-            case gui::SoftKey::F1: {
-                break;
-            }
-            default:
-                break;
-        }
-    });
-
     gameClient->addWindow(CHAT_WINDOW_ID, chatWindow.get());
 }
 
@@ -144,6 +137,19 @@ void setupWorldBuildingWindow() {
     });
 
     gameClient->addWindow(WORLDBUILDING_WINDOW_ID, worldBuildingWindow.get());
+}
+
+void setupCombatWindow() {
+    combatWindow = std::make_unique<gui::CombatWindow>();
+//    combatWindow->setOnTODO([](){
+//        gameClient->switchToWindow(CHAT_WINDOW_ID);
+//    });
+//    combatWindow->setOnTODO2([](auto inputText){
+//        auto request = protocols:: ??? ;
+//        networkingClient->send(protocols::serializeRequestMessage(request));
+//    });
+
+    gameClient->addWindow(COMBAT_WINDOW_ID, combatWindow.get());
 }
 
 void handleAuthResponse(const protocols::ResponseMessage& response) {
@@ -273,6 +279,7 @@ int main(int argc, char *argv[]) {
     setupRegisterWindow();
     setupChatWindow();
     setupWorldBuildingWindow();
+    setupCombatWindow();
 
     networkingClient = std::make_unique<Client>(argv[1], argv[2]);
     while(running) {
