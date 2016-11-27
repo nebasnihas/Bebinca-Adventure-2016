@@ -3,10 +3,18 @@
 
 #include "commands/MessageBuilder.hpp"
 
+class GameModel;
+class Controller;
+
 class PigLatinDecorator : public MessageBuilderDecorator {
 public:
-    PigLatinDecorator(const MessageBuilder& messageBuilder) : MessageBuilderDecorator{messageBuilder} {};
+    PigLatinDecorator(const MessageBuilder& messageBuilder, const Controller& controller, GameModel& gameModel)
+            : MessageBuilderDecorator{messageBuilder}, gameModel{gameModel}, controller{controller} {};
     virtual std::vector<MessageInfo> buildMessages() const override;
+
+private:
+    GameModel& gameModel;
+    const Controller& controller;
 };
 
 

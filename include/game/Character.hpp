@@ -101,6 +101,7 @@ public:
 
 	void pushToBuffer(const std::string message, const std::string sender, std::string color);
     void addStatusEffect(std::shared_ptr<StatusEffect> statusEffect);
+    bool hasStatusEffect(StatusType statusType);
 
     //Defaults
     static const std::string defaultID;

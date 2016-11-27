@@ -125,7 +125,7 @@ void Controller::update() {
 }
 
 void Controller::sendOutput(const MessageBuilder& messageBuilder) const {
-    auto msg = PigLatinDecorator{messageBuilder};
+    auto msg = PigLatinDecorator{messageBuilder, *this, gameModel};
     messageIO.send(msg);
 }
 

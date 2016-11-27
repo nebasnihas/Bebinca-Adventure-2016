@@ -506,6 +506,9 @@ void GameModel::listValidSpells(const std::string& characterID) {
 void GameModel::loadDefaultSpells() {
     Spell bodySwap("body swap", 0, SpellType::BODY_SWAP, "");
     addSpell(bodySwap);
+
+    Spell pigLatin{"pig latin", 0, SpellType::PIG_LATIN, ""};
+    addSpell(pigLatin);
 }
 
 void GameModel::castSpell(const std::string& sourceID, const std::string& targetID, const std::string& spellID) {

@@ -67,6 +67,8 @@ private:
     //help command
     friend class HelpCommand;
     std::unique_ptr<HelpCommand> helpCommand;
+
+    friend class PigLatinDecorator;
 };
 
 

@@ -9,6 +9,7 @@ enum class SpellType {
     OFFENSE,
     DEFENSE,
     BODY_SWAP,
+	PIG_LATIN,
     UNDEFINED
 };
 
