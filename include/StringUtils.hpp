@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include "boost/algorithm/string.hpp"
+#include <boost/tokenizer.hpp>
 
 static inline std::pair<std::string, std::string> separateFirstWord(const std::string text) noexcept
 {
@@ -23,17 +24,22 @@ static inline std::pair<std::string, std::string> separateFirstWord(const std::s
     return std::pair<std::string, std::string>(firstWord, rest);
 };
 
-static inline std::vector<std::string> splitString(const std::string& text)
+static inline std::vector<std::string> splitString(std::string text)
 {
     std::vector<std::string> tokens;
     if(text.empty()) {
         return tokens;
     }
 
-    std::string tmp = text;
-    boost::trim(tmp);
+    boost::trim(text);
+    std::stringstream ss;
 
-    boost::split(tokens, tmp, boost::is_any_of(" \t"), boost::token_compress_on);
+    using EscapeList = boost::escaped_list_separator<char>;
+    boost::tokenizer<EscapeList> tokenizer{text, EscapeList('\\', ' ', '\"')};
+    for (const auto& token : tokenizer) {
+        tokens.emplace_back(token);
+    }
+
     return tokens;
 }
 

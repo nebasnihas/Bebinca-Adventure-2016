@@ -83,3 +83,9 @@ commands:
     bindings:
       - "kick"
       - "/k"
+  command-edit:
+    desc: "Edit areas"
+    usage: "[area|add|status]"
+    role: "worldbuilder"
+    bindings:
+      - "edit"

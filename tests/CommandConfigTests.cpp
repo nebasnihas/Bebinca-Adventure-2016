@@ -1,7 +1,5 @@
 #include <gtest/gtest.h>
 #include <../src/game-server/commands/CommandConfig.hpp>
-#include "yaml-cpp/yaml.h"
-#include <vector>
 
 class TestCommand : public Command {
 public:
@@ -53,6 +51,10 @@ TEST_F(CommandConfigTest, CreateFromNode) {
     EXPECT_TRUE(res.getUsage() == usage);
     EXPECT_TRUE(res.getInputBindings().size() == 1);
     EXPECT_TRUE(res.getInputBindings()[0] == binding1);
+
+    EXPECT_TRUE(res.getDescription() == config.getCommandDescription(id));
+    EXPECT_TRUE(res.getUsage() == config.getCommandUsage(id));
+    EXPECT_TRUE(res.getInputBindings() == config.getCommandInputBindings(id));
 }
 
 TEST_F(CommandConfigTest, InvalidCommandId) {

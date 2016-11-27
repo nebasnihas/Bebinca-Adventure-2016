@@ -18,10 +18,14 @@ public:
     void addNodeSource(const YAML::Node& node);
     void reloadFromSources();
 
-    CommandHandle createInputBindingsForCommand(const std::string& commandId,
-                                                Command& command) const;
+    CommandHandle createInputBindingsForCommand(const std::string& commandId, Command& command) const;
+    std::string getCommandDescription(const std::string& commandId) const;
+    std::string getCommandUsage(const std::string& commandId) const;
+    std::vector<std::string> getCommandInputBindings(const std::string& commandId) const;
 
 private:
+    YAML::Node getConfigNodeForCommand(const std::string& commandId) const;
+
     std::unordered_set<std::string> fileSources;
     YAML::Node root;
 };

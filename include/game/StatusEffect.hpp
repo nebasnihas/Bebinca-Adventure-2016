@@ -7,7 +7,8 @@
 
 enum class StatusType {
     UNDEFINED,
-    BODYSWAP
+    BODYSWAP,
+    PIG_LATIN,
 };
 
 class StatusEffect {
@@ -37,6 +38,12 @@ private:
 
     std::string swappedID;
 
+};
+
+class PigLatinSwapStatus : public StatusEffect {
+public:
+    PigLatinSwapStatus(int durationInSeconds) : StatusEffect{durationInSeconds} {}
+    virtual StatusType getType() {return StatusType::PIG_LATIN;}
 };
 
 #endif

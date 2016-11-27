@@ -15,7 +15,9 @@ add_executable(runAllTests
         SpellImportingTest.cpp
         CombatTests.cpp
         NPCScriptingTest.cpp
-		PigLatinTranslatorTests.cpp)
+		PigLatinTranslatorTests.cpp
+        ProtocolTests.cpp
+        )
 
 target_link_libraries(runAllTests
         gtest

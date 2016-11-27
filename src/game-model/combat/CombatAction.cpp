@@ -63,7 +63,7 @@ void CombatCast::execute(Character& source, Character& target) {
         case SpellType::DEFENSE:
 			castDefenseSpell(source, target, power, stringInfo);
 			break;
-		case SpellType::BODY_SWAP:
+		case SpellType::BODY_SWAP: {
 			//TODO: determine duration of body swap based on player level
 			auto sourceStatus = std::make_shared<BodySwapStatus>(20, target.getID());
 			auto targetStatus = std::make_shared<BodySwapStatus>(20, source.getID());
@@ -71,8 +71,25 @@ void CombatCast::execute(Character& source, Character& target) {
 			source.addStatusEffect(sourceStatus);
 			target.addStatusEffect(targetStatus);
 
-			target.pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_GENERIC_SOURCE, stringInfo), GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
-			source.pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_GENERIC_TARGET, stringInfo), GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
+			target.pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_GENERIC_SOURCE, stringInfo),
+								GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
+			source.pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_GENERIC_TARGET, stringInfo),
+								GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
+			break;
+		}
+		case SpellType::PIG_LATIN: {
+			auto sourceStatus = std::make_shared<PigLatinSwapStatus>(20);
+			auto targetStatus = std::make_shared<PigLatinSwapStatus>(20);
+
+			source.addStatusEffect(sourceStatus);
+			target.addStatusEffect(targetStatus);
+
+			target.pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_GENERIC_SOURCE, stringInfo),
+								GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
+			source.pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_GENERIC_TARGET, stringInfo),
+								GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
+			break;
+		}
     }
 }
 

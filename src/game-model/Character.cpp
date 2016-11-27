@@ -293,3 +293,13 @@ std::vector<std::string> NPC::getCommandsToExecute()
     outputBuffer->clear();
     return commandsToExecute;
 }
+
+bool Character::hasStatusEffect(StatusType statusType) {
+    for (const auto& e : statusEffects) {
+        if (e->getType() == statusType) {
+            return true;
+        }
+    }
+
+    return false;
+}

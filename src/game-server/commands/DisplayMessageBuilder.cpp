@@ -29,11 +29,14 @@ std::vector<MessageInfo> DisplayMessageBuilder::buildMessages() const
     std::vector<MessageInfo> output;
     output.reserve(clientList.size());
 
-    std::transform(clientList.begin(), clientList.end(), std::back_inserter(output), [this](const auto& client){
+    std::transform(clientList.begin(), clientList.end(), std::back_inserter(output), [this](const auto& client) {
+        protocols::DisplayMessage displayMessage;
+        displayMessage.message = message;
+        displayMessage.sender = sender;
+
         MessageInfo msg;
-        msg.message = message;
-        msg.sender = sender;
         msg.client = client;
+        msg.message = protocols::createDisplayResponseMessage(displayMessage);
 
         return msg;
     });

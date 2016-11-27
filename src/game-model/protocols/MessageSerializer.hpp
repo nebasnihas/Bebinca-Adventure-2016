@@ -10,7 +10,7 @@ const std::string MessageBodyKey = "Body";
 namespace protocols {
 
 template<typename HeaderType>
-std::string serializeMessage(HeaderType header, const YAML::Node& body)
+static inline std::string serializeMessage(HeaderType header, const YAML::Node& body)
 {
     YAML::Emitter output;
 
@@ -26,7 +26,7 @@ std::string serializeMessage(HeaderType header, const YAML::Node& body)
 }
 
 template<typename T, typename HeaderType>
-T deserializeMessage(const std::string& serializedMessage)
+static inline T deserializeMessage(const std::string& serializedMessage)
 {
     auto node = YAML::Load(serializedMessage);
 

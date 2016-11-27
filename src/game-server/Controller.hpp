@@ -11,8 +11,10 @@
 #include "commands/CommandConfig.hpp"
 #include "commands/CommandHandle.hpp"
 #include "game/protocols/PlayerCommand.hpp"
+#include "game/protocols/CommandInfo.hpp"
 #include "AccountInfo.hpp"
 #include "HelpCommand.hpp"
+#include "CommandInfoRequestHandler.hpp"
 
 class Command;
 class ConnectionManager;
@@ -26,6 +28,7 @@ public:
 
     void registerCommand(const std::string& commandId, Command& command);
     void processCommand(const protocols::PlayerCommand& command, const networking::Connection& client);
+    void processCommandInfoRequest(protocols::CommandName cmdInfoRequest, const networking::Connection& client);
 
     bool addNewPlayer(const AccountInfo& accountInfo, const networking::Connection& client);
     void removePlayer(const networking::Connection& clientID);
@@ -56,6 +59,7 @@ private:
     MessageIO& messageIO;
     CommandConfig commandConfig;
     ConnectionManager& connectionManager;
+    CommandInfoRequestHandler dataRequestHandler;
 
     void sendOutput(const MessageBuilder& messageBuilder) const;
     const AccountInfo& getAccountInfo(const networking::Connection& client) const;
@@ -63,6 +67,8 @@ private:
     //help command
     friend class HelpCommand;
     std::unique_ptr<HelpCommand> helpCommand;
+
+    friend class PigLatinDecorator;
 };
 
 

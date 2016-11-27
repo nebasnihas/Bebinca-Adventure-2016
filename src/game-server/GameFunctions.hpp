@@ -25,6 +25,7 @@ private:
     CastCommand castCommand;
 	StatusCommand statusCommand;
 	KickCommand kickCommand;
+	EditCommand editCommand;
 };
 
 

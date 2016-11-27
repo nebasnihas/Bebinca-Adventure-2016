@@ -9,6 +9,7 @@ Application::Application() {
     cbreak();
     halfdelay(1);
     start_color();
+    set_escdelay(25);
 
     clear();
     refresh();

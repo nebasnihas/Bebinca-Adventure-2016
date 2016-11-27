@@ -6,7 +6,8 @@ add_executable(game-client
         Application.cpp Application.hpp
         AuthenticationWindow.cpp AuthenticationWindow.hpp
         ChatWindow.cpp ChatWindow.hpp
-        StrColorizer.cpp StrColorizer.hpp)
+        StrColorizer.cpp StrColorizer.hpp
+        WorldBuildingWindow.cpp WorldBuildingWindow.hpp)
 
 set_target_properties(game-client
         PROPERTIES
@@ -27,6 +28,7 @@ include_directories(
 target_link_libraries(game-client
         networking
         protocols
+        game
         ${Boost_LIBRARIES}
         ${CURSES_LIBRARIES}
         menu

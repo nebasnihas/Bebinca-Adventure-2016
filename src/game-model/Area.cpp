@@ -51,21 +51,23 @@ Area::Area(const std::string &id, const std::string &title)
         }
 }
 
+Area::Area(std::string id) :id{std::move(id)} {}
+
 //*---------------
 // Getters
 //---------------*
 
 
 //Accessors
-std::string Area::getTitle() const {
+const std::string& Area::getTitle() const {
     return title;
 }
 
-std::string Area::getID() const {
+const std::string& Area::getID() const {
     return id;
 }
 
-std::string Area::getDescription() const {
+const std::string& Area::getDescription() const {
     return description;
 }
 
@@ -73,10 +75,33 @@ Area::Doors* Area::getConnectedAreas() const{
     return (Doors*) &connectedAreas;
 }
 
+const std::vector<Object>& Area::getObjectList() const {
+    return objectList;
+}
+
 std::unordered_map<std::string, std::string> Area::getExtendedDescriptions() const {
     return extendedDescriptions;
 }
 
+void Area::setTitle(const std::string& title) {
+    this->title = title;
+}
+
+void Area::setDescription(const std::string& description) {
+    this->description = description;
+}
+
+void Area::addConnectedArea(const std::string& exit, const std::string& areaID) {
+    if (connectedAreas.count(exit) == 1) {
+        connectedAreas.erase(exit);
+    }
+
+    connectedAreas.emplace(exit, areaID);
+}
+
+void Area::removeConnectedArea(const std::string& exit) {
+    connectedAreas.erase(exit);
+}
 //Setters
 void Area::addObjects(std::string object) {
     this->objectNames.push_back(object);
@@ -84,4 +109,7 @@ void Area::addObjects(std::string object) {
 
 const std::vector<std::string>& Area::getObjectNames() const{
 	return objectNames;
+}
+void Area::addObject(const Object& object) {
+    objectList.emplace_back(object);
 }

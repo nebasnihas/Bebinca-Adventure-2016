@@ -48,8 +48,8 @@ Object* GameModel::getObjectInArea(const std::string& keyword, const std::string
  */
 
 bool GameModel::addArea(const Area area) {
-
-	locations.insert(std::pair<std::string, Area>(area.getID(), std::move(area)));
+    locations.erase(area.getID());
+	locations.emplace(area.getID(), std::move(area));
 
 	// No failure case yet...
 	return true;
@@ -104,15 +104,15 @@ bool GameModel::moveCharacter(const std::string& characterID, const std::string&
     }
 
     auto connectedAreas = area->getConnectedAreas();
-    // Check if the current area is connected to the target destination
-    auto connectedArea = connectedAreas->find(areaTag);
 
-    if (connectedArea == connectedAreas->end()) {
+    // Check if the current area is connected to the target destination
+    if (connectedAreas->count(areaTag) == 0) {
         return false;
     }
+    auto connectedArea = connectedAreas->at(areaTag);
 
-    character->setAreaID(connectedArea->second);
-    auto newDir = getRelativeDirection(findDirectionByAreaID(connectedArea->second, currAreaID));
+    character->setAreaID(connectedArea);
+    auto newDir = getRelativeDirection(findDirectionByAreaID(connectedArea, currAreaID));
     sendMoveUpdateMessages(character->getID(), currAreaID, getRelativeDirection(areaTag), character->getAreaID(), newDir);
 
     return true;
@@ -493,14 +493,16 @@ void GameModel::sendGlobalMessage(const std::string& senderID, std::string messa
 void GameModel::sendLocalMessageFromCharacter(const std::string& senderID, std::string message) {
 	auto areaID = getCharacterByID(senderID)->getAreaID();
 	for (const auto &character: getCharacterIDsInArea(areaID)) {
-		getCharacterByID(character)->pushToBuffer(message, getCharacterByID(senderID)->getName(), ColorTag::WHITE);
+		getCharacterByID(character)->pushToBuffer(GameStrings::get(GameStringKeys::AREA_CHANNEL) + message,
+                                                  getCharacterByID(senderID)->getName(), ColorTag::CYAN);
 	}
 }
 
 void GameModel::sendPrivateMessage(const std::string& senderID, std::string message, const std::string& target) {
 	auto targetCharacter = getCharacterByID(target);
 	if (targetCharacter != nullptr) {
-		targetCharacter->pushToBuffer(message, getCharacterByID(senderID)->getName(), ColorTag::WHITE);
+		targetCharacter->pushToBuffer(GameStrings::get(GameStringKeys::PRIVATE_CHANNEL) + message,
+                                      getCharacterByID(senderID)->getName(), ColorTag::MAGENTA);
 	}
 }
 
@@ -516,6 +518,9 @@ void GameModel::listValidSpells(const std::string& characterID) {
 void GameModel::loadDefaultSpells() {
     Spell bodySwap("body swap", 0, SpellType::BODY_SWAP, "");
     addSpell(bodySwap);
+
+    Spell pigLatin{"pig latin", 0, SpellType::PIG_LATIN, ""};
+    addSpell(pigLatin);
 }
 
 void GameModel::castSpell(const std::string& sourceID, const std::string& targetID, const std::string& spellID) {

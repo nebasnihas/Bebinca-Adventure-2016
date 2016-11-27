@@ -17,7 +17,8 @@ Controller::Controller(GameModel& gameModel, MessageIO& messageIO, ConnectionMan
           messageIO{messageIO},
           commandConfig{commandCreator},
           connectionManager{connectionManager},
-          helpCommand{std::make_unique<HelpCommand>(*this)} {
+          helpCommand{std::make_unique<HelpCommand>(*this)},
+          dataRequestHandler{messageIO, commandConfig} {
     registerCommand(COMMAND_HELP, *helpCommand);
 }
 
@@ -56,7 +57,6 @@ bool Controller::addNewPlayer(const AccountInfo& accountInfo, const networking::
 
     playerMap.insert(PlayerMapPair{accountInfo.username, client});
     playerAccountMap.insert({accountInfo.username, accountInfo});
-    allClients.push_back(client);
     gameModel.createCharacter(accountInfo.username);
 
     auto outMsg = DisplayMessageBuilder{"Player <" +  ColorTag::MAGENTA + accountInfo.username + ColorTag::WHITE + "> has joined."}
@@ -64,6 +64,7 @@ bool Controller::addNewPlayer(const AccountInfo& accountInfo, const networking::
             .addClients(allClients);
     sendOutput(outMsg);
 
+    allClients.push_back(client);
     return true;
 }
 
@@ -124,7 +125,7 @@ void Controller::update() {
 }
 
 void Controller::sendOutput(const MessageBuilder& messageBuilder) const {
-    auto msg = PigLatinDecorator{messageBuilder};
+    auto msg = PigLatinDecorator{messageBuilder, *this, gameModel};
     messageIO.send(msg);
 }
 
@@ -133,7 +134,6 @@ const AccountInfo& Controller::getAccountInfo(const networking::Connection& clie
     return playerAccountMap.find(id)->second;
 }
 
-
-
-
-
+void Controller::processCommandInfoRequest(protocols::CommandName cmdInfoRequest, const networking::Connection& client) {
+    dataRequestHandler.handleDataRequest(cmdInfoRequest, client);
+}

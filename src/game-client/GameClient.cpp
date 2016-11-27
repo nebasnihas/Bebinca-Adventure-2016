@@ -6,17 +6,21 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
+#include <glog/logging.h>
 #include "networking/client.h"
 #include "StringUtils.hpp"
 #include "game/protocols/RequestMessage.hpp"
 #include "game/protocols/Authentication.hpp"
 #include "game/protocols/PlayerCommand.hpp"
 #include "game/protocols/DisplayMessage.hpp"
+#include "game/protocols/CommandInfo.hpp"
+#include "game/protocols/Editing.hpp"
+#include "game/GameDataImporter.hpp"
 #include "Application.hpp"
 #include "MainMenuWindow.hpp"
 #include "AuthenticationWindow.hpp"
 #include "ChatWindow.hpp"
-#include <glog/logging.h>
+#include "WorldBuildingWindow.hpp"
 
 using namespace networking;
 
@@ -24,6 +28,7 @@ static const std::string MAIN_MENU_WINDOW_ID = "auth";
 static const std::string LOGIN_WINDOW_ID = "login";
 static const std::string REGISTER_WINDOW_ID = "register";
 static const std::string CHAT_WINDOW_ID = "chat";
+static const std::string WORLDBUILDING_WINDOW_ID = "build";
 bool running = true;
 
 std::unique_ptr<Client> networkingClient;
@@ -32,6 +37,9 @@ std::unique_ptr<gui::MainMenuWindow> authWindow;
 std::unique_ptr<gui::AuthenticationWindow> loginWindow;
 std::unique_ptr<gui::AuthenticationWindow> registerWindow;
 std::unique_ptr<gui::ChatWindow> chatWindow;
+std::unique_ptr<gui::WorldBuildingWindow> worldBuildingWindow;
+
+std::string editCommand;
 
 void setupAuthWindow() {
     authWindow = std::make_unique<gui::MainMenuWindow>();
@@ -56,9 +64,11 @@ void setupAuthWindow() {
 
 void setupLoginWindow() {
     loginWindow = std::make_unique<gui::AuthenticationWindow>("LOGIN");
+
     loginWindow->setOnCancel([](){
         gameClient->switchToWindow(MAIN_MENU_WINDOW_ID);
     });
+
     loginWindow->setOnInput([](auto user, auto password) {
         auto requestMessage = protocols::createLoginRequestMessage({user, password});
         networkingClient->send(protocols::serializeRequestMessage(requestMessage));
@@ -69,9 +79,11 @@ void setupLoginWindow() {
 
 void setupRegisterWindow() {
     registerWindow = std::make_unique<gui::AuthenticationWindow>("REGISTER");
+
     registerWindow->setOnCancel([](){
         gameClient->switchToWindow(MAIN_MENU_WINDOW_ID);
     });
+
     registerWindow->setOnInput([](auto username, auto password) {
         auto requestMessage = protocols::createRegistrationRequestMessage({username, password});
         networkingClient->send(protocols::serializeRequestMessage(requestMessage));
@@ -82,13 +94,56 @@ void setupRegisterWindow() {
 
 void setupChatWindow() {
     chatWindow = std::make_unique<gui::ChatWindow>();
+
     chatWindow->setOnInput([](auto inputText){
         auto separated = separateFirstWord(inputText);
         auto request = protocols::createPlayerCommandRequestMessage({separated.first, separated.second});
         networkingClient->send(protocols::serializeRequestMessage(request));
     });
 
+    chatWindow->setOnSoftKeyPressed([](auto key) {
+        switch(key) {
+            case gui::SoftKey::F1: {
+                break;
+            }
+            default:
+                break;
+        }
+    });
+
     gameClient->addWindow(CHAT_WINDOW_ID, chatWindow.get());
+}
+
+void setupWorldBuildingWindow() {
+    worldBuildingWindow = std::make_unique<gui::WorldBuildingWindow>();
+
+    worldBuildingWindow->setOnSubmit([](auto area) {
+        YAML::Emitter em;
+        em << YAML::Node{area};
+        std::stringstream arguments;
+        arguments << "submit \"" << em.c_str() << "\"";
+        auto args = arguments.str();
+        auto cmd =  protocols::createPlayerCommandRequestMessage(protocols::PlayerCommand{command : editCommand, arguments : args});
+        networkingClient->send(protocols::serializeRequestMessage(cmd));
+
+        worldBuildingWindow->showMessage("Saving changes..");
+    });
+
+    worldBuildingWindow->setOnQuit([]() {
+       gameClient->switchToWindow(CHAT_WINDOW_ID);
+    });
+
+    worldBuildingWindow->setOnDiscard([]() {
+        auto cmd =  protocols::createPlayerCommandRequestMessage(protocols::PlayerCommand{command : editCommand, arguments : "cancel"});
+        networkingClient->send(protocols::serializeRequestMessage(cmd));
+        gameClient->switchToWindow(CHAT_WINDOW_ID);
+    });
+
+    worldBuildingWindow->setOnQuit([]() {
+        gameClient->switchToWindow(CHAT_WINDOW_ID);
+    });
+
+    gameClient->addWindow(WORLDBUILDING_WINDOW_ID, worldBuildingWindow.get());
 }
 
 void handleAuthResponse(const protocols::ResponseMessage& response) {
@@ -96,6 +151,8 @@ void handleAuthResponse(const protocols::ResponseMessage& response) {
     if(authResponse.success) {
         gameClient->switchToWindow(CHAT_WINDOW_ID);
         chatWindow->showText("Welcome!");
+        auto cmd = protocols::createCommandInfoRequest(protocols::CommandName::EDIT);
+        networkingClient->send(protocols::serializeRequestMessage(cmd));
         return;
     }
 
@@ -109,7 +166,49 @@ void handleAuthResponse(const protocols::ResponseMessage& response) {
 
 void handleDisplayResponse(const protocols::ResponseMessage& responseMessage) {
     auto displayMessage = protocols::readDisplayResponseMessage(responseMessage);
-    chatWindow->showText(displayMessage);
+
+    std::string displayText;
+    if (displayMessage.sender) {
+        displayText += "[" + displayMessage.sender.get() + "] - ";
+    }
+    displayText += displayMessage.message;
+
+    chatWindow->showText(displayText);
+}
+
+void handleCommandResponse(const protocols::ResponseMessage& responseMessage) {
+    auto response = protocols::readCommandInfoResponse(responseMessage);
+    switch(response.name) {
+        case protocols::CommandName::EDIT:
+            editCommand = response.inputBinding;
+            break;
+        default:
+            break;
+    }
+}
+
+void handleEditResponse(const protocols::ResponseMessage& responseMessage) {
+    auto editResponse = protocols::readEditResponse(responseMessage);
+    switch (editResponse.editType) {
+        case protocols::EditType::AREA: {
+            CHECK(editResponse.data) << "No data for area";
+            auto area = editResponse.data.get();
+            worldBuildingWindow->loadAreaData(area);
+
+            gameClient->switchToWindow(WORLDBUILDING_WINDOW_ID);
+            break;
+        }
+        case protocols::EditType::SAVE_CHANGES: {
+            if (!editResponse.success) {
+                worldBuildingWindow->showMessage(editResponse.message);
+                break;
+            }
+
+            gameClient->switchToWindow(CHAT_WINDOW_ID);
+            chatWindow->showText(editResponse.message);
+            break;
+        }
+    }
 }
 
 void updateFromServer() {
@@ -146,6 +245,12 @@ void updateFromServer() {
             case protocols::ResponseHeader::DISPLAY_MESSAGE_RESPONSE:
                 handleDisplayResponse(response);
                 break;
+            case protocols::ResponseHeader::COMMAND_INFO_RESPONSE:
+                handleCommandResponse(response);
+                break;
+            case protocols::ResponseHeader::EDIT_INFO_RESPONSE:
+                handleEditResponse(response);
+                break;
             default:
                 break;
         }
@@ -167,6 +272,7 @@ int main(int argc, char *argv[]) {
     setupLoginWindow();
     setupRegisterWindow();
     setupChatWindow();
+    setupWorldBuildingWindow();
 
     networkingClient = std::make_unique<Client>(argv[1], argv[2]);
     while(running) {

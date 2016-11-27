@@ -12,5 +12,6 @@
 #include <commands/game-commands/CastCommand.hpp>
 #include <commands/game-commands/StatusCommand.hpp>
 #include <commands/game-commands/KickCommand.hpp>
+#include <commands/game-commands/EditCommand.hpp>
 
 #endif //ADVENTURE2016_GAMECOMMANDS_HPP
