@@ -45,6 +45,18 @@ Object::Object(	const std::vector<std::string>& attributes,
 			        }
                	}
 
+//Defaults
+const std::string Object::defaultObjectID = " ";
+const std::string Object::defaultItemType = " ";
+const std::string Object::defaultShortDesc = " ";
+
+const std::vector<std::string> Object::defaultAttributes = {"noAttributes", " "};
+const std::vector<std::string> Object::defaultExtra = {"noExtraDescription", " "};
+const std::vector<std::string> Object::defaultKeywords = {"noKeywords", " "};
+const std::vector<std::string> Object::defaultLongDesc = {"noLongDesc", " "};
+const std::vector<std::string> Object::defaultWearFlags = {"noWearFlags", " "};
+
+
 //*---------------
 // Getters
 //---------------*

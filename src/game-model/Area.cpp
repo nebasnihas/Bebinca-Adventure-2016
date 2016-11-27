@@ -81,6 +81,11 @@ std::vector<std::string> Area::getExtendedDescriptions() const {
     return extendedDescriptions;
 }
 
+//Setters
+void Area::addObjects(std::string object) {
+    this->objectNames.push_back(object);
+}
+
 
 //TODO : explain this function
 

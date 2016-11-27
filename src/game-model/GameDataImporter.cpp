@@ -108,31 +108,31 @@ std::vector<Area> GameDataImporter::getRooms(const YAML::Node& ROOMS) {
     return rooms;
 }
 
-std::vector<Object> GameDataImporter::getObjects(const YAML::Node& OBJECTS){
-    vector<Object> objects = {};
+std::unordered_map<std::string, Object> GameDataImporter::returnObjects(const YAML::Node& OBJECTS){
+    unordered_map<std::string, Object> objects;
 
     /*
     Split up objects in YML file and store them in the objects class
     */
 
     for(const auto& OBJECT : OBJECTS){
-        int cost = OBJECT["cost"].as<int>();
-        int weight = OBJECT["weight"].as<int>();
+        int cost = OBJECT["cost"] ? OBJECT["cost"].as<int>() : Object::defaultCost;
+        int weight = OBJECT["weight"] ? OBJECT["weight"].as<int>() : Object::defaultWeight;
 
-        string objectId = OBJECT["id"].as<string>();
-        string item_type = OBJECT["item_type"].as<string>();
-        string shortdesc = OBJECT["shortdesc"].as<string>();
+        string objectID = OBJECT["id"] ? OBJECT["id"].as<string>() : Object::defaultObjectID;
+        string item_type = OBJECT["item_type"] ? OBJECT["item_type"].as<string>() : Object::defaultItemType;
+        string shortdesc = OBJECT["shortdesc"] ? OBJECT["shortdesc"].as<string>() : Object::defaultShortDesc;
 
-        vector<string> attributes = OBJECT["attributes"].as<vector<string>>();
-        vector<string> extra = OBJECT["extra"].as<vector<string>>();
-        vector<string> keywords = OBJECT["keywords"].as<vector<string>>();
-        vector<string> longdesc = OBJECT["longdesc"].as<vector<string>>();
-        vector<string> wear_flags = OBJECT["wear_flags"].as<vector<string>>();
+        vector<string> attributes = OBJECT["attributes"] ? OBJECT["attributes"].as<vector<string>>() : Object::defaultAttributes;
+        vector<string> extra = OBJECT["extra"] ? OBJECT["extra"].as<vector<string>>() : Object::defaultExtra;
+        vector<string> keywords = OBJECT["keywords"] ? OBJECT["keywords"].as<vector<string>>() : Object::defaultKeywords;
+        vector<string> longdesc = OBJECT["longdesc"] ? OBJECT["longdesc"].as<vector<string>>() : Object::defaultLongDesc;
+        vector<string> wear_flags = OBJECT["wear_flags"] ? OBJECT["wear_flags"].as<vector<string>>() : Object::defaultWearFlags;
 
         string description = boost::algorithm::join(longdesc, " ");
 
-        Object newObject = Object(attributes, cost, extra, objectId, item_type, keywords, description, shortdesc, wear_flags, weight);
-        objects.push_back(newObject);
+        Object newObject = Object(attributes, cost, extra, objectID, item_type, keywords, description, shortdesc, wear_flags, weight);
+        objects.insert(std::pair<std::string, Object> (shortdesc, newObject));
     }
     return objects;
 }
@@ -175,7 +175,7 @@ vector<Resets> GameDataImporter::returnResets(const YAML::Node& RESETS) {
     return resets;
 }
 
-std::vector<Spell> GameDataImporter::getSpells(const YAML::Node& SPELLS) {
+vector<Spell> GameDataImporter::getSpells(const YAML::Node& SPELLS) {
 
     std::vector<Spell> returnSpells;
 
@@ -268,11 +268,11 @@ string getStringData(const YAML::Node node, string keyword) {
 
 
 //The workflow for SHOPS ends here, not sure how to utilize yet
-void GameDataImporter::loadShops(GameModel& gameModel, const YAML::Node& SHOPS){
-
-    for(const auto& SHOP : SHOPS){
-        //no data on shops in mgoose file
-
-    }
-
-}
+//void GameDataImporter::loadShops(GameModel& gameModel, const YAML::Node& SHOPS){
+//
+//    for(const auto& SHOP : SHOPS){
+//        //no data on shops in mgoose file
+//
+//    }
+//
+//}

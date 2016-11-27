@@ -13,6 +13,7 @@ GameModel::GameModel() {
  */
 
 const std::string ACTION_NPC = "npc";
+const std::string ACTION_OBJECT = "object";
 
 bool GameModel::createCharacter(const std::string& characterID,
                                 const std::string& characterName) {
@@ -298,6 +299,32 @@ Character* GameModel::getBodySwappedCharacter(Character* character) const {
 			return (NPC*)&(npcs.at(characterID));
 		}
 		else return character;
+    }
+}
+
+void GameModel::loadObjects(const YAML::Node& OBJECTS){
+    this->objects = GameDataImporter::returnObjects(OBJECTS);
+}
+
+void GameModel::addObjectToAreas(){
+    for ( const auto& reset : resets) {
+        if (reset.getAction() == ACTION_OBJECT){
+
+            //ActionID is ItemID
+            std::string actionID = reset.getActionID();
+
+            //find Objects
+            std::string objectName;
+            for(auto& object : objects){
+                if(actionID == object.second.getID()) {
+                    objectName = object.second.getName();
+                }
+            }
+            std::string roomID = reset.getAreaID();
+
+            //add to game model areas map
+            locations.at(roomID).addObjects(objectName);
+        }
     }
 }
 
