@@ -24,7 +24,6 @@ bool StrColorizer::is_space(char c){
 void StrColorizer::print_color(WINDOW *win, int ypos, int xpos, const std::string &text){
 
     attribute_string res = str_to_colortoken(text);
-
     colortoken_print(win,ypos,xpos,res);
 
 
@@ -102,6 +101,7 @@ void StrColorizer::colortoken_print(WINDOW *win, int ypos, int xpos, const attri
         getyx(win, y, x);
 
     }
+
 
     refresh();
 

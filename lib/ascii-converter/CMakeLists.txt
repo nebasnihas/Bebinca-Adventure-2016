@@ -1,7 +1,7 @@
 
 add_library(ascii-converter
         AsciiConverter.cpp
-        AsciiConverter.hpp
+        ../../include/ascii-converter/AsciiConverter.hpp
         )
 
 set_target_properties(ascii-converter

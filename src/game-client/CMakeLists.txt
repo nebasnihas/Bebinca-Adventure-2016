@@ -34,6 +34,7 @@ target_link_libraries(game-client
         menu
         ${CMAKE_THREAD_LIBS_INIT}
         glog
+        ascii-converter
         )
 
 install(TARGETS game-client

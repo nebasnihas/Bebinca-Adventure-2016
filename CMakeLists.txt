@@ -13,6 +13,7 @@ include_directories(
         ${CMAKE_SOURCE_DIR}/lib/expr-evaluator
         ${CMAKE_SOURCE_DIR}/tests/lib/googlemock/include
         ${CMAKE_SOURCE_DIR}/tests/lib/googletest/include
+        ${CMAKE_SOURCE_DIR}/lib/ascii-converter
 )
 
 link_directories(${LIBRARY_OUTPUT_PATH})

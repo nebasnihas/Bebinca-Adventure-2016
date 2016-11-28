@@ -14,6 +14,7 @@
 #include <vector>
 #include <memory>
 #include <ncurses.h>
+#include "ascii-converter/AsciiConverter.hpp"
 
 //Standard ncurses colors
 enum class color_type: char {

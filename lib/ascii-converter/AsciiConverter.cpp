@@ -1,6 +1,7 @@
 //AsciiConverter
 
-#include "AsciiConverter.hpp"
+#include "ascii-converter/AsciiConverter.hpp"
+
 
 #define MAX_SHADES 10
 #define MAX_WORD_COUNT 10
@@ -132,7 +133,7 @@ string AsciiConverter::convertObject0(const string style, const string &objname)
     ifstream bmpfile;
     BMPFileHeader header;
     
-    const string filepath = "assets/bmpimgs/" + objname + ".bmp";
+    const string filepath = "data/assets/bmpimgs/" + move(objname) + ".bmp";
     
     // Open the image file
     bmpfile.open (filepath, ios::in | ios::binary);
@@ -192,7 +193,7 @@ string AsciiConverter::convertObject0(const string style, const string &objname)
     }
     
     return ret_string;
-    
+
 }
 
 
@@ -798,6 +799,12 @@ string AsciiConverter::animation_helper(const string &objname, char anim_frame[M
     
 }
 
+void AsciiConverter::set_anim_splitter(int i, int &splitter) {
+
+    if(i%11 ==0)
+        splitter = 1;
+
+}
 
 vector<string> AsciiConverter::animateObject(const string &objname){
     
