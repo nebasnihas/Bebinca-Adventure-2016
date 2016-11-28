@@ -416,7 +416,7 @@ void GameModel::update() {
         runNPCScripts();
     }
 
-    if (gameTicks % GameModel::GAME_TICKS_PER_SAVE_TICK) {
+    if (gameTicks % GameModel::GAME_TICKS_PER_SAVE_TICK == 0) {
         saveAllCharacters();
     }
 
@@ -603,4 +603,23 @@ void GameModel::saveAllCharacters() {
     for (const auto& pair : characters) {
         YmlSerializer::save_to_file(pair.second);
     }
+}
+
+const Character& GameModel::getCharacterBattleTarget(const std::string& characterID) {
+    auto id = getCharacterByID(characterID)->getID();
+    auto instance = combatManager.getCombatInstanceByCharacterID(id);
+    auto playerInstance = instance->getCharacterInstance(id);
+    auto targetInstance = playerInstance->getTarget();
+    return targetInstance.getCharacterRef();
+}
+
+std::vector<Spell> GameModel::getAllSpells() {
+    std::vector<Spell> spellList;
+    spellList.reserve(spells.size());
+
+    for (const auto& pair : spells) {
+        spellList.emplace_back(pair.second);
+    }
+
+    return spellList;
 }

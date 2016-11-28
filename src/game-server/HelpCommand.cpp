@@ -1,4 +1,5 @@
 #include <boost/algorithm/string/join.hpp>
+#include <GameStrings.hpp>
 #include "HelpCommand.hpp"
 #include "Controller.hpp"
 
@@ -53,9 +54,9 @@ std::unique_ptr<MessageBuilder> HelpCommand::allCommandsHelp(const networking::C
 
 std::string HelpCommand::getCommandBindingsHelpMessage(const std::string& command) {
     std::string message;
-    message += "Command:[";
-    message += boost::algorithm::join(controller.inputToCommandMap.at(command).getInputBindings(), ",");
-    message += "]";
+    message += "Command:[" + ColorTag::CYAN;
+    message += boost::algorithm::join(controller.inputToCommandMap.at(command).getInputBindings(), "&w,&g");
+    message += ColorTag::WHITE + "]";
 
     return message;
 }

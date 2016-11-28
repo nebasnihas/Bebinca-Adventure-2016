@@ -20,6 +20,7 @@ void CommandInfoRequestHandler::handleDataRequest(protocols::CommandName name,
             break;
         case protocols::CommandName::CAST:
             commandId = COMMAND_CAST;
+            break;
         default:
             LOG(ERROR) << "Case not handled";
     }

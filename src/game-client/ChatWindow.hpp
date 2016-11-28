@@ -44,6 +44,7 @@ private:
     void clearEntryText();
     void onSoftKeyPressed(SoftKey key);
     void printColorText(const std::string& text);
+    void reprintText();
 
     WINDOW* displayWindow;
     WINDOW* entryWindow;

@@ -29,7 +29,7 @@ public:
     // TODO: Make this configurable
     static const int GAME_TICKS_PER_COMBAT_TICK = 30;
 	static const int GAME_TICKS_PER_NPC_TICK = 30;
-    static const int GAME_TICKS_PER_SAVE_TICK = 300;
+    static const int GAME_TICKS_PER_SAVE_TICK = 50;
 
 	GameModel();
 
@@ -93,24 +93,25 @@ public:
 
 	std::string getEntityDescription(const std::string& areaID, const std::string& entityID) const;
 
-    void loadActions(const std::unordered_map<std::string, std::shared_ptr<CombatAction>>& actionLookup);
+	void loadActions(const std::unordered_map<std::string, std::shared_ptr<CombatAction>>& actionLookup);
 	void addSpell(Spell spell);
+	std::vector<Spell> getAllSpells();
 	void setResets(const std::vector<Resets> resets);
 
-    bool engageCharacterInCombat(const std::string& characterID, const std::string& target);
-    bool setCombatAction(const std::string& characterID, const std::string& actionName);
-    bool setCombatTarget(const std::string& characterID, const std::string& targetID);
-    std::vector<std::string> getPossibleTargets(const std::string& characterID);
-    std::vector<std::string> getAvailableActions(const std::string& characterID);
+	const Character& getCharacterBattleTarget(const std::string& characterID);
+	bool engageCharacterInCombat(const std::string& characterID, const std::string& target);
+	bool setCombatAction(const std::string& characterID, const std::string& actionName);
+	bool setCombatTarget(const std::string& characterID, const std::string& targetID);
+	std::vector<std::string> getPossibleTargets(const std::string& characterID);
+	std::vector<std::string> getAvailableActions(const std::string& characterID);
 	void listValidSpells(const std::string& characterID);
-    void update();
-	void castSpell(const std::string& sourceID, const std::string& targetID, const std::string& spellID);
+	void update();
 
+	void castSpell(const std::string& sourceID, const std::string& targetID, const std::string& spellID);
 	void pushToOutputBuffer(const std::string& characterID, std::string message, std::string sender, std::string color);
 	void sendGlobalMessage(const std::string& senderID, std::string message);
 	void sendLocalMessageFromCharacter(const std::string &senderID, std::string message);
 	void sendPrivateMessage(const std::string& senderID, std::string message, const std::string& target);
-
 private:
     void manageDeadCharacters();
     bool characterCanMove(const Character& character);
@@ -136,11 +137,9 @@ private:
 
 	std::string defaultLocation;
 	std::unordered_map<std::string, Spell> spells;
-
     std::unordered_map<std::string, NPC> npcTemplates;
 
     unsigned long long gameTicks = 0;
-
 }; //GameModel class
 
 

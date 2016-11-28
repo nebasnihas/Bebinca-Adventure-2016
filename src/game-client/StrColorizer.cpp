@@ -24,7 +24,6 @@ bool StrColorizer::is_space(char c){
 void StrColorizer::print_color(WINDOW *win, int ypos, int xpos, const std::string &text){
 
     attribute_string res = str_to_colortoken(text);
-
     colortoken_print(win,ypos,xpos,res);
 
 
@@ -102,6 +101,7 @@ void StrColorizer::colortoken_print(WINDOW *win, int ypos, int xpos, const attri
         getyx(win, y, x);
 
     }
+
 
     refresh();
 
@@ -261,10 +261,20 @@ int StrColorizer::process_tagged_str(int i, color_type& c_type, const std::strin
 int StrColorizer::str_to_rainbow_token(const std::string &text, int i, attribute_string &att_str){
     
     int color_code = 0;
-    
+
+    //process until next rainbow tag
     for(int color_loop = color_looper::RED; ; color_loop++){
-        
-        if(is_tag(text[i]) || i >= text.size()) break;
+
+        if (i >= text.size()) {
+            break;
+        }
+
+        if (is_tag(text[i])) {
+            i++;
+            if (get_color(text[i++]) == color_type::RAINBOW) {
+                break;
+            }
+        }
         
         att_str.push_back(color_token {text[i], get_looper_color(color_code)});
         i++;
@@ -276,6 +286,6 @@ int StrColorizer::str_to_rainbow_token(const std::string &text, int i, attribute
         
     }
     
-    return i--;
+    return --i;
     
 }

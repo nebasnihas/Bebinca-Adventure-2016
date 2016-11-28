@@ -21,6 +21,10 @@
 #include "AuthenticationWindow.hpp"
 #include "ChatWindow.hpp"
 #include "WorldBuildingWindow.hpp"
+#include "CombatWindow.hpp"
+#include "ArtWindow.hpp"
+#include <chrono>
+#include <thread>
 
 using namespace networking;
 
@@ -28,7 +32,9 @@ static const std::string MAIN_MENU_WINDOW_ID = "auth";
 static const std::string LOGIN_WINDOW_ID = "login";
 static const std::string REGISTER_WINDOW_ID = "register";
 static const std::string CHAT_WINDOW_ID = "chat";
+static const std::string COMBAT_WINDOW_ID = "combat";
 static const std::string WORLDBUILDING_WINDOW_ID = "build";
+static const std::string ART_WINDOW_ID = "art";
 bool running = true;
 
 std::unique_ptr<Client> networkingClient;
@@ -38,8 +44,11 @@ std::unique_ptr<gui::AuthenticationWindow> loginWindow;
 std::unique_ptr<gui::AuthenticationWindow> registerWindow;
 std::unique_ptr<gui::ChatWindow> chatWindow;
 std::unique_ptr<gui::WorldBuildingWindow> worldBuildingWindow;
+std::unique_ptr<gui::CombatWindow> combatWindow;
+std::unique_ptr<gui::ArtWindow> artWindow;
 
 std::string editCommand;
+std::string castCommand;
 
 void setupAuthWindow() {
     authWindow = std::make_unique<gui::MainMenuWindow>();
@@ -101,16 +110,6 @@ void setupChatWindow() {
         networkingClient->send(protocols::serializeRequestMessage(request));
     });
 
-    chatWindow->setOnSoftKeyPressed([](auto key) {
-        switch(key) {
-            case gui::SoftKey::F1: {
-                break;
-            }
-            default:
-                break;
-        }
-    });
-
     gameClient->addWindow(CHAT_WINDOW_ID, chatWindow.get());
 }
 
@@ -125,8 +124,6 @@ void setupWorldBuildingWindow() {
         auto args = arguments.str();
         auto cmd =  protocols::createPlayerCommandRequestMessage(protocols::PlayerCommand{command : editCommand, arguments : args});
         networkingClient->send(protocols::serializeRequestMessage(cmd));
-
-        worldBuildingWindow->showMessage("Saving changes..");
     });
 
     worldBuildingWindow->setOnQuit([]() {
@@ -146,13 +143,38 @@ void setupWorldBuildingWindow() {
     gameClient->addWindow(WORLDBUILDING_WINDOW_ID, worldBuildingWindow.get());
 }
 
+void setupCombatWindow() {
+    combatWindow = std::make_unique<gui::CombatWindow>();
+
+    combatWindow->setOnSelection([](const auto& spellName) {
+        auto castArgs = spellName + " " + combatWindow->getTargetName();
+        auto cmd =  protocols::createPlayerCommandRequestMessage(
+                protocols::PlayerCommand{
+                        command : castCommand,
+                        arguments : castArgs
+                });
+        networkingClient->send(protocols::serializeRequestMessage(cmd));
+    });
+
+    gameClient->addWindow(COMBAT_WINDOW_ID, combatWindow.get());
+}
+
+void setupArtWindow() {
+    artWindow = std::make_unique<gui::ArtWindow>();
+    gameClient->addWindow(ART_WINDOW_ID, artWindow.get());
+}
+
 void handleAuthResponse(const protocols::ResponseMessage& response) {
     auto authResponse = protocols::readAuthenticationResponseMessage(response);
     if(authResponse.success) {
-        gameClient->switchToWindow(CHAT_WINDOW_ID);
-        chatWindow->showText("Welcome!");
         auto cmd = protocols::createCommandInfoRequest(protocols::CommandName::EDIT);
         networkingClient->send(protocols::serializeRequestMessage(cmd));
+
+        auto cast = protocols::createCommandInfoRequest(protocols::CommandName::CAST);
+        networkingClient->send(protocols::serializeRequestMessage(cast));
+
+        gameClient->switchToWindow(CHAT_WINDOW_ID);
+        chatWindow->showText("Welcome!");
         return;
     }
 
@@ -173,6 +195,10 @@ void handleDisplayResponse(const protocols::ResponseMessage& responseMessage) {
     }
     displayText += displayMessage.message;
 
+    if (gameClient->getCurrentWindowName() == COMBAT_WINDOW_ID) {
+        combatWindow->appendText(displayText);
+    }
+
     chatWindow->showText(displayText);
 }
 
@@ -181,6 +207,9 @@ void handleCommandResponse(const protocols::ResponseMessage& responseMessage) {
     switch(response.name) {
         case protocols::CommandName::EDIT:
             editCommand = response.inputBinding;
+            break;
+        case protocols::CommandName::CAST:
+            castCommand = response.inputBinding;
             break;
         default:
             break;
@@ -208,6 +237,33 @@ void handleEditResponse(const protocols::ResponseMessage& responseMessage) {
             chatWindow->showText(editResponse.message);
             break;
         }
+    }
+}
+
+void handleCombatInfoResponse(const protocols::ResponseMessage& responseMessage) {
+    auto combatInfo = protocols::readCombatInfoResponse(responseMessage);
+    switch (combatInfo.status) {
+        case protocols::CombatStatus::START:
+            //not used right now..
+            combatWindow->beginCombat(combatInfo);
+            gameClient->switchToWindow(COMBAT_WINDOW_ID);
+            break;
+        case protocols::CombatStatus::UPDATE:
+            combatWindow->updateCombat(combatInfo);
+            gameClient->switchToWindow(COMBAT_WINDOW_ID);
+            break;
+        case protocols::CombatStatus::END:
+            if (combatInfo.player->health <= 0) {
+                gameClient->switchToWindow(ART_WINDOW_ID);
+                artWindow->showAnimation("defeat");
+            } else {
+                gameClient->switchToWindow(ART_WINDOW_ID);
+                artWindow->showAnimation("victory");
+            }
+
+            combatWindow->endCombat();
+            gameClient->switchToWindow(CHAT_WINDOW_ID);
+            break;
     }
 }
 
@@ -251,6 +307,9 @@ void updateFromServer() {
             case protocols::ResponseHeader::EDIT_INFO_RESPONSE:
                 handleEditResponse(response);
                 break;
+            case protocols::ResponseHeader::COMBAT_INFO_RESPONSE:
+                handleCombatInfoResponse(response);
+                break;
             default:
                 break;
         }
@@ -273,8 +332,15 @@ int main(int argc, char *argv[]) {
     setupRegisterWindow();
     setupChatWindow();
     setupWorldBuildingWindow();
+    setupCombatWindow();
+    setupArtWindow();
 
     networkingClient = std::make_unique<Client>(argv[1], argv[2]);
+
+    gameClient->switchToWindow(ART_WINDOW_ID);
+    artWindow->playSplash("splash");
+    gameClient->switchToWindow(MAIN_MENU_WINDOW_ID);
+
     while(running) {
         gameClient->update();
         updateFromServer();
