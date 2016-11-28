@@ -1,11 +1,12 @@
 //AsciiConverter
 
-#include "AsciiConverter.hpp"
+#include "ascii-converter/AsciiConverter.hpp"
+
 
 #define MAX_SHADES 10
 #define MAX_WORD_COUNT 10
 #define DEBUG 1
-#define MAX_SEQ 48
+#define MAX_SEQ 65
 
 typedef unsigned short uint16;
 typedef unsigned int uint32;
@@ -39,7 +40,7 @@ string AsciiConverter::get_loc(const string &font_type){
     string type = font_type;
     to_lower(type);
     
-    const string find_loc = "./assets/fontsets/" + type + "/";
+    const string find_loc = "data//assets/fontsets/" + type + "/";
     return find_loc;
 }
 
@@ -132,7 +133,7 @@ string AsciiConverter::convertObject0(const string style, const string &objname)
     ifstream bmpfile;
     BMPFileHeader header;
     
-    const string filepath = "assets/bmpimgs/" + move(objname) + ".bmp";
+    const string filepath = "data/assets/bmpimgs/" + move(objname) + ".bmp";
     
     // Open the image file
     bmpfile.open (filepath, ios::in | ios::binary);
@@ -192,7 +193,7 @@ string AsciiConverter::convertObject0(const string style, const string &objname)
     }
     
     return ret_string;
-    
+
 }
 
 
@@ -798,11 +799,11 @@ string AsciiConverter::animation_helper(const string &objname, char anim_frame[M
     
 }
 
-void AsciiConverter::set_anim_splitter(int i, int &splitter){
-    
-    if(i%11 == 0)
+void AsciiConverter::set_anim_splitter(int i, int &splitter) {
+
+    if(i%11 ==0)
         splitter = 1;
-    
+
 }
 
 vector<string> AsciiConverter::animateObject(const string &objname){
@@ -810,7 +811,7 @@ vector<string> AsciiConverter::animateObject(const string &objname){
     vector<string> string_animation_frames;
     vector<animation_type> char_types;
     const int frames = 11;
-    const string filepath = "assets/bmpimgs/" + move(objname) + ".bmp";
+    const string filepath = "data/assets/bmpimgs/" + move(objname) + ".bmp";
     
     //vector<animation_frame> anim_frames[framespersec];
     
@@ -853,7 +854,7 @@ void AsciiConverter::set_sequence_filepath(vector<string> &filepath_seq, const s
     
     for(int i=0; i< MAX_SEQ; i++){
         string sq = to_string(i);
-        string push = "assets/bmpimgs/sequences/" + move(objname) +
+        string push = "data/assets/bmpimgs/sequences/" + move(objname) +
         "/" + sq + ".bmp";
         filepath_seq.push_back(push);
     }
