@@ -36,6 +36,7 @@ const std::string USERNAME_TOO_LONG = "username-too-long";
 const std::string USERNAME_INVALD = "username-invalid";
 
 const std::string PLAYER_KICKED = "player-kicked";
+const std::string PLAYER_RESPAWNED = "player-respawned";
 
 const std::string PLAYER_ENTER = "game-player-enter-area";
 const std::string PLAYER_LEAVE = "game-player-leave-area";

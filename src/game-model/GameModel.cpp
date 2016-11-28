@@ -433,6 +433,8 @@ void GameModel::manageDeadCharacters() {
             character.setCurrentHealth(character.getMaxHealth());
             character.setCurrentMana(character.getMaxMana());
             character.getInventory().removeAllItems();
+			character.pushToBuffer(GameStrings::get(GameStringKeys::PLAYER_RESPAWNED),
+													GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::GREEN);
         }
     }
 }
