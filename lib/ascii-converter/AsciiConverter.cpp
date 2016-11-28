@@ -40,7 +40,7 @@ string AsciiConverter::get_loc(const string &font_type){
     string type = font_type;
     to_lower(type);
     
-    const string find_loc = "./assets/fontsets/" + type + "/";
+    const string find_loc = "data//assets/fontsets/" + type + "/";
     return find_loc;
 }
 
@@ -811,7 +811,7 @@ vector<string> AsciiConverter::animateObject(const string &objname){
     vector<string> string_animation_frames;
     vector<animation_type> char_types;
     const int frames = 11;
-    const string filepath = "assets/bmpimgs/" + move(objname) + ".bmp";
+    const string filepath = "data/assets/bmpimgs/" + move(objname) + ".bmp";
     
     //vector<animation_frame> anim_frames[framespersec];
     
@@ -854,7 +854,7 @@ void AsciiConverter::set_sequence_filepath(vector<string> &filepath_seq, const s
     
     for(int i=0; i< MAX_SEQ; i++){
         string sq = to_string(i);
-        string push = "assets/bmpimgs/sequences/" + move(objname) +
+        string push = "data/assets/bmpimgs/sequences/" + move(objname) +
         "/" + sq + ".bmp";
         filepath_seq.push_back(push);
     }
