@@ -4,11 +4,13 @@
 #include "game/GameModel.hpp"
 #include "Controller.hpp"
 #include "PigLatinTranslator.hpp"
+#include <random>
 
 namespace {
-std::default_random_engine gen;
+std::random_device rd;
+std::mt19937 mt{rd()};
 std::uniform_int_distribution<int> distribution{1, 50};
-auto rainbow = std::bind(distribution, gen);
+auto rainbow = std::bind(distribution, mt);
 }
 
 std::vector<MessageInfo> PigLatinDecorator::buildMessages() const {

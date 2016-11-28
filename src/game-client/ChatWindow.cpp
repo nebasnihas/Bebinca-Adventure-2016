@@ -198,7 +198,7 @@ void ChatWindow::reprintText() {
         lines = (int)lineHistory.size(); //Make sure buffer size is less than max int
     }
 
-    for (int i = 0; i < lines; i++) {
+    for (int i = lineHistory.size() - lines; i < lineHistory.size(); i++) {
         printColorText(lineHistory[i]);
     }
 }

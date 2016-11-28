@@ -19,6 +19,10 @@ Application::Application() {
 void Application::switchToWindow(const std::string& name) {
     CHECK(windows.count(name) == 1) << "No window with name: " << name;
 
+    if (name == currentWindowName) {
+        return;
+    }
+
     clear();
     refresh();
 

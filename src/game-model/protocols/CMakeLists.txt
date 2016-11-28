@@ -4,7 +4,7 @@ add_library(protocols
         DisplayMessage.cpp
         PlayerCommand.cpp
         Authentication.cpp
-        CommandInfo.cpp Editing.cpp)
+        CommandInfo.cpp Editing.cpp CombatInfo.cpp)
 
 target_link_libraries(protocols
         yaml-cpp

@@ -49,7 +49,7 @@ strings:
  combat-result-loss: 'You were &rkilled&w and lost the battle'
 
  spell-list-header: 'List of Spells: '
- spell-usage-invalid: 'Invalid usage of cast. Type \"help\" cast'
+ spell-invalid-usage: 'Invalid usage of cast. Type \"help\" cast'
  spell-insufficient-mana: 'Not enough mana to cast &c$a&w'
  spell-unknown: 'You do not know the spell ''&c$a&w'''
  spell-offense-self: 'You cast &c$a&w on yourself for &y$d&w damage'

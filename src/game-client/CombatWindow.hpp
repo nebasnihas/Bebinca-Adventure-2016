@@ -9,6 +9,7 @@
 #include <functional>
 #include "Window.hpp"
 #include <boost/algorithm/string.hpp>
+#include <game/protocols/CombatInfo.hpp>
 #include "CharacterAsciis.hpp"
 
 namespace gui {
@@ -30,14 +31,21 @@ public:
     virtual void redraw() override;
     virtual void onEnter() override;
 
-    void setOnSelection(std::function<void(SpellMenuChoice)> callback);
+    virtual void onExit() override;
+
+    void setOnSelection(std::function<void(std::string& spellName)> callback);
+
+    void appendText(const std::string& text);
+    void beginCombat(const protocols::CombatInfo& combatInfo);
+    void updateCombat(const protocols::CombatInfo& info);
+    void endCombat();
+    std::string getTargetName();
 private:
     void createMenu();
     void removeMenu();
     void recreate();
-//    void refreshMenuSubWindow(std::vector<std::string> menuItems, const std::string &label);
     void refreshMenuSubWindow(gui::SpellMenuChoice menuChoice);
-    void appendText(const std::string& text);
+    void clearWindows();
 
     WINDOW* combatWindow;
     WINDOW* character1Window;
@@ -52,7 +60,10 @@ private:
     std::vector<ITEM*> menuItems;
     MENU* menu;
     Size size;
-    std::function<void(SpellMenuChoice)> callback;
+    std::function<void(std::string& spellName)> callback;
+
+    protocols::CombatInfo combatInfo;
+    bool isInCombat = false;
 };
 
 }

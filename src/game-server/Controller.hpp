@@ -15,6 +15,7 @@
 #include "AccountInfo.hpp"
 #include "HelpCommand.hpp"
 #include "CommandInfoRequestHandler.hpp"
+#include "game/Spell.hpp"
 
 class Command;
 class ConnectionManager;
@@ -63,12 +64,16 @@ private:
 
     void sendOutput(const MessageBuilder& messageBuilder) const;
     const AccountInfo& getAccountInfo(const networking::Connection& client) const;
+    void onCharacterDead(const std::string& playerID);
+    std::vector<Spell> spells;
+    std::unordered_set<std::string> playersInCombat;
 
     //help command
     friend class HelpCommand;
     std::unique_ptr<HelpCommand> helpCommand;
 
     friend class PigLatinDecorator;
+    friend class CombatDecorator;
 };
 
 

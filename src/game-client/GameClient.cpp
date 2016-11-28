@@ -118,8 +118,6 @@ void setupWorldBuildingWindow() {
         auto args = arguments.str();
         auto cmd =  protocols::createPlayerCommandRequestMessage(protocols::PlayerCommand{command : editCommand, arguments : args});
         networkingClient->send(protocols::serializeRequestMessage(cmd));
-
-        worldBuildingWindow->showMessage("Saving changes..");
     });
 
     worldBuildingWindow->setOnQuit([]() {
@@ -141,13 +139,16 @@ void setupWorldBuildingWindow() {
 
 void setupCombatWindow() {
     combatWindow = std::make_unique<gui::CombatWindow>();
-//    combatWindow->setOnTODO([](){
-//        gameClient->switchToWindow(CHAT_WINDOW_ID);
-//    });
-//    combatWindow->setOnTODO2([](auto inputText){
-//        auto request = protocols:: ??? ;
-//        networkingClient->send(protocols::serializeRequestMessage(request));
-//    });
+
+    combatWindow->setOnSelection([](const auto& spellName) {
+        auto castArgs = spellName + " " + combatWindow->getTargetName();
+        auto cmd =  protocols::createPlayerCommandRequestMessage(
+                protocols::PlayerCommand{
+                        command : "cast",
+                        arguments : castArgs
+                });
+        networkingClient->send(protocols::serializeRequestMessage(cmd));
+    });
 
     gameClient->addWindow(COMBAT_WINDOW_ID, combatWindow.get());
 }
@@ -178,6 +179,10 @@ void handleDisplayResponse(const protocols::ResponseMessage& responseMessage) {
         displayText += "[" + displayMessage.sender.get() + "] - ";
     }
     displayText += displayMessage.message;
+
+    if (gameClient->getCurrentWindowName() == COMBAT_WINDOW_ID) {
+        combatWindow->appendText(displayText);
+    }
 
     chatWindow->showText(displayText);
 }
@@ -214,6 +219,31 @@ void handleEditResponse(const protocols::ResponseMessage& responseMessage) {
             chatWindow->showText(editResponse.message);
             break;
         }
+    }
+}
+
+void handleCombatInfoResponse(const protocols::ResponseMessage& responseMessage) {
+    auto combatInfo = protocols::readCombatInfoResponse(responseMessage);
+    switch (combatInfo.status) {
+        case protocols::CombatStatus::START:
+            //not used right now..
+            combatWindow->beginCombat(combatInfo);
+            gameClient->switchToWindow(COMBAT_WINDOW_ID);
+            break;
+        case protocols::CombatStatus::UPDATE:
+            combatWindow->updateCombat(combatInfo);
+            gameClient->switchToWindow(COMBAT_WINDOW_ID);
+            break;
+        case protocols::CombatStatus::END:
+            if (combatInfo.player->health <= 0) {
+                combatWindow->appendText("You lost");
+            } else {
+                combatWindow->appendText("You won");
+            }
+
+            combatWindow->endCombat();
+            gameClient->switchToWindow(CHAT_WINDOW_ID);
+            break;
     }
 }
 
@@ -256,6 +286,9 @@ void updateFromServer() {
                 break;
             case protocols::ResponseHeader::EDIT_INFO_RESPONSE:
                 handleEditResponse(response);
+                break;
+            case protocols::ResponseHeader::COMBAT_INFO_RESPONSE:
+                handleCombatInfoResponse(response);
                 break;
             default:
                 break;
