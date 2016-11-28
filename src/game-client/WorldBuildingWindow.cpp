@@ -318,6 +318,9 @@ void WorldBuildingWindow::handleInputForForm(int val) {
             form_driver(editForm, REQ_NEXT_FIELD);
             form_driver(editForm, REQ_END_FIELD);
             break;
+        case KEY_DC:
+            set_field_buffer(editFields[1], 0, "");
+            break;
         default:
             form_driver(editForm, val);
             break;
