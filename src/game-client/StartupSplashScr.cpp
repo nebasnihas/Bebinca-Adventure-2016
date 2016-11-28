@@ -20,11 +20,21 @@ void StartupSplashScr::animateSplash() {
     int width = 0;
     int height = 0;
 
+    std::vector<std::string> animatedsplash = AsciiConverter::animateSequence("splash");
+
     start_color();
     init_pair(1,COLOR_WHITE, COLOR_BLACK);
     wattron(win,COLOR_PAIR(1));
-    const char *cr = AsciiConverter::convertObject0("def","source").c_str();
-    print_middle(win, 0,0,80,0, cr);
+
+    for (string s: animatedsplash){
+
+        const char *cr = s.c_str();
+        print_middle(win,0,0,80,0,cr);
+        this_thread::sleep_for(chrono::milliseconds(120));
+        wrefresh(win);
+
+    }
+
     wattroff(win,COLOR_PAIR(1));
     wgetch(win);
     this_thread::sleep_for(chrono::milliseconds(500));
@@ -37,7 +47,7 @@ void StartupSplashScr::print_middle(WINDOW *win, int starty, int startx, int wid
     int length,y,x;
     float calc;
 
-    getyx(win, y,x);
+   // getyx(win, y,x);
     std::string ss(str);
 
     length = ss.length();
