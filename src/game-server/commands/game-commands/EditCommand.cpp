@@ -108,6 +108,8 @@ std::unique_ptr<MessageBuilder> EditCommand::editArea(const gsl::span<std::strin
         area = gameModel.getAreaByID(arguments[1]);
         if (area == nullptr) {
             auto newArea = Area{arguments[1]};
+            newArea.setTitle("Area" + arguments[1]);
+            newArea.setDescription("Description");
             area = &newArea;
         }
     }
@@ -155,6 +157,9 @@ std::unique_ptr<MessageBuilder> EditCommand::saveChanges(const gsl::span<std::st
         return submitSuccess(GameStrings::get(GameStringKeys::EDIT_SAVED), player.clientID);
     } catch (std::exception& e) {
         LOG(INFO) << "Error when user submitted area: " << e.what();
+        YAML::Emitter em;
+        em << arguments[1];
+        LOG(INFO) << em.c_str();
         return submitError(e.what(), player.clientID);
     }
 }

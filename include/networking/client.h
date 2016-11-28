@@ -80,7 +80,7 @@ private:
 
     void readMessage();
 
-    static constexpr std::size_t BUFFER_SIZE = 4096;
+    static constexpr std::size_t BUFFER_SIZE = 9000;
 
     bool isClosed;
     boost::asio::io_service ioService;
