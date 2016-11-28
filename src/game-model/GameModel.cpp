@@ -427,7 +427,6 @@ void GameModel::manageDeadCharacters() {
     for (auto& pair : characters) {
         auto& character = pair.second;
         if (character.getState() == CharacterState::DEAD) {
-            // TODO: Add NPC Clause
             character.setAreaID(getDefaultLocationID());
             character.setState(CharacterState::IDLE);
             character.setCurrentHealth(character.getMaxHealth());
@@ -435,6 +434,14 @@ void GameModel::manageDeadCharacters() {
             character.getInventory().removeAllItems();
 			character.pushToBuffer(GameStrings::get(GameStringKeys::PLAYER_RESPAWNED),
 													GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::GREEN);
+        }
+    }
+
+    for (auto it = npcs.begin(), ite = npcs.end(); it != ite;) {
+        if (it->second.getState() == CharacterState::DEAD) {
+            it = npcs.erase(it);
+        } else {
+            ++it;
         }
     }
 }

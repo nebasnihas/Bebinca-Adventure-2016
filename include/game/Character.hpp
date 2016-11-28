@@ -93,7 +93,7 @@ public:
     void setCurrentHealth(int currentHealth);
     void setMaxMana(int maxMana);
     void setCurrentMana(int currentMana);
-    void increaseLevel();
+    void levelUp();
     void increaseExp(int expToAdd);
 
 	void pushToBuffer(const std::string message, const std::string sender, std::string color);

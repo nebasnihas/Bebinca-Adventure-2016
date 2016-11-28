@@ -148,8 +148,10 @@ void Character::setInventory(const std::string& objectID) {
     inventoryNew.addItem(objectID);
 }
 
-void Character::increaseLevel() {
+void Character::levelUp() {
     this->level++;
+    this->maxHealth += 10;
+    this->maxMana += 10;
 }
 
 void Character::increaseExp(int expToAdd) {

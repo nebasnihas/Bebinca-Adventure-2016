@@ -63,7 +63,7 @@ void CombatInstance::battleCleanup() {
         if (cInstance.isAlive()) {
             // Character is alive, distribute exp and continue
             // TODO: Add actual exp tracking
-            character.increaseLevel();
+            character.levelUp();
             character.setState(CharacterState::IDLE);
 			character.pushToBuffer(GameStrings::get(GameStringKeys::COMBAT_VICTORY), GameStringKeys::MESSAGE_SENDER_BATTLE, ColorTag::WHITE);
         } else {
