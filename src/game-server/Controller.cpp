@@ -121,9 +121,9 @@ void Controller::update() {
 		auto targetChar = gameModel.getCharacterByID(player);
 		auto outputBuffer = targetChar->getOutputBuffer();
 		for (auto& message: *outputBuffer ) {
-			auto displayMessage = DisplayMessageBuilder{message.text}.
+			auto displayMessage = DisplayMessageBuilder{message.color + message.text + ColorTag::WHITE}.
 					addClient(client).
-					setSender(message.color + message.senderID + ColorTag::WHITE);
+					setSender(message.senderID);
 			sendOutput(displayMessage);
 		}
 		outputBuffer->clear();

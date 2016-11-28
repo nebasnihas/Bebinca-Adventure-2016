@@ -10,10 +10,7 @@ std::unique_ptr<MessageBuilder> LookCommand::execute(const gsl::span<std::string
 	std::string description;
 
 	if (arguments.empty()) {
-		description = "\n-- " + ColorTag::GREEN
-					  + gameModel.getAreaByID(areaID)->getTitle()
-					  + ColorTag::WHITE + "--\n"
-					  + gameModel.getAreaDescription(areaID);
+		description = "\n-- &g" + gameModel.getAreaByID(areaID)->getTitle() + "&w --\n" + gameModel.getAreaDescription(areaID);
 		gameModel.getCharacterByID(player.playerID)->pushToBuffer(description, GameStringKeys::MESSAGE_SENDER_SERVER,
 																  ColorTag::WHITE);
 		return DisplayMessageBuilder{description};

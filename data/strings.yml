@@ -29,6 +29,7 @@ strings:
  username-invalid: "You cannot use that username"
 
  player-kicked: "has been kicked out"
+ player-respawned: 'You have respawned.'
 
  game-player-enter-area: '$n arrives from $a.'
  game-player-leave-area: '$n leaves to $a.'
