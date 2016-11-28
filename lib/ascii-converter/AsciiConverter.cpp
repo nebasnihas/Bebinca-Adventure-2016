@@ -5,7 +5,7 @@
 #define MAX_SHADES 10
 #define MAX_WORD_COUNT 10
 #define DEBUG 1
-#define MAX_SEQ 48
+#define MAX_SEQ 65
 
 typedef unsigned short uint16;
 typedef unsigned int uint32;
