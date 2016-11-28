@@ -17,8 +17,6 @@ void StartupSplashScr::animateSplash() {
     win = newwin(wind.ws_row,wind.ws_col,0,beg_x);
 
     //initscr();
-    int width = 0;
-    int height = 0;
 
     std::vector<std::string> animatedsplash = AsciiConverter::animateSequence("splash");
 
@@ -29,8 +27,8 @@ void StartupSplashScr::animateSplash() {
     for (string s: animatedsplash){
 
         const char *cr = s.c_str();
-        print_middle(win,0,0,80,0,cr);
-        this_thread::sleep_for(chrono::milliseconds(120));
+        print_middle(win,0,0,80,0,cr); //width height placeholders for now
+        this_thread::sleep_for(chrono::milliseconds(120)); //120 seems to work fine
         wrefresh(win);
 
     }
@@ -44,15 +42,8 @@ void StartupSplashScr::animateSplash() {
 
 void StartupSplashScr::print_middle(WINDOW *win, int starty, int startx, int width, int height, const char* str) {
 
-    int length,y,x;
-    float calc;
+    //Modify function later to best fit printing needs
 
-   // getyx(win, y,x);
-    std::string ss(str);
-
-    length = ss.length();
-    calc = (width-length)/2;
-    x = startx + (int) calc;
     mvwprintw(win,starty,startx,"%s", str);
     //refresh();
 

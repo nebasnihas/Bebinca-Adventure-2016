@@ -24,7 +24,12 @@ private:
     static void print_middle(WINDOW *win, int starty, int startx, int width, int height, const char* str);
 
 public:
+
+    //Uses default "splash" assets
     static void animateSplash();
+
+    //Add if needed
+    //static void animateSplash(std::string& name);
 
 };
 
