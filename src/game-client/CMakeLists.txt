@@ -7,7 +7,7 @@ add_executable(game-client
         AuthenticationWindow.cpp AuthenticationWindow.hpp
         ChatWindow.cpp ChatWindow.hpp
         StrColorizer.cpp StrColorizer.hpp
-        WorldBuildingWindow.cpp WorldBuildingWindow.hpp)
+        WorldBuildingWindow.cpp WorldBuildingWindow.hpp StartupSplashScr.cpp StartupSplashScr.hpp)
 
 set_target_properties(game-client
         PROPERTIES
