@@ -47,4 +47,5 @@ void gui::ArtWindow::playAnimation(const std::vector<std::string>& frames, int f
         wrefresh(frameWindow);
         this_thread::sleep_for(chrono::milliseconds(frameTimeMs)); //120 seems to work fine
     }
+       this_thread::sleep_for(chrono::milliseconds(550));
 }
