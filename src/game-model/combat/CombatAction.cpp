@@ -6,8 +6,9 @@ CombatCast::CombatCast(const Spell &spell) : spell(spell) {}
 
 void CombatAction::dealDamage(Character& character, int amount) {
     auto newHealth = character.getCurrentHealth() - amount;
-    if (newHealth < 0) {
+    if (newHealth <= 0) {
         newHealth = 0;
+		character.setState(CharacterState::DEAD);
     }
     character.setCurrentHealth(newHealth);
 }

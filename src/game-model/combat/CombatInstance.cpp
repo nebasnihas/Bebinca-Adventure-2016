@@ -68,8 +68,8 @@ void CombatInstance::battleCleanup() {
 			character.pushToBuffer(GameStrings::get(GameStringKeys::COMBAT_VICTORY), GameStringKeys::MESSAGE_SENDER_BATTLE, ColorTag::WHITE);
         } else {
             // Character is dead. Set to dead state, GameModel will clean up later.
-            character.setState(CharacterState::DEAD);
-			character.pushToBuffer(GameStrings::get(GameStringKeys::COMBAT_LOSS), GameStringKeys::MESSAGE_SENDER_BATTLE, ColorTag::WHITE);
+            // Bug if multiple characters
+            character.pushToBuffer(GameStrings::get(GameStringKeys::COMBAT_LOSS), GameStringKeys::MESSAGE_SENDER_BATTLE, ColorTag::WHITE);
         }
     }
 }
