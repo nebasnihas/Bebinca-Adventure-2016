@@ -358,8 +358,8 @@ bool GameModel::engageCharacterInCombat(const std::string& characterID, const st
     battleInstance.addCharacterToNewTeam(*c1);
     battleInstance.addCharacterToNewTeam(*c2);
     combatManager.loadCombatInstance(battleInstance);
-
-	auto stringInfo = StringInfo{characterID, target, 0, ""};
+	auto targetName = getCharacterByID(target)->getName();
+	auto stringInfo = StringInfo{characterID, targetName, 0, ""};
 	c1->pushToBuffer(GameStrings::getFormatted(GameStringKeys::COMBAT_ENGAGE, stringInfo), GameStringKeys::MESSAGE_SENDER_BATTLE, ColorTag::WHITE);
 	c2->pushToBuffer(GameStrings::getFormatted(GameStringKeys::COMBAT_ENGAGED, stringInfo), GameStringKeys::MESSAGE_SENDER_BATTLE, ColorTag::WHITE);
 
