@@ -45,17 +45,39 @@ v) Run the game-client executable and specify the same port and IP as the server
 
 ## Walkthrough
 
-You will commence your journey in the center of Midguard...
+You will commence your journey in the center of Midguard... Travel around the world with the regular compass directions by moving North, East, West, or South. You will be meeting many characters along the way including the likes of Samylla and Xouwasi and many more! Battle your friends by casting spells on them and even body swap with other players in order to strategically become the most clever in all of the land! 
 
-(Need more detail here)
+## Supported Commands
+
+**shout - Command:[shout]**
+**whisper - Command:[whisper,/w]**
+Chat to a single nearby player
+**status - Command:[status]**
+List your current stats
+**cast - Command:[cast,/c]**
+Cast spells to friends and enemies
+(Spell list will be shown by typing: /c)
+**exits - Command:[exits]**
+**help - Command:[help,/h]**
+List supported games in-game
+**look - Command:[look]**
+**attack - Command:[attack,/a]**
+**move - Command:[go,move,g]**
+**players - Command:[players]**
+List the players currently in the same area
+**say - Command:[say]**
+
 
 ## Screenshots
 
 Gameplay
 ![Alt text](https://www.sfu.ca/~pmadeya/Title%20screen.png "Title screen")
+
 ![Alt text](https://www.sfu.ca/~pmadeya/authentication.png "Authentication")
+
 ![Alt text](https://www.sfu.ca/~pmadeya/start_gameplay.png "First World")
 
+![Alt text](https://www.sfu.ca/~pmadeya/Screen%20Shot%202016-11-30%20at%2010.46.35%20PM.png "Gameplay")
 
 Combat system
 ![Alt text](https://www.sfu.ca/~pmadeya/combat_ui.png "Project Intro")
@@ -68,7 +90,6 @@ You MUST install the following software on your computer:
 CMake (minimum version 3.5.1)
 libboost-all-dev (Boost libraries)
 libncurses-dev (ncurses library)
-
 
 ## Authors
 
