@@ -49,23 +49,19 @@ You will commence your journey in the center of Midguard... Travel around the wo
 
 ## Supported Commands
 
-**shout - Command:[shout]**
-**whisper - Command:[whisper,/w]**
-Chat to a single nearby player
-**status - Command:[status]**
-List your current stats
-**cast - Command:[cast,/c]**
-Cast spells to friends and enemies
-(Spell list will be shown by typing: /c)
-**exits - Command:[exits]**
-**help - Command:[help,/h]**
-List supported games in-game
-**look - Command:[look]**
-**attack - Command:[attack,/a]**
-**move - Command:[go,move,g]**
-**players - Command:[players]**
-List the players currently in the same area
-**say - Command:[say]**
+```
+shout - Command:[shout]
+whisper - Command:[whisper,/w] - Chat to a single nearby player
+status - Command:[status] - List your current stats
+cast - Command:[cast,/c] - Cast spells to friends and enemies - (Spell list will be shown by typing: /c)
+exits - Command:[exits]
+help - Command:[help,/h] - List supported games in-game
+look - Command:[look]
+attack - Command:[attack,/a]
+move - Command:[go,move,g]
+players - Command:[players] - List the players currently in the same area
+say - Command:[say]
+```
 
 
 ## Screenshots
