@@ -6,47 +6,51 @@ const std::string COMMAND_CONFIGURATION_KEY = "commands";
 const std::string DESC_KEY = "desc";
 const std::string USAGE_KEY = "usage";
 const std::string BINDINGS_KEY = "bindings";
+const std::string ROLE_KEY = "role";
 
-YAML::Node getConfigNodeForCommand(const std::string& commandId, const YAML::Node& rootNode) {
-    const std::string key = "command-" + commandId;
+std::string getDescFromConfigNode(const YAML::Node& node) {
+    const auto& descNode = node[DESC_KEY];
+    CHECK(descNode) << "No description for command";
 
-    const auto configNode = rootNode[key];
-    CHECK(configNode) << "Command configuration doesn't exist for: " << commandId;
-    LOG(INFO) << "Configuring options for command: " << commandId;
-
-    return configNode;
+    LOG(INFO) << "Found description for command";
+    return descNode.as<std::string>();
 }
 
-void addDesc(CommandHandle& cmd, const YAML::Node& node) {
-    const auto descNode = node[DESC_KEY];
-    if (descNode) {
-        LOG(INFO) << "Found description for command: " << cmd.getId();
-        cmd.setDescription(descNode.as<std::string>());
-    } else {
-        LOG(WARNING) << "No description for command: " << cmd.getId();
-    }
+std::string getUsageFromConfigNode(const YAML::Node& node) {
+    const auto& usageNode = node[USAGE_KEY];
+    CHECK(usageNode) << "No usage found for command";
+
+    LOG(INFO) << "Found usage for command";
+    return usageNode.as<std::string>();
 }
 
-void addUsage(CommandHandle& cmd, const YAML::Node& node) {
-    const auto usageNode = node[USAGE_KEY];
-    if (usageNode) {
-        LOG(INFO) << "Found usage for command: " << cmd.getId();
-        cmd.setUsage(usageNode.as<std::string>());
-    } else {
-        LOG(WARNING) << "No usage found for command: " << cmd.getId();
-    }
-}
-
-std::vector<std::string> getInputBindings(const std::string& commandId, const YAML::Node node) {
-    const auto inputBindingsNode = node[BINDINGS_KEY];
-    CHECK(inputBindingsNode) << "No bindings configuration found for command: " << commandId;
+std::vector<std::string> getBindingsFromConfigNode(const YAML::Node node) {
+    const auto& inputBindingsNode = node[BINDINGS_KEY];
+    CHECK(inputBindingsNode) << "No bindings configuration found for command";
 
     auto inputBindings = inputBindingsNode.as<std::vector<std::string>>();
-    CHECK(!inputBindings.empty()) << "No bindings for command: " << commandId;
+    CHECK(!inputBindings.empty()) << "No bindings for command";
 
-    LOG(INFO) << "Found bindings for command:" << commandId;
-
+    LOG(INFO) << "Found bindings for command";
     return inputBindings;
+}
+
+const static std::unordered_map<std::string, PlayerRole> stringToRole = {
+        {"user", PlayerRole::NORMAL},
+        {"admin", PlayerRole::ADMIN},
+        {"worldbuilder", PlayerRole::WORLDBUILDER}
+};
+
+PlayerRole getRoleFromConfigNode(const YAML::Node& node) {
+    const auto& roleNode = node[ROLE_KEY];
+    CHECK(roleNode) << "No role defined for command";
+
+    auto role = roleNode.as<std::string>();
+    auto it = stringToRole.find(role);
+    CHECK(it != stringToRole.end()) << "Not a valid role: " << role;
+
+    LOG(INFO) << "Adding role: " << role << " to command";
+    return it->second;
 }
 }
 
@@ -63,11 +67,12 @@ CommandHandle CommandConfig::createInputBindingsForCommand(const std::string& co
                                                            Command& command) const {
     CommandHandle cmd{commandId, command};
 
-    auto node = getConfigNodeForCommand(commandId, root);
-    addDesc(cmd, node);
-    addUsage(cmd, node);
+    auto node = getConfigNodeForCommand(commandId);
+    cmd.setDescription(getDescFromConfigNode(node));
+    cmd.setUsage(getUsageFromConfigNode(node));
+    cmd.setRole(getRoleFromConfigNode(node));
 
-    auto inputBindings = getInputBindings(commandId, node);
+    auto inputBindings = getBindingsFromConfigNode(node);
     for (const auto& binding : inputBindings) {
         LOG(INFO) << "Adding binding " << binding << " to command: " << commandId;
         cmd.addInputBinding(binding);
@@ -98,4 +103,28 @@ void CommandConfig::addNodeSource(const YAML::Node& node) {
 void CommandConfig::reloadFromSources() {
     root.reset();
     //TODO reload from files and nodes?
+}
+
+std::string CommandConfig::getCommandDescription(const std::string& commandId) const {
+    auto node = getConfigNodeForCommand(commandId);
+    return getDescFromConfigNode(node);
+}
+
+std::string CommandConfig::getCommandUsage(const std::string& commandId) const {
+    auto node = getConfigNodeForCommand(commandId);
+    return getUsageFromConfigNode(node);
+}
+
+std::vector<std::string> CommandConfig::getCommandInputBindings(const std::string& commandId) const {
+    auto node = getConfigNodeForCommand(commandId);
+    return getBindingsFromConfigNode(node);
+}
+
+YAML::Node CommandConfig::getConfigNodeForCommand(const std::string& commandId) const {
+    const std::string key = "command-" + commandId;
+    const auto configNode = root[key];
+    CHECK(configNode) << "Command configuration doesn't exist for: " << commandId;
+
+    LOG(INFO) << "Configuring options for command: " << commandId;
+    return configNode;
 }

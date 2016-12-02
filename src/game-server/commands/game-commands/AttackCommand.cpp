@@ -1,5 +1,6 @@
 #include "AttackCommand.hpp"
 #include <iostream>
+#include <boost/algorithm/string/join.hpp>
 
 AttackCommand::AttackCommand(GameModel &gameModel, Controller &controller)
         : gameModel{gameModel}, controller{controller} {
@@ -10,13 +11,16 @@ AttackCommand::execute(const gsl::span<std::string, -1> arguments, const PlayerI
     if (arguments.empty()) {
         return setCombatAction(player);
     }
-
-    auto targetID = arguments[0];
+	std::string targetID = boost::algorithm::join(arguments, " ");
     auto targetClient = controller.getClientID(targetID);
 
     if (!targetClient) {
-        std::string invalidPlayer = targetID + " " + NOT_FOUND;
-        return buildPlayerMessage(player.clientID, invalidPlayer);
+		auto targetNPC = gameModel.getNPCInArea(targetID, gameModel.getCharacterByID(player.playerID)->getAreaID());
+		if (targetNPC == nullptr) {
+			std::string invalidPlayer = targetID + " " + NOT_FOUND;
+			return buildPlayerMessage(player.clientID, invalidPlayer);
+		}
+        targetID = targetNPC->getID();
     }
 
     if (gameModel.characterIsInCombat(player.playerID)) {

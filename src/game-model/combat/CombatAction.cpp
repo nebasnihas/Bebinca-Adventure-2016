@@ -1,14 +1,14 @@
+#include <boost/regex/v4/match_flags.hpp>
 #include "CombatAction.hpp"
+#include <boost/format.hpp>
 
-CombatCast::CombatCast(const Spell &spell) : spell(spell)
-{
-
-}
+CombatCast::CombatCast(const Spell &spell) : spell(spell) {}
 
 void CombatAction::dealDamage(Character& character, int amount) {
     auto newHealth = character.getCurrentHealth() - amount;
-    if (newHealth < 0) {
+    if (newHealth <= 0) {
         newHealth = 0;
+		character.setState(CharacterState::DEAD);
     }
     character.setCurrentHealth(newHealth);
 }
@@ -33,11 +33,12 @@ void CombatAttack::execute(Character& source, Character& target) {
     // TODO: Move this formula somewhere configurable
     auto damage = 10 * sourceLevel;
     dealDamage(target, damage);
+	auto stringInfo = StringInfo{source.getName(), target.getName(), damage, getID()};
 
-	auto sourceMessage = "You attack " + target.getName() + " and deal " + std::to_string(damage) + " damage";
-	auto targetMessage = "You take " + std::to_string(damage) + " damage" + " from " + source.getName();
-	source.pushToBuffer(sourceMessage);
-	target.pushToBuffer(targetMessage);
+	auto sourceMessage = GameStrings::getFormatted(GameStringKeys::PLAYER_ATTACKS, stringInfo);
+	auto targetMessage = GameStrings::getFormatted(GameStringKeys::PLAYER_ATTACKED, stringInfo);
+	source.pushToBuffer(sourceMessage, GameStringKeys::MESSAGE_SENDER_BATTLE, ColorTag::WHITE);
+	target.pushToBuffer(targetMessage, GameStringKeys::MESSAGE_SENDER_BATTLE, ColorTag::WHITE);
 }
 
 std::string CombatAttack::getID() {
@@ -45,52 +46,79 @@ std::string CombatAttack::getID() {
 }
 
 void CombatCast::execute(Character& source, Character& target) {
-
     auto manaCost = spell.getManaCost();
     auto currentMana = source.getCurrentMana();
-
+	auto power = spell.getPower(source);
+	auto stringInfo = StringInfo{source.getName(), target.getName(), power, spell.getName()};
     if (currentMana < manaCost) {
-		source.pushToBuffer("Not enough mana to cast " + spell.getName());
+		source.pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_NO_MANA, stringInfo), GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
         return;
     } else {
         source.setCurrentMana(currentMana - manaCost);
     }
 
-
-    auto power = spell.getPower(source);
     switch (spell.getType()) {
 		case SpellType::OFFENSE:
-			if (source.getName() == target.getName()) {
-				source.pushToBuffer("You cast " + spell.getName() + " on yourself for damage " + std::to_string(power));
-			}
-			else {
-				source.pushToBuffer("You cast " + spell.getName() + " on " + target.getName() + " for damage " + std::to_string(power));
-				target.pushToBuffer(source.getName() + " casts " + spell.getName() + " on you for damage " + std::to_string(power));
-			}
-            dealDamage(target, power);
+			castOffenseSpell(source, target, power, stringInfo);
             break;
         case SpellType::DEFENSE:
-            // TODO: Resolve and fix this temporary patchwork
-			if (source.getName() == target.getName() || source.getState() == CharacterState::BATTLE) {
-				source.pushToBuffer("You cast " + spell.getName() + " on yourself and heal " + std::to_string(power));
-				healDamage(source, power);
-			}
-			else {
-				source.pushToBuffer("You cast " + spell.getName() + " on " + target.getName() + " and heal " + std::to_string(power));
-				target.pushToBuffer(source.getName() + " casts " + spell.getName() + " on you and heals you for " + std::to_string(power));
-				healDamage(target, power);
-			}
-            break;
-		case SpellType::BODY_SWAP:
-			auto sourceStatus = std::make_shared<BodySwapStatus>(10, target.getID());
-			target.pushToBuffer("You cast " + spell.getName() + " on " + target.getName());
-			source.addStatusEffect(sourceStatus);
+			castDefenseSpell(source, target, power, stringInfo);
+			break;
+		case SpellType::BODY_SWAP: {
+			//TODO: determine duration of body swap based on player level
+			auto sourceStatus = std::make_shared<BodySwapStatus>(20, target.getID());
+			auto targetStatus = std::make_shared<BodySwapStatus>(20, source.getID());
 
-			auto targetStatus = std::make_shared<BodySwapStatus>(10, source.getID());
-			source.pushToBuffer(source.getName() + " casts " + spell.getName() + " on you");
+			source.addStatusEffect(sourceStatus);
 			target.addStatusEffect(targetStatus);
+
+			target.pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_GENERIC_SOURCE, stringInfo),
+								GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
+			source.pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_GENERIC_TARGET, stringInfo),
+								GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
+			break;
+		}
+		case SpellType::PIG_LATIN: {
+			auto targetStatus = std::make_shared<PigLatinSwapStatus>(20);
+
+			target.addStatusEffect(targetStatus);
+
+			target.pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_GENERIC_TARGET, stringInfo),
+								GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
+			source.pushToBuffer(GameStrings::getFormatted(GameStringKeys::SPELL_GENERIC_SOURCE, stringInfo),
+								GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
+			break;
+		}
     }
 }
+
+void CombatCast::castDefenseSpell(Character &source, Character &target, int power, const StringInfo &stringInfo) const {
+	auto senderID = GameStringKeys::MESSAGE_SENDER_SERVER;
+	if (source.getState() == BATTLE) {
+		senderID = GameStringKeys::MESSAGE_SENDER_BATTLE;
+	}
+	if (source.getName() == target.getName() || source.getState() == BATTLE) {
+		source.pushToBuffer(GameStrings::format(spell.getHitvict(), stringInfo), senderID, ColorTag::WHITE);
+		healDamage(source, power);
+	}
+	else {
+		source.pushToBuffer(GameStrings::format(spell.getHitchar(), stringInfo), senderID, ColorTag::WHITE);
+		target.pushToBuffer(GameStrings::format(spell.getHitvict(), stringInfo), senderID, ColorTag::WHITE);
+		healDamage(target, power);
+	}
+}
+
+void CombatCast::castOffenseSpell(Character &source, Character &target, int power, const StringInfo &stringInfo) const {
+	if (source.getName() == target.getName()) {
+		source.pushToBuffer(GameStrings::format(spell.getHitvict(), stringInfo), GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
+	}
+	else {
+		source.pushToBuffer(GameStrings::format(spell.getHitchar(), stringInfo), GameStringKeys::MESSAGE_SENDER_BATTLE, ColorTag::WHITE);
+		target.pushToBuffer(GameStrings::format(spell.getHitvict(), stringInfo), GameStringKeys::MESSAGE_SENDER_BATTLE, ColorTag::WHITE);
+	}
+	dealDamage(target, power);
+}
+
 
 const Spell& CombatCast::getSpellRef() const {
     return spell;

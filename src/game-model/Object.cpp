@@ -6,7 +6,6 @@
 
 Object::Object(	const std::vector<std::string>& attributes,
 				int cost,
-				const std::vector<std::string>& extra,
 				const std::string& ID,
 				const std::string& type,
 				const std::vector<std::string>& keywords,
@@ -16,7 +15,6 @@ Object::Object(	const std::vector<std::string>& attributes,
                	int weight)
 				:	attributes(attributes)
 				,	cost(cost)
-				,	extra(extra)
 				,	ID(ID)
 				,	type(type)
 				,	keywords(keywords)
@@ -44,6 +42,18 @@ Object::Object(	const std::vector<std::string>& attributes,
 			            std::cout << e.what() << std::endl;
 			        }
                	}
+
+//Defaults
+const std::string Object::defaultObjectID = " ";
+const std::string Object::defaultItemType = " ";
+const std::string Object::defaultShortDesc = " ";
+
+const std::vector<std::string> Object::defaultAttributes = {"noAttributes", " "};
+const std::vector<std::string> Object::defaultExtra = {"noExtraDescription", " "};
+const std::vector<std::string> Object::defaultKeywords = {"noKeywords", " "};
+const std::vector<std::string> Object::defaultLongDesc = {"noLongDesc", " "};
+const std::vector<std::string> Object::defaultWearFlags = {"noWearFlags", " "};
+
 
 //*---------------
 // Getters

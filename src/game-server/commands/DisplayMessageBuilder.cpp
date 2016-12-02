@@ -1,6 +1,7 @@
 #include "DisplayMessageBuilder.hpp"
+#include <GameStrings.hpp>
 
-const std::string DisplayMessageBuilder::SENDER_SERVER = "Server"; //TODO reserve default name
+const std::string DisplayMessageBuilder::SENDER_SERVER = GameStrings::get(GameStringKeys::SERVER_NAME);
 
 DisplayMessageBuilder& DisplayMessageBuilder::addClient(const networking::Connection& client)
 {
@@ -23,18 +24,22 @@ DisplayMessageBuilder& DisplayMessageBuilder::setSender(const std::string& sende
     return *this;
 }
 
-std::vector<networking::Message> DisplayMessageBuilder::buildMessages() const
+std::vector<MessageInfo> DisplayMessageBuilder::buildMessages() const
 {
-    std::vector<networking::Message> output;
+    std::vector<MessageInfo> output;
     output.reserve(clientList.size());
 
-    for (const auto& client : clientList) {
-        auto messageForClient = protocols::DisplayMessage{message, sender};
-        auto responseMessage = protocols::createDisplayResponseMessage(messageForClient);
-        auto serializedResponseMessage = protocols::serializeResponseMessage(responseMessage);
+    std::transform(clientList.begin(), clientList.end(), std::back_inserter(output), [this](const auto& client) {
+        protocols::DisplayMessage displayMessage;
+        displayMessage.message = message;
+        displayMessage.sender = sender;
 
-        output.push_back(networking::Message{client, serializedResponseMessage});
-    }
+        MessageInfo msg;
+        msg.client = client;
+        msg.message = protocols::createDisplayResponseMessage(displayMessage);
+
+        return msg;
+    });
 
     return output;
 }

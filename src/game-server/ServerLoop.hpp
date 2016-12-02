@@ -11,13 +11,20 @@
 #include "glog/logging.h"
 #include "Looper.hpp"
 #include "ServerConfig.hpp"
+#include "MessageIO.hpp"
+#include "ConnectionManager.hpp"
 
-class ServerLoop : public Loop {
+class ServerLoop : public Loop, public MessageIO, public ConnectionManager {
 public:
     ServerLoop(const ServerConfig& serverConfig);
 
     virtual void processInputs(bool& quit) override;
     virtual void update() override;
+    virtual void send(const MessageBuilder& messageBuilder) override;
+
+    virtual void disconnectClient(const networking::Connection& connection) override;
+
+    virtual void send(const protocols::CommandInfo& info, const networking::Connection& receiver) override;
 
 private:
     networking::Server server;

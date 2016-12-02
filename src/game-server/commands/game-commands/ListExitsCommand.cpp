@@ -1,5 +1,5 @@
 #include <commands/DisplayMessageBuilder.hpp>
-#include <GameStrings.hpp>
+#include "GameStrings.hpp"
 #include "ListExitsCommand.hpp"
 
 ListExitsCommand::ListExitsCommand(GameModel& gameModel) : gameModel{gameModel} {}
@@ -10,7 +10,7 @@ std::unique_ptr<MessageBuilder> ListExitsCommand::execute(const gsl::span<std::s
     auto connectedAreaMap = *gameModel.getConnectedAreas(areaID);
     std::string message = GameStrings::get(GameStringKeys::EXITS_AREA) + "\n";
     for (auto mapEntry: connectedAreaMap) {
-        message += mapEntry.first + "\n";
+        message += ColorTag::GREEN + mapEntry.first + ColorTag::WHITE + "\n";
     }
 
     return DisplayMessageBuilder{message}

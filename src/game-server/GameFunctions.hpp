@@ -24,7 +24,8 @@ private:
     AttackCommand attackCommand;
     CastCommand castCommand;
 	StatusCommand statusCommand;
-
+	KickCommand kickCommand;
+	EditCommand editCommand;
 };
 
 

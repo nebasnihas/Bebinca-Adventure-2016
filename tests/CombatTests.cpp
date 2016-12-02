@@ -16,13 +16,11 @@ protected:
 
         gameModel.loadActions(map);
 
-        Spell spell = Spell("spell", 1, 100, SpellType::OFFENSE, [](int i){
-            return i*200;
-        });
+        Spell spell = Spell("spell", 1, SpellType::OFFENSE, "l");
         gameModel.addSpell(spell);
 
-        gameModel.createCharacter(CHAR1_ID, CHAR1_ID);
-        gameModel.createCharacter(CHAR2_ID, CHAR2_ID);
+        gameModel.createCharacter(CHAR1_ID);
+        gameModel.createCharacter(CHAR2_ID);
 
     }
 
@@ -30,8 +28,6 @@ protected:
 };
 
 TEST_F(CombatTest, basicCombat) {
-
-
     gameModel.engageCharacterInCombat(CHAR1_ID, CHAR2_ID);
     EXPECT_TRUE(gameModel.characterIsInCombat(CHAR1_ID));
     EXPECT_TRUE(gameModel.characterIsInCombat(CHAR2_ID));
@@ -43,11 +39,14 @@ TEST_F(CombatTest, basicCombat) {
 
     EXPECT_FALSE(gameModel.characterIsDead(CHAR1_ID));
     EXPECT_TRUE(gameModel.characterIsDead(CHAR2_ID));
+
+    //should respawn
+    gameModel.update();
+    EXPECT_FALSE(gameModel.characterIsDead(CHAR1_ID));
+    EXPECT_FALSE(gameModel.characterIsDead(CHAR2_ID));
 }
 
 TEST_F(CombatTest, spellCombat) {
-
-
     gameModel.engageCharacterInCombat(CHAR1_ID, CHAR2_ID);
     gameModel.setCombatAction(CHAR2_ID, "spell");
     EXPECT_TRUE(gameModel.characterIsInCombat(CHAR1_ID));
@@ -58,6 +57,11 @@ TEST_F(CombatTest, spellCombat) {
     }
     EXPECT_FALSE(gameModel.characterIsInCombat(CHAR2_ID));
 
-    EXPECT_TRUE(gameModel.characterIsDead(CHAR1_ID));
+    EXPECT_FALSE(gameModel.characterIsDead(CHAR1_ID));
+    EXPECT_TRUE(gameModel.characterIsDead(CHAR2_ID));
+
+    //should respawn
+    gameModel.update();
+    EXPECT_FALSE(gameModel.characterIsDead(CHAR1_ID));
     EXPECT_FALSE(gameModel.characterIsDead(CHAR2_ID));
 }

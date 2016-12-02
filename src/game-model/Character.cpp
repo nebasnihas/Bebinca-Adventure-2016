@@ -1,16 +1,18 @@
 #include <game/Character.hpp>
+#include <boost/format.hpp>
+#include <game/NPCScripts.hpp>
+#include "GameStrings.hpp"
 
 Character::Character() {}
 
 Character::Character(const std::string& id,
                      const std::string& name,
-                     std::string& hit,
-                     std::string& damage,
+                     const std::string& hit,
+                     const std::string& damage,
                      int level,
                      int exp,
                      int armor,
                      int gold,
-                     Inventory inventory,
                      std::string& areaID
                     )
 
@@ -24,9 +26,8 @@ Character::Character(const std::string& id,
                     , armor(armor)
                     , gold(gold)
                     , areaID(areaID)
-
+                    , outputBuffer(std::make_shared<std::deque<PlayerMessage>>())
                     {
-                       inventory = Inventory(inventory); //Unsure if this works/keeps consistency (Understatement of the year)
                     }
 
 
@@ -147,8 +148,10 @@ void Character::setInventory(const std::string& objectID) {
     inventoryNew.addItem(objectID);
 }
 
-void Character::increaseLevel() {
+void Character::levelUp() {
     this->level++;
+    this->maxHealth += 10;
+    this->maxMana += 10;
 }
 
 void Character::increaseExp(int expToAdd) {
@@ -165,12 +168,11 @@ void Character::setAreaID(const std::string& newAreaID){
 void Character::addStatusEffect(std::shared_ptr<StatusEffect> statusEffect) {
     statusEffects.push_back(statusEffect);
 }
-void Character::setOutputBuffer(MessageBuffer outputBuffer) {
-	this->outputBuffer = std::move(outputBuffer);
-}
 
-void Character::pushToBuffer(const std::string message) {
-	outputBuffer->push_back(message);
+void Character::pushToBuffer(const std::string message, const std::string sender, std::string color) {
+	if (outputBuffer != nullptr) {
+		outputBuffer->push_back(PlayerMessage{message, sender, color});
+	}
 }
 
 std::string Character::getStatus() {
@@ -184,21 +186,21 @@ std::string Character::getStatus() {
 ///////                                     NPC Subclass                                               ///////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-NPC::NPC(const std::string& id,
-                   const std::string& name,
-                   std::string& hit,
-                   std::string& damage,
-                   int level,
-                   int exp,
-                   int armor,
-                   int gold,
-                   Inventory inventory,
-                   std::string& areaID,
-                   int thac0,
-                   const std::string& description,
-                   const std::string& keywords,
-                   const std::string& longDesc
-                    )
+NPC::NPC(const std::string &id,
+		 const std::string &name,
+		 std::string &hit,
+		 std::string &damage,
+		 int level,
+		 int exp,
+		 int armor,
+		 int gold,
+		 std::string &areaID,
+		 int thac0,
+		 const std::string &description,
+		 const std::vector<std::string> &keywords,
+		 const std::string &longDesc,
+		 std::unordered_map<std::string, NPCScripts> &scripts
+)
 
                     : Character(id,
                         name, //Shortdesc is a name
@@ -208,7 +210,6 @@ NPC::NPC(const std::string& id,
                         exp,
                         armor,
                         gold,
-                        inventory,
                         areaID
                         )
 
@@ -216,6 +217,8 @@ NPC::NPC(const std::string& id,
                     , description(description)
                     , keywords(keywords)
                     , longDesc(longDesc)
+                    , scripts(scripts)
+
                     {
                     }
 
@@ -229,7 +232,7 @@ std::string NPC::getDescription() const {
     return description;
 }
 
-std::string NPC::getKeywords() const {
+const std::vector<std::string> & NPC::getKeywords() const {
     return keywords;
 }
 
@@ -239,6 +242,10 @@ std::string NPC::getlongDesc() const {
 
 int NPC::getThac0() const {
     return thac0;
+}
+
+std::unordered_map<std::string, NPCScripts> NPC::getScripts() const {
+    return scripts;
 }
 
 int NPC::getCounter() const {
@@ -251,4 +258,53 @@ void NPC::increaseCounter() {
 
 void NPC::setCounter(int newCount) {
     this->counter = newCount;
+}
+
+std::vector<std::string> NPC::getCommandsToExecute()
+{
+    std::vector<std::string> commandsToExecute;
+    for (auto& message : *outputBuffer ) {
+
+        // We only read messages that are sent by the server
+        if (message.senderID != GameStringKeys::MESSAGE_SENDER_SERVER) {
+            continue;
+        }
+
+        for (auto& pair : scripts) {
+            auto& script = pair.second;
+
+            // Capture the name of the player that triggered this
+            std::string qualifierPattern = "(\\w+).*" + script.getScriptingQualifier();
+            boost::regex effectsRegex{qualifierPattern};
+            boost::smatch matches;
+
+            // If this isn't a match, move on
+            if (!boost::regex_match(message.text, matches, effectsRegex)) {
+                continue;
+            }
+
+            // Substitute the "$n" string for the userID, then add it to the vector of commands
+            std::string userID = matches.str(1);
+            const auto& commands = script.getScriptingCommands();
+            for (auto command : commands) {
+                boost::replace_all(command, "$n", userID);
+                commandsToExecute.push_back(command);
+            }
+        }
+    }
+
+    if (!hasStatusEffect(StatusType::BODYSWAP)) {
+        outputBuffer->clear();
+    }
+    return commandsToExecute;
+}
+
+bool Character::hasStatusEffect(StatusType statusType) {
+    for (const auto& e : statusEffects) {
+        if (e->getType() == statusType) {
+            return true;
+        }
+    }
+
+    return false;
 }

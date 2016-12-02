@@ -31,14 +31,38 @@ std::unordered_map<std::string, NPC> GameDataImporter::returnNPCS(const YAML::No
         vector<string> longdesc = nodeNPC["longdesc"] ? nodeNPC["longdesc"].as<vector<string>>() : NPC::defaultLongDescription;
 
         string sDescription = boost::algorithm::join(description, " ");
-        string sKeywords = boost::algorithm::join(keywords, " ");
         string sLongDescription = boost::algorithm::join(longdesc, " ");
 
         Inventory inventory;
         std::string areaID;
 
-        NPC newNPC = NPC(npcID, shortdesc, hit, damage, level, exp, armor, gold, inventory, areaID, thac0,
-                              sDescription, sKeywords, sLongDescription);
+        unordered_map<string, NPCScripts> NPCScriptings;
+        //Scripting Attributes
+        if(nodeNPC["programs"]) {
+
+            const YAML::Node programs = nodeNPC["programs"];
+            for (const auto &program : programs) {
+                vector<string> scriptingCommands = program["commands"] ? program["commands"].as<vector<string>>() : NPCScripts::defaultCommand;
+				for (auto& command: scriptingCommands) {
+					boost::trim(command);
+				}
+                string qualifier = program["qualifier"] ? program["qualifier"].as<string>() : NPCScripts::defaultQualifier;
+                string scriptingName = program["name"] ? program["name"].as<string>() : NPCScripts::defaultScriptingName;
+                vector<string> scriptingDescription = program["description"] ? program["description"].as<vector<string>>() : NPCScripts::defaultScriptingDescription;
+
+                boost::replace_all(qualifier, "~", "");
+                string scriptingDescriptionString = boost::algorithm::join(scriptingDescription, " ");
+
+                std::pair<string, vector<string>> qualifierCommandsPair (qualifier, scriptingCommands);
+
+                NPCScripts newNPCScript = NPCScripts(qualifier, scriptingCommands, scriptingName, scriptingDescriptionString);
+
+                NPCScriptings.insert(std::pair<string, NPCScripts>(qualifier,newNPCScript));
+            }
+        }
+
+        NPC newNPC = NPC(npcID, shortdesc, hit, damage, level, exp, armor, gold, areaID, thac0,
+                              sDescription, keywords, sLongDescription, NPCScriptings);
         npcs.insert(std::pair<std::string, ::NPC>(npcID, newNPC));
     }
     return npcs;
@@ -55,59 +79,39 @@ string description (of area)
 
 std::vector<Area> GameDataImporter::getRooms(const YAML::Node& ROOMS) {
     vector<Area> rooms;
-    std::string roomDescription;
+    rooms.reserve(ROOMS.size());
 
-    for(const auto& ROOM : ROOMS){
-        vector<string> desc = ROOM["desc"].as<vector<string>>();
-        string description = boost::algorithm::join(desc, " ");
-        vector<string> extended_descriptions = ROOM["extended_descriptions"].as<vector<string>>();
-        string id = ROOM["id"].as<string>();
-        string name = ROOM["name"].as<string>();
+    std::transform(ROOMS.begin(), ROOMS.end(), std::back_inserter(rooms), [](const YAML::Node& roomNode) {
+        return roomNode.as<Area>();
+    });
 
-        unordered_map<string, string> doorsMap;
-        const YAML::Node doors = ROOM["doors"];
-        for(const auto& door : doors){
-            string dir = door["dir"].as<string>();
-            string to = door["to"].as<string>();
-
-            //Following two are currently empty on the YAML file
-//            vector<string> desc = door["desc"].as<vector<string>>();
-//            vector<string> doorKeywords = door["keywords"].as<vector<string>>();
-            std::pair<string, string> doorKeyValuePair (dir, to);
-            doorsMap.insert(doorKeyValuePair);
-        }
-        //Create an Area objects with ID, title, connected areas, and descriptions
-        Area newArea = Area(id, name, doorsMap, description, extended_descriptions);
-        rooms.push_back(newArea);
-    }
     return rooms;
 }
 
-std::vector<Object> GameDataImporter::getObjects(const YAML::Node& OBJECTS){
-    vector<Object> objects = {};
+std::unordered_map<std::string, Object> GameDataImporter::returnObjects(const YAML::Node& OBJECTS){
+    unordered_map<std::string, Object> objects;
 
     /*
     Split up objects in YML file and store them in the objects class
     */
 
     for(const auto& OBJECT : OBJECTS){
-        int cost = OBJECT["cost"].as<int>();
-        int weight = OBJECT["weight"].as<int>();
+        int cost = OBJECT["cost"] ? OBJECT["cost"].as<int>() : Object::defaultCost;
+        int weight = OBJECT["weight"] ? OBJECT["weight"].as<int>() : Object::defaultWeight;
 
-        string objectId = OBJECT["id"].as<string>();
-        string item_type = OBJECT["item_type"].as<string>();
-        string shortdesc = OBJECT["shortdesc"].as<string>();
+        string objectID = OBJECT["id"] ? OBJECT["id"].as<string>() : Object::defaultObjectID;
+        string item_type = OBJECT["item_type"] ? OBJECT["item_type"].as<string>() : Object::defaultItemType;
+        string shortdesc = OBJECT["shortdesc"] ? OBJECT["shortdesc"].as<string>() : Object::defaultShortDesc;
 
-        vector<string> attributes = OBJECT["attributes"].as<vector<string>>();
-        vector<string> extra = OBJECT["extra"].as<vector<string>>();
-        vector<string> keywords = OBJECT["keywords"].as<vector<string>>();
-        vector<string> longdesc = OBJECT["longdesc"].as<vector<string>>();
-        vector<string> wear_flags = OBJECT["wear_flags"].as<vector<string>>();
+        vector<string> attributes = OBJECT["attributes"] ? OBJECT["attributes"].as<vector<string>>() : Object::defaultAttributes;
+        vector<string> keywords = OBJECT["keywords"] ? OBJECT["keywords"].as<vector<string>>() : Object::defaultKeywords;
+        vector<string> longdesc = OBJECT["longdesc"] ? OBJECT["longdesc"].as<vector<string>>() : Object::defaultLongDesc;
+        vector<string> wear_flags = OBJECT["wear_flags"] ? OBJECT["wear_flags"].as<vector<string>>() : Object::defaultWearFlags;
 
         string description = boost::algorithm::join(longdesc, " ");
 
-        Object newObject = Object(attributes, cost, extra, objectId, item_type, keywords, description, shortdesc, wear_flags, weight);
-        objects.push_back(newObject);
+        Object newObject = Object(attributes, cost, objectID, item_type, keywords, description, shortdesc, wear_flags, weight);
+        objects.insert(std::pair<std::string, Object> (shortdesc, newObject));
     }
     return objects;
 }
@@ -150,7 +154,7 @@ vector<Resets> GameDataImporter::returnResets(const YAML::Node& RESETS) {
     return resets;
 }
 
-std::vector<Spell> GameDataImporter::getSpells(const YAML::Node& SPELLS) {
+vector<Spell> GameDataImporter::getSpells(const YAML::Node& SPELLS) {
 
     std::vector<Spell> returnSpells;
 
@@ -227,7 +231,7 @@ bool GameDataImporter::tryParseSpell(const YAML::Node &SPELL, SpellType spellTyp
         duration = SPELL["Duration"].as<int>();
     }
 
-    retSpell = Spell(name, mana, spellType, effect);
+    retSpell = Spell(name, mana, spellType, effect, hitchar, hitroom, hitvict);
     return true;
 }
 
@@ -243,11 +247,11 @@ string getStringData(const YAML::Node node, string keyword) {
 
 
 //The workflow for SHOPS ends here, not sure how to utilize yet
-void GameDataImporter::loadShops(GameModel& gameModel, const YAML::Node& SHOPS){
-
-    for(const auto& SHOP : SHOPS){
-        //no data on shops in mgoose file
-
-    }
-
-}
+//void GameDataImporter::loadShops(GameModel& gameModel, const YAML::Node& SHOPS){
+//
+//    for(const auto& SHOP : SHOPS){
+//        //no data on shops in mgoose file
+//
+//    }
+//
+//}

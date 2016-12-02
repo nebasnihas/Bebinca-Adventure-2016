@@ -1,8 +1,16 @@
 
 add_executable(game-client
         GameClient.cpp
-        chatWindow.cpp
-        )
+        MainMenuWindow.cpp MainMenuWindow.hpp
+        Window.hpp
+        Application.cpp Application.hpp
+        AuthenticationWindow.cpp AuthenticationWindow.hpp
+        ChatWindow.cpp ChatWindow.hpp
+        StrColorizer.cpp StrColorizer.hpp
+        WorldBuildingWindow.cpp WorldBuildingWindow.hpp
+        CombatWindow.hpp CombatWindow.cpp
+        CharacterAsciis.hpp
+        StartupSplashScr.cpp StartupSplashScr.hpp ArtWindow.cpp ArtWindow.hpp)
 
 set_target_properties(game-client
         PROPERTIES
@@ -23,9 +31,13 @@ include_directories(
 target_link_libraries(game-client
         networking
         protocols
+        game
         ${Boost_LIBRARIES}
         ${CURSES_LIBRARIES}
+        menu
         ${CMAKE_THREAD_LIBS_INIT}
+        glog
+        ascii-converter
         )
 
 install(TARGETS game-client

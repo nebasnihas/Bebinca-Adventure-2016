@@ -22,7 +22,7 @@ public:
     DisplayMessageBuilder& addClients(const gsl::span<networking::Connection, -1> clients);
     DisplayMessageBuilder& setSender(const std::string& sender);
 
-    virtual std::vector<networking::Message> buildMessages() const override ;
+    virtual std::vector<MessageInfo> buildMessages() const override ;
 private:
     std::vector<networking::Connection> clientList;
     std::string message;

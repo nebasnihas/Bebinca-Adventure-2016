@@ -1,16 +1,14 @@
+#include <boost/format.hpp>
 #include "CombatInstance.hpp"
+#include "GameStrings.hpp"
 
 CombatInstance::CombatInstance(std::unordered_map<std::string, std::shared_ptr<CombatAction>>* actionLookup, std::string defaultActionID)
-        : actionLookup(actionLookup), defaultActionID(defaultActionID)
-{
-
-}
+        : actionLookup(actionLookup), defaultActionID(defaultActionID) {}
 
 void CombatInstance::update() {
 
     //TODO: Order of execution for character actions
     for (CharacterInstance& characterInstance : characters) {
-
         if (!characterInstance.isAlive()) {
             continue;
         }
@@ -20,7 +18,8 @@ void CombatInstance::update() {
             auto& action = iter->second;
             action->execute(characterInstance.getCharacterRef(), characterInstance.getTarget().getCharacterRef());
         } else {
-			characterInstance.getCharacterRef().pushToBuffer("You do not know the spell " + characterInstance.getCombatActionID());
+			auto unknownSpellMessage = GameStrings::getFormatted(GameStringKeys::SPELL_UNKNOWN, StringInfo{"", "", 0, characterInstance.getCombatActionID()});
+			characterInstance.getCharacterRef().pushToBuffer(unknownSpellMessage, GameStringKeys::MESSAGE_SENDER_SERVER, ColorTag::WHITE);
         }
 
 		//TODO: Extract default case
@@ -64,13 +63,13 @@ void CombatInstance::battleCleanup() {
         if (cInstance.isAlive()) {
             // Character is alive, distribute exp and continue
             // TODO: Add actual exp tracking
-            character.increaseLevel();
+            character.levelUp();
             character.setState(CharacterState::IDLE);
-			character.pushToBuffer("You won the battle");
+			character.pushToBuffer(GameStrings::get(GameStringKeys::COMBAT_VICTORY), GameStringKeys::MESSAGE_SENDER_BATTLE, ColorTag::WHITE);
         } else {
             // Character is dead. Set to dead state, GameModel will clean up later.
-            character.setState(CharacterState::DEAD);
-			character.pushToBuffer("You were killed");
+            // Bug if multiple characters
+            character.pushToBuffer(GameStrings::get(GameStringKeys::COMBAT_LOSS), GameStringKeys::MESSAGE_SENDER_BATTLE, ColorTag::WHITE);
         }
     }
 }

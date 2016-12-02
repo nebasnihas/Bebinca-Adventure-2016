@@ -15,7 +15,7 @@ struct DisplayMessage {
 };
 
 ResponseMessage createDisplayResponseMessage(const DisplayMessage& message);
-std::string readDisplayResponseMessage(const ResponseMessage& responseMessage);
+DisplayMessage readDisplayResponseMessage(const ResponseMessage& responseMessage);
 
 }
 
