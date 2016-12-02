@@ -75,6 +75,76 @@ foreach(file ${data})
             )
 endforeach(file)
 
+file(GLOB assets RELATIVE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/data/assets/*)
+foreach(file ${assets})
+    set(SRC "${CMAKE_SOURCE_DIR}/${file}")
+    set(DST "${PROJECT_BINARY_DIR}/bin/${file}")
+    add_custom_command(
+            TARGET data_target
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SRC} ${DST}
+            )
+endforeach(file)
+
+file(GLOB bmpimgs RELATIVE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/data/assets/bmpimgs/*)
+foreach(file ${bmpimgs})
+    set(SRC "${CMAKE_SOURCE_DIR}/${file}")
+    set(DST "${PROJECT_BINARY_DIR}/bin/${file}")
+    add_custom_command(
+            TARGET data_target
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SRC} ${DST}
+            )
+endforeach(file)
+
+file(GLOB sequences RELATIVE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/data/assets/bmpimgs/sequences/*)
+foreach(file ${sequences})
+    set(SRC "${CMAKE_SOURCE_DIR}/${file}")
+    set(DST "${PROJECT_BINARY_DIR}/bin/${file}")
+    add_custom_command(
+            TARGET data_target
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SRC} ${DST}
+            )
+endforeach(file)
+
+file(GLOB splash RELATIVE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/data/assets/bmpimgs/sequences/splash/*)
+foreach(file ${splash})
+    set(SRC "${CMAKE_SOURCE_DIR}/${file}")
+    set(DST "${PROJECT_BINARY_DIR}/bin/${file}")
+    add_custom_command(
+            TARGET data_target
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SRC} ${DST}
+            )
+endforeach(file)
+
+file(GLOB fontsets RELATIVE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/data/assets/fontsets/*)
+foreach(file ${fontsets})
+    set(SRC "${CMAKE_SOURCE_DIR}/${file}")
+    set(DST "${PROJECT_BINARY_DIR}/bin/${file}")
+    add_custom_command(
+            TARGET data_target
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SRC} ${DST}
+            )
+endforeach(file)
+
+file(GLOB dark RELATIVE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/data/assets/fontsets/dark/*)
+foreach(file ${dark})
+    set(SRC "${CMAKE_SOURCE_DIR}/${file}")
+    set(DST "${PROJECT_BINARY_DIR}/bin/${file}")
+    add_custom_command(
+            TARGET data_target
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SRC} ${DST}
+            )
+endforeach(file)
+
+file(GLOB default RELATIVE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/data/assets/fontsets/default/*)
+foreach(file ${default})
+    set(SRC "${CMAKE_SOURCE_DIR}/${file}")
+    set(DST "${PROJECT_BINARY_DIR}/bin/${file}")
+    add_custom_command(
+            TARGET data_target
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SRC} ${DST}
+            )
+endforeach(file)
+
 add_custom_target(config ALL)
 add_custom_command(
         TARGET config
