@@ -120,7 +120,7 @@ void setupWorldBuildingWindow() {
         YAML::Emitter em;
         em << YAML::Node{area};
         std::stringstream arguments;
-        arguments << "submit \"" << em.c_str() << "\"";
+        arguments << "submit @" << em.c_str() << "@";
         auto args = arguments.str();
         auto cmd =  protocols::createPlayerCommandRequestMessage(protocols::PlayerCommand{command : editCommand, arguments : args});
         networkingClient->send(protocols::serializeRequestMessage(cmd));

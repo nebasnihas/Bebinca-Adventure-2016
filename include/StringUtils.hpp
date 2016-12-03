@@ -35,7 +35,7 @@ static inline std::vector<std::string> splitString(std::string text)
     boost::trim(text);
 
     using EscapeList = boost::escaped_list_separator<char>;
-    boost::tokenizer<EscapeList> tokenizer{text, EscapeList("", " ", "\"\'")};
+    boost::tokenizer<EscapeList> tokenizer{text, EscapeList("", " ", "@")}; //@ simple workaround for worldbuilding
     for (const auto& token : tokenizer) {
         tokens.emplace_back(token);
     }

@@ -697,7 +697,7 @@ offense:
   Wearoff: You feel less sick.
 - Dammsg: psychic surge
   Duration: 10
-  Effect: '''i'' 26 ''blind'' 0'
+  Effect: '''l'' 26 ''blind'' 0'
   Hitchar: You send a wave of psychic energy toward $N and $E howls in pain.
   Hitvict: $n points at you and you are engulfed in blinding pain.
   Mana: 20

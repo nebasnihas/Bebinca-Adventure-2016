@@ -147,7 +147,9 @@ std::unique_ptr<MessageBuilder> EditCommand::saveChanges(const gsl::span<std::st
         return notEditing(player.clientID);
     }
     try {
-        auto area = YAML::Load(arguments[1]).as<Area>();
+        auto ymlStr = arguments[1];
+        LOG(INFO) << ymlStr;
+        auto area = YAML::Load(ymlStr).as<Area>();
 
         gameModel.addArea(area);
 
